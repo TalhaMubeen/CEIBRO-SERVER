@@ -1,0 +1,11 @@
+:root {
+  --primary: rgb(37, 85, 85);
+  --accent: rgb(201, 226, 217);
+  --light-accent: rgb(213, 235, 227, 0.4);
+}
+
+
+body {
+  margin: 0;
+  padding: 0;
+}

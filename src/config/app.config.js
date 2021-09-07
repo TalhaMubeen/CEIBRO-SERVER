@@ -1,0 +1,3 @@
+export const TOGGLE_NAVBAR = 'TOGGLE_NAVBAR'
+export const SET_NAVBAR_OPEN = 'SET_NAVBAR_OPEN'
+export const SET_COLLAPSE = 'SET_COLLAPSE'
