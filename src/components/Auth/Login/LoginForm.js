@@ -53,7 +53,7 @@ const LoginForm = () => {
             variant="contained"
             color="primary"
             onClick={() => {
-              history.push('/onboard')
+              history.push('/dashboard')
             }}
           >
             Login
@@ -83,6 +83,7 @@ const useStyles = makeStyles({
   },
   titles: {
     color: colors.textPrimary,
+    fontFamily: 'Inter'
   },
   loginForm: {
     display: "flex",
@@ -104,7 +105,7 @@ const useStyles = makeStyles({
     marginTop: 5,
     weight: 500,
     fontSize: 14,
-    paddingLeft: 40
+    paddingLeft: 30
   },
   logoWrapper: {
     paddingTop: '8%',

@@ -1,52 +1,36 @@
 
-import { FaRegBookmark } from "react-icons/fa";
-import { FiFolder, FiSettings } from "react-icons/fi";
 import { VscHome } from "react-icons/vsc";
-import { MdGroup } from "react-icons/md";
-import { HiDownload } from "react-icons/hi";
-import { MdAccountBalance } from "react-icons/md";
-import { CgShoppingCart } from "react-icons/cg";
+import { BsChatSquareDots } from "react-icons/bs";
+import { BiTask } from "react-icons/bi";
+import { AiOutlineFolder } from "react-icons/ai";
+
+
 
 export default [
     {
-        title: 'Home',
+        title: 'Dashboard',
         icon: <VscHome />,
-        path: "home"
+        path: "dashboard",
+        notification: 0,
+        active: true
     },
     {
-        title: 'Folders',
-        icon: <FiFolder />,
-        path: "folders"
+        title: 'Chat',
+        icon: <BsChatSquareDots />,
+        path: "chat",
+        notification: 2
     },
     {
-        title: 'Groups',
-        icon: <MdGroup />,
-        path: "groups"
+        title: 'Tasks',
+        icon: <BiTask />,
+        path: "tasks",
+        notification: 2
     },
     {
-        title: 'Downloads',
-        icon: <HiDownload />,
-        path: "downloads"
-    },
-    {
-        title: 'Bookmarks',
-        icon: <FaRegBookmark />,
-        path: "bookmarks"
-    },
-    {
-        title: 'Settings',
-        icon: <FiSettings />,
-        path: "settings"
-    },
-    {
-        title: 'Finances',
-        icon: <MdAccountBalance />,
-        path: "finances"
-    },
-    {
-        title: 'Cart',
-        icon: <CgShoppingCart />,
-        path: "cart"
+        title: 'Projects',
+        icon: <AiOutlineFolder />,
+        path: "projects",
+        notification: 0
     }
 
 ]

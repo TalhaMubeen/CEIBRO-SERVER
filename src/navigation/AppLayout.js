@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core'
 import React from 'react'
+import colors from '../assets/colors'
 import Sidebar from '../components/Sidebar/Sidebar'
 import Topbar from '../components/Topbar/Topbar'
 
@@ -26,19 +27,21 @@ const useStyles = makeStyles(theme => ({
     wrapper: {
         height: '100vh',
         overflow: 'hidden',
+        background: 'green'
     },
     content: {
         height: '100vh',
-        marginLeft: 240,
+        marginLeft: 200,
         overflowX: 'hidden',
         overflowY: 'auto',
-        padding: '10px 35px',
+        background: colors.lightGrey,
         [theme.breakpoints.down('md')]: {
             marginLeft: 0,
             padding: 10
         }
     },
     children: {
-        paddingBottom: 50
+        paddingBottom: 50,
+        padding: '10px 35px',
     }
 }))

@@ -8,6 +8,7 @@ import './topbar.css'
 import appActions from '../../redux/action/app.action';
 import { useDispatch, useSelector } from 'react-redux';
 import { useMediaQuery } from 'react-responsive'
+import colors from '../../assets/colors';
 
 const Topbar = () => {
     const classes = useStyles()
@@ -34,15 +35,24 @@ const Topbar = () => {
             <Grid 
                 container
                 direction="row"
-                justifyContent="flex-end"
                 alignItems="center"
                 className={classes.container}
             >
 
+                {isTabletOrMobile && 
+                    <Grid item xs={2} md={0}>
+                        <MenuIcon onClick={toggleNavbar}/>
+                    </Grid>
+                }
 
-                {isTabletOrMobile && <Grid item xs={4} md={0}>
-                    <MenuIcon onClick={toggleNavbar}/>
-                </Grid>}
+                <Grid item xs={4} md={3} className={classes.titleContainer}>
+                    <Typography variant="h6" component="h6">
+                        Dashboard
+                    </Typography>
+                    <Button size="small" color="primary" variant="contained">Login</Button>
+                </Grid>
+
+                <Grid xs={1} md={4}></Grid>
 
                 <Grid 
                     xs={5}
@@ -63,20 +73,25 @@ const Topbar = () => {
                 </Grid>
                 <Grid 
                     xs={3}
-                    md={1}
+                    md={2}
                     item
                     style={{display: 'flex', justifyContent: 'flex-start'}}
                     direction="row"
                     justifyContent="center"
                     alignItems="center"
                 >
-                    <Typography>
-                        <Badge badgeContent={4}>
-                            <NotificationsNoneSharp className={classes.bell}/>
-                        </Badge>
-                    </Typography>
-                    <Button onClick={handleClick} aria-controls="simple-menu" aria-haspopup="true">
-                        <Avatar alt="Cindy Baker" className={classes.small} src="https://material-ui.com/static/images/avatar/2.jpg" />
+
+                    <div className={classes.nameWrapper}>
+                        <Typography>
+                            IIja
+                        </Typography>
+                        <Typography>
+                            Nikolajev
+                        </Typography>
+                    </div>
+                    
+                    <Button style={{ padding: 0}} onClick={handleClick} aria-controls="simple-menu" aria-haspopup="true">
+                        <Avatar variant="square"  alt="Cindy Baker" className={classes.small} src="https://material-ui.com/static/images/avatar/2.jpg" />
                     </Button>
                     <Menu
                         id="simple-menu"
@@ -90,6 +105,12 @@ const Topbar = () => {
                         <MenuItem>My account</MenuItem>
                         <MenuItem>Logout</MenuItem>
                     </Menu>
+
+                    <Typography>
+                        <Badge badgeContent={4}>
+                            <NotificationsNoneSharp className={classes.bell}/>
+                        </Badge>
+                    </Typography>
                 </Grid>
 
             </Grid>
@@ -102,6 +123,8 @@ export default Topbar
 const useStyles = makeStyles(theme => ({
     topNavbarWrapper: {
         height: 60,
+        paddingRight: 20,
+        background: colors.white
     },
     container: {
         height: '100%',
@@ -117,4 +140,15 @@ const useStyles = makeStyles(theme => ({
         width: theme.spacing(3),
         height: theme.spacing(3),
     },
+    titleContainer: {
+        display: 'flex',
+        justifyContent: 'space-evenly'
+    },
+    nameWrapper: {
+        display: 'flex',
+        alignItems: 'flex-end',
+        flexDirection: 'column',
+        fontSize: 14,
+        fontWeight: 500
+    }
 }))

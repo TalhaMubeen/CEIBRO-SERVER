@@ -4,11 +4,13 @@ const colors = {
     textPrimary: 'rgb(0, 118, 200)',
     lightPurpuple: 'rgb(122, 177, 251)',
     secondaryBlue: 'rgb(0, 82, 204)',
-    white: 'rgb(255, 255, 255)',
     
-    lightGrey: 'rgb(206, 212, 218)',
+    white: 'rgb(255, 255, 255)',
+    black: 'black',
+
+    lightGrey: 'rgb(245, 247, 248)',
     lightGreySecondary: 'rgb(213, 213, 213)',
-    grey: 'rgb(250, 251, 252)',
+    grey: 'rgb(236, 240, 241)',
     mediumGrey: 'rgb(223, 225, 230)',
     
     lightGreen: 'rgb(93, 198, 97)',
