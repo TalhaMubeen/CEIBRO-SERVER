@@ -1,3 +1,4 @@
+import { ActionInterface } from ".";
 import { TOGGLE_NAVBAR, SET_NAVBAR_OPEN, SET_COLLAPSE } from "../../config/app.config";
 
 const intialStatue = {
@@ -5,7 +6,9 @@ const intialStatue = {
     collapse: false
 }
 
-export default function(state = intialStatue, action) {
+
+
+const AppReducer = (state = intialStatue, action: ActionInterface ) => {
     switch(action.type) {
         case TOGGLE_NAVBAR:
             return {
@@ -27,3 +30,5 @@ export default function(state = intialStatue, action) {
     }
         
 } 
+
+export default AppReducer

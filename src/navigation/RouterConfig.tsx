@@ -2,7 +2,11 @@ import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-d
 import Login from "../components/Auth/Login/Login";
 import AppLayout from "./AppLayout";
 
-const RouterConfig = () => {
+
+interface Configs {
+}
+
+const RouterConfig: React.FC<Configs> = () => {
   return (
     <Router>
         <Switch>

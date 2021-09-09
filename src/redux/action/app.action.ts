@@ -6,13 +6,13 @@ const appActions = {
                 type: TOGGLE_NAVBAR
             }
     },
-    setNavbarOpen: open => {
+    setNavbarOpen: (open: boolean) => {
         return {
                 type: SET_NAVBAR_OPEN,
                 payload: open
             }
     },
-    setCollapse: open => {
+    setCollapse: (open: boolean) => {
         return {
                 type: SET_COLLAPSE,
                 payload: open

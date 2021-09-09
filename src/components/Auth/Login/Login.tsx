@@ -1,15 +1,19 @@
 import { Grid } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
+import { makeStyles } from '@material-ui/core/styles'
 import ImageTile from './ImageTile'
 import './login.css'
 import LoginForm from './LoginForm'
 
-const Login = () => {
+import { LoginInterface } from '../../../interfaces/Login.interface'
+
+
+
+const Login: React.FC<LoginInterface> = () => {
     const classes = useStyles()
     
     return (
         <Grid container className={classes.login}>
-            <Grid item xs={12} md={4} className={classes.formTile}>
+            <Grid item xs={12} md={4}>
                 <LoginForm />
             </Grid>
 

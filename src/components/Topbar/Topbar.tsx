@@ -6,19 +6,21 @@ import Avatar from '@material-ui/core/Avatar';
 import MenuIcon from '@material-ui/icons/Menu';
 import './topbar.css'
 import appActions from '../../redux/action/app.action';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive'
+// import { RootState } from '../../redux/reducers'
 import colors from '../../assets/colors';
 
 const Topbar = () => {
     const classes = useStyles()
 
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)' })
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
 
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
     const dispatch = useDispatch();
-    const { navbar } = useSelector(store => store.app)
-    const handleClick = (event) => {
+    // const { navbar } = useSelector((store: RootState) => store.app)
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
     };
   
@@ -40,7 +42,7 @@ const Topbar = () => {
             >
 
                 {isTabletOrMobile && 
-                    <Grid item xs={2} md={0}>
+                    <Grid item xs={2}>
                         <MenuIcon onClick={toggleNavbar}/>
                     </Grid>
                 }
@@ -97,7 +99,6 @@ const Topbar = () => {
                         id="simple-menu"
                         anchorEl={anchorEl}
                         keepMounted
-                        open={true}
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >

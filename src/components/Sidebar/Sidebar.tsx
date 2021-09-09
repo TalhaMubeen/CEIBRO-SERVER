@@ -1,23 +1,25 @@
-import { Badge, makeStyles, Typography } from '@material-ui/core'
+import { Badge, Typography } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 import { useHistory } from 'react-router'
 import assets from '../../assets/assets'
 import colors from '../../assets/colors'
-import configs from '../../navigation/SidebarConfig'
+import configs, { SidebarConfigInterface } from '../../navigation/SidebarConfig'
+
 
 function Sidebar() {
     const classes = useStyles()
 
     const history = useHistory()
 
-    const handleRouteClick = (config) => {
+    const handleRouteClick = (config: SidebarConfigInterface) => {
         history.push(`/${config.path}`)
     }
 
     return (
         <div className={classes.sidebarWrapper}>
             <div className={classes.logoWrapper}>
-                <img src={assets.logo}/>
+                <img src={assets.logo} alt="ceibro-logo"/>
             </div>
 
             <div className={classes.menueWrapper}>

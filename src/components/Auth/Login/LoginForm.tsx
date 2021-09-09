@@ -1,5 +1,5 @@
 import { Typography, Button, FormControlLabel, Checkbox } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { useState } from "react";
 import { useHistory } from "react-router";
 import assets from "../../../assets/assets";
@@ -14,7 +14,7 @@ const LoginForm = () => {
   return (
     <div className="form-container">
       <div className={classes.logoWrapper }>
-        <img src={assets.logo} />
+        <img src={assets.logo} alt="ceibro-logo"/>
       </div>
 
 
@@ -44,8 +44,7 @@ const LoginForm = () => {
             />
           }
           className={classes.remember}
-          label="Remember me"
-          label={<Typography variant="span" className={classes.remember}>Remember me</Typography>}
+          label={<Typography className={classes.remember}>Remember me</Typography>}
         />
         <div className={classes.actionWrapper}>
           <Button
@@ -60,7 +59,7 @@ const LoginForm = () => {
           </Button>
           <Typography
             className={`${classes.titles} ${classes.forget}`}
-            variant="span"
+            variant="body1"
             gutterBottom
           >
             Forget Password?

@@ -4,9 +4,16 @@ import { BsChatSquareDots } from "react-icons/bs";
 import { BiTask } from "react-icons/bi";
 import { AiOutlineFolder } from "react-icons/ai";
 
+export interface SidebarConfigInterface {
+    title: string
+    icon: any
+    path: string
+    notification: number
+    active?: boolean | undefined
+}
 
 
-export default [
+const SidebarConfig = [
     {
         title: 'Dashboard',
         icon: <VscHome />,
@@ -34,3 +41,5 @@ export default [
     }
 
 ]
+
+export default SidebarConfig

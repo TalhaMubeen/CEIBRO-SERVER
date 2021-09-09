@@ -4,7 +4,10 @@ import colors from '../assets/colors'
 import Sidebar from '../components/Sidebar/Sidebar'
 import Topbar from '../components/Topbar/Topbar'
 
-const AppLayout = ({ children }) => {
+interface AppLayoutInterface {
+}
+
+const AppLayout: React.FC<AppLayoutInterface> = ({ children }) => {
     const classes = useStyles()
 
     return (
