@@ -7,6 +7,7 @@ const colors = {
     
     white: 'rgb(255, 255, 255)',
     black: 'black',
+    lightBlack: 'rgb(125, 126, 128)',
 
     lightGrey: 'rgb(245, 247, 248)',
     lightGreySecondary: 'rgb(213, 213, 213)',

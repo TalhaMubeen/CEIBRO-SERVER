@@ -1,9 +1,10 @@
 import { ActionInterface } from ".";
 import { TOGGLE_NAVBAR, SET_NAVBAR_OPEN, SET_COLLAPSE } from "../../config/app.config";
-
+import SidebarConfig from "../../navigation/SidebarConfig";
 const intialStatue = {
     navbar: true,
-    collapse: false
+    collapse: false,
+    sidebarRoutes: SidebarConfig
 }
 
 

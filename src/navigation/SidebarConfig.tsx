@@ -4,7 +4,7 @@ import { BsChatSquareDots } from "react-icons/bs";
 import { BiTask } from "react-icons/bi";
 import { AiOutlineFolder } from "react-icons/ai";
 
-export interface SidebarConfigInterface {
+export interface SingleConfig {
     title: string
     icon: any
     path: string
@@ -12,34 +12,38 @@ export interface SidebarConfigInterface {
     active?: boolean | undefined
 }
 
+export interface SidebarConfigInterface {
+    [key: string]: SingleConfig
+}
 
-const SidebarConfig = [
-    {
+
+const SidebarConfig: SidebarConfigInterface = {
+    "Dashboard": {
         title: 'Dashboard',
         icon: <VscHome />,
         path: "dashboard",
         notification: 0,
         active: true
     },
-    {
+    "Chat": {
         title: 'Chat',
         icon: <BsChatSquareDots />,
         path: "chat",
-        notification: 2
+        notification: 3
     },
-    {
+    "Tasks": {
         title: 'Tasks',
         icon: <BiTask />,
         path: "tasks",
         notification: 2
     },
-    {
+    "Projects": {
         title: 'Projects',
         icon: <AiOutlineFolder />,
         path: "projects",
         notification: 0
     }
 
-]
+}
 
 export default SidebarConfig

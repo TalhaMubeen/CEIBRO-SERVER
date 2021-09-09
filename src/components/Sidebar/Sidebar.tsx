@@ -1,18 +1,18 @@
 import { Badge, Typography } from '@material-ui/core'
 import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { useHistory } from 'react-router'
 import assets from '../../assets/assets'
 import colors from '../../assets/colors'
-import configs, { SidebarConfigInterface } from '../../navigation/SidebarConfig'
-
-
+import { SingleConfig } from '../../navigation/SidebarConfig'
+import { RootState } from '../../redux/reducers'
 function Sidebar() {
     const classes = useStyles()
-
+    const configs = useSelector((store: RootState) => store.app.sidebarRoutes)
     const history = useHistory()
 
-    const handleRouteClick = (config: SidebarConfigInterface) => {
+    const handleRouteClick = (config: SingleConfig) => {
         history.push(`/${config.path}`)
     }
 
@@ -23,9 +23,10 @@ function Sidebar() {
             </div>
 
             <div className={classes.menueWrapper}>
-                {configs && configs.map(config => {
+                {configs && Object.values(configs).map(config => {
                     return (
-                        <div 
+                        <div
+                            key={config.title}
                             className={`${classes.menue } ${window.location.pathname.includes(config.path)? classes.active: ''}`}  
                             onClick={() => handleRouteClick(config)}
                         >
