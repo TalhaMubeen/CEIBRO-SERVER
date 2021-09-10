@@ -15,7 +15,7 @@ const theme = createTheme({
     },
     secondary: {
       main: colors.secondaryBlue,
-    }
+    },
   },
   typography: {
     fontFamily: [

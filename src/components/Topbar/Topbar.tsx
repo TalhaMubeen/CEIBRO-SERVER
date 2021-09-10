@@ -49,9 +49,9 @@ const Topbar = () => {
 
                 <Grid item xs={4} md={3} className={classes.titleContainer}>
                     <Typography variant="h6" component="h6">
-                        Dashboard
+                        Projects
                     </Typography>
-                    <Button size="small" color="primary" variant="contained">Login</Button>
+                    <Button size="small" color="primary" variant="contained">Create</Button>
                 </Grid>
 
                 <Grid xs={1} md={4}></Grid>

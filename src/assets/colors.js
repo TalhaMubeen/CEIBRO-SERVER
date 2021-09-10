@@ -12,7 +12,8 @@ const colors = {
     lightGrey: 'rgb(245, 247, 248)',
     lightGreySecondary: 'rgb(213, 213, 213)',
     grey: 'rgb(236, 240, 241)',
-    mediumGrey: 'rgb(223, 225, 230)',
+    mediumGrey: '#bdc3c7',
+    textGrey: '#605C5C',
     
     lightGreen: 'rgb(93, 198, 97)',
     accent: 'rgb(201, 226, 217)',
@@ -25,8 +26,11 @@ const colors = {
     darkNavy: 'rgb(65, 154, 154)',
     
     golden: 'rgb(254, 215, 83)',
+    darkYellow: '#F1B740',
 
     darkColor: 'rgb(38, 50, 56)'
+
+    
 }
 
 export default colors
