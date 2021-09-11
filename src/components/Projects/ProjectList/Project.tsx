@@ -12,7 +12,6 @@ const Project = () => {
     const allStatus = getAllStatus()
 
     const getStyleClass = (status: string) => {
-        console.log('hllo', status)
         switch(status.toLowerCase()) {
             case 'all':
             return 'all-badge';
@@ -24,7 +23,6 @@ const Project = () => {
                 return 'completed-badge'
             case 'done':
                 return 'completed-badge';
-                
             case 'approved':
                 return 'approved-badge';
 
@@ -35,8 +33,8 @@ const Project = () => {
     }
 
     return (
-        <Grid xs={12}>
-            <Grid container xs={12}>
+        <Grid item xs={12}>
+            <Grid container>
                 <Grid item xs={3} className={classes.datePicker}>
                     <DatePicker/>
                 </Grid>
@@ -51,9 +49,9 @@ const Project = () => {
             </Grid>
 
             <Grid container className={classes.allStatus}>
-                {allStatus && allStatus.map(status => {
+                {allStatus && allStatus.map((status, index) => {
                     return (
-                    <div className={`${classes.statusChip} ${getStyleClass(status.title)}`}>
+                    <div key={index} className={`${classes.statusChip} ${getStyleClass(status.title)}`}>
                         <Typography>
                             {status.title}
                         </Typography>

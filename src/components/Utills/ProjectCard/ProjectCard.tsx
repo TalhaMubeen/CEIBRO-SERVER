@@ -48,8 +48,8 @@ const ProjectCard: FC<ProjectCardInterface> = (props) =>  {
                     </div>
                     <img className={classes.myImage} src={src} alt="ceibro-project-img" />
                 </Grid>
-                <Grid container xs={12}>
-                    <Grid xs={6}>
+                <Grid container>
+                    <Grid item xs={6}>
                         <Typography className={classes.meta}>
                             Due Date
                         </Typography>
@@ -58,7 +58,7 @@ const ProjectCard: FC<ProjectCardInterface> = (props) =>  {
                         </Typography>
                         
                     </Grid>
-                    <Grid xs={6}>
+                    <Grid item xs={6}>
                         <Typography className={classes.meta}>
                             Owner
                         </Typography>

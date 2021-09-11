@@ -54,14 +54,12 @@ const Topbar = () => {
                     <Button size="small" color="primary" variant="contained">Create</Button>
                 </Grid>
 
-                <Grid xs={1} md={4}></Grid>
+                <Grid item xs={1} md={4}></Grid>
 
                 <Grid 
                     xs={5}
                     md={3}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
+                    item
                 >
                     <Textfield
                         id="input-with-icon-adornment"
@@ -78,9 +76,6 @@ const Topbar = () => {
                     md={2}
                     item
                     style={{display: 'flex', justifyContent: 'flex-start'}}
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
                 >
 
                     <div className={classes.nameWrapper}>

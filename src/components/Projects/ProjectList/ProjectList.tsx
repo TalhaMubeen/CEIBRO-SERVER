@@ -8,9 +8,9 @@ const ProjectList = () => {
     return (
         <Grid container>
             {projects && 
-                projects.map((project: ProjectInterface) => {
+                projects.map((project: ProjectInterface, index: number) => {
                     return (
-                        <ProjectCard project={project}/>
+                        <ProjectCard key={index} project={project}/>
                     )
                 })
             }

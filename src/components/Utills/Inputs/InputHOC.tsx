@@ -3,12 +3,12 @@ import { makeStyles } from '@material-ui/core/styles'
 import React, { FC } from 'react'
 import colors from '../../../assets/colors'
 
-interface InputHOC {
+interface InputHOCInterface {
     title: string
 
 }
 
-const InputHOC: FC<InputHOC> = (props) =>  {
+const InputHOC: FC<InputHOCInterface> = (props) =>  {
     const { children, title } = props
     const classes = useStyles()
 
