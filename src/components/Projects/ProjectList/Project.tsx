@@ -11,10 +11,27 @@ const Project = () => {
 
     const allStatus = getAllStatus()
 
-    const getStyle = (status: string) => {
-        // if(status === 'all')  {
-        //     return classes.all
-        // }
+    const getStyleClass = (status: string) => {
+        console.log('hllo', status)
+        switch(status.toLowerCase()) {
+            case 'all':
+            return 'all-badge';
+
+            case 'ongoing':
+                return 'ongoing-badge';
+
+            case 'completed':
+                return 'completed-badge'
+            case 'done':
+                return 'completed-badge';
+                
+            case 'approved':
+                return 'approved-badge';
+
+            case 'draft':
+                return 'draft-badge'
+            
+        }
     }
 
     return (
@@ -36,7 +53,7 @@ const Project = () => {
             <Grid container className={classes.allStatus}>
                 {allStatus && allStatus.map(status => {
                     return (
-                    <div className={classes.statusChip}>
+                    <div className={`${classes.statusChip} ${getStyleClass(status.title)}`}>
                         <Typography>
                             {status.title}
                         </Typography>

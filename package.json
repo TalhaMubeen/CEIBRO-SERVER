@@ -26,6 +26,7 @@
     "react-responsive": "^9.0.0-beta.3",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
+    "react-select": "^4.3.1",
     "redux": "^4.1.1",
     "redux-thunk": "^2.3.0",
     "typescript": "^4.4.2",
@@ -56,6 +57,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react-router-dom": "^5.1.8"
+    "@types/react-router-dom": "^5.1.8",
+    "@types/react-select": "^4.0.17"
   }
 }

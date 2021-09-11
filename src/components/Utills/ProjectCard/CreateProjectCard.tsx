@@ -29,9 +29,10 @@ const useStyles = makeStyles({
         flexDirection: 'column',
         cursor: 'pointer',
         "&:hover": {
-            border: `1px solid ${colors.mediumGrey}`
+            border: `1px solid ${colors.mediumGrey}`,
+            borderRadius: 4
         },
-        height: 270
+        height: 270,
     },
     text: {
         fontSize: 14,

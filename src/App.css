@@ -1,11 +1,36 @@
 :root {
-  --primary: rgb(37, 85, 85);
+  --primary: rgb(0, 118, 200);
   --accent: rgb(201, 226, 217);
   --light-accent: rgb(213, 235, 227, 0.4);
+  --black: rgb(0,0,0);
+  --dark-yellow: #F1B740;
+  --medium-grey: #bdc3c7;
+  --light-black: rgb(125, 126, 128);
 }
 
 
 body {
   margin: 0;
   padding: 0;
+}
+
+
+.all-badge .MuiBadge-colorPrimary{
+  background: white;
+  color: var(--black);
+}
+
+.ongoing-badge .MuiBadge-colorPrimary{
+  background: var(--dark-yellow);
+  color: white;
+}
+
+.completed-badge .MuiBadge-colorPrimary{
+  background: var(--medium-grey);
+  color: white;
+}
+
+.draft-badge .MuiBadge-colorPrimary{
+  background: var(--light-black);
+  color: white;
 }

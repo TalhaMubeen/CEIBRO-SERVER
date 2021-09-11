@@ -33,7 +33,7 @@ export function getAllStatus() {
     return [
         {
             title: 'All',
-            count: 0
+            count: 3
         },
         {
             title: 'Ongoing',
