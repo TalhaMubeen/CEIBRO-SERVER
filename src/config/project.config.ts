@@ -54,3 +54,14 @@ export function getAllStatus() {
     ]
 
 }
+
+
+
+
+
+const projectReduxConfigs = {
+    OPEN_DRAWER: 'OPEN_DRAWER',
+    CLOSE_DRAWER: 'CLOSE_DRAWER'
+}
+
+export default projectReduxConfigs

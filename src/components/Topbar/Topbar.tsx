@@ -6,6 +6,7 @@ import Avatar from '@material-ui/core/Avatar';
 import MenuIcon from '@material-ui/icons/Menu';
 import './topbar.css'
 import appActions from '../../redux/action/app.action';
+import projectActions from '../../redux/action/project.action';
 import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive'
 // import { RootState } from '../../redux/reducers'
@@ -32,6 +33,10 @@ const Topbar = () => {
         dispatch(appActions.toggleNavbar())
     }
 
+    const openProjectDrawer = () => {
+        dispatch(projectActions.openDrawer())
+    }
+
     return (
         <div className={`topbar ${classes.topNavbarWrapper}`}>
             <Grid 
@@ -51,7 +56,7 @@ const Topbar = () => {
                     <Typography variant="h6" component="h6">
                         Projects
                     </Typography>
-                    <Button size="small" color="primary" variant="contained">Create</Button>
+                    <Button onClick={openProjectDrawer} size="small" color="primary" variant="contained">Create</Button>
                 </Grid>
 
                 <Grid item xs={1} md={4}></Grid>
