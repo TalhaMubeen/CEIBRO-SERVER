@@ -4,7 +4,7 @@ import DatePicker from '../../Utills/Inputs/DatePicker'
 import SelectDropdown from '../../Utills/Inputs/SelectDropdown'
 import { Badge, Grid, makeStyles, Typography } from '@material-ui/core'
 import { getAllStatus, getColorByStatus } from '../../../config/project.config'
-import CreateProjectDrawer from '../Create-Project/CreateProjectDrawer'
+import CreateProjectDrawer from '../Create-Project/CreateProjectDrawer/CreateProjectDrawer'
 
 const Project = () => {
 

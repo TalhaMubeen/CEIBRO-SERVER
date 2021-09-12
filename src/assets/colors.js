@@ -9,11 +9,12 @@ const colors = {
     black: 'black',
     lightBlack: 'rgb(125, 126, 128)',
 
-    lightGrey: 'rgb(245, 247, 248)',
+    lightGrey: '#F5F7F8',
     lightGreySecondary: 'rgb(213, 213, 213)',
     grey: 'rgb(236, 240, 241)',
     mediumGrey: '#bdc3c7',
     textGrey: '#605C5C',
+    purpleGrey: '#DBDBE5',
     
     lightGreen: 'rgb(93, 198, 97)',
     accent: 'rgb(201, 226, 217)',
