@@ -3,6 +3,7 @@ import { Grid, makeStyles } from '@material-ui/core'
 import ProjectOverview from './ProjectOverview/ProjectOverview'
 import ProjectRoles from './ProjectRoles/ProjectRoles'
 import ProjectGroups from './ProjectGroups/ProjectGroups'
+import ProjectDocuments from './ProjectDocuments/ProjectDocuments'
 
 const CreateProjectBody = () => {
     const classes = useStyles()
@@ -11,6 +12,7 @@ const CreateProjectBody = () => {
             {/* <ProjectOverview/> */}
             {/* <ProjectRoles/> */}
             {/* <ProjectGroups/> */}
+            <ProjectDocuments/>
         </Grid>
     )
 }
