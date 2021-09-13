@@ -8,6 +8,7 @@ import { RootState } from '../../../../redux/reducers'
 import ProjectDrawerHeader from './ProjectDrawerHeader'
 import ProjectDrawerMenu from './ProjectDrawerMenu'
 import CreateProjectBody from './CreateProjectBody'
+import CreateProjectFooter from './CreateProjectFooter'
 
 const CreateProjectDrawer = () => {
     const drawerOpen = useSelector((store:RootState) => store.project.drawerOpen)
@@ -24,6 +25,7 @@ const CreateProjectDrawer = () => {
                 <ProjectDrawerHeader/>
                 <ProjectDrawerMenu/>
                 <CreateProjectBody/>
+                <CreateProjectFooter/>
             </div>
           </Drawer>
     )

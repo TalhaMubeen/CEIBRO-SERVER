@@ -74,7 +74,8 @@ export default function CustomizedSelects(props) {
 
   
   const handleChange = (event) => {
-    handleValueChange(event.target.value)
+    console.log('vale u is ', event.target.value)
+    // handleValueChange(event.target.value)
   };
 
 
@@ -90,7 +91,7 @@ export default function CustomizedSelects(props) {
         >
           {options && options.map(option => {
             return (
-              <option value={option.title}>{option.title}</option>
+              <option value={option.value}>{option.title}</option>
             )
           })}
         </NativeSelect>

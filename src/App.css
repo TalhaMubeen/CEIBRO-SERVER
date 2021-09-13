@@ -34,3 +34,13 @@ body {
   background: var(--light-black);
   color: white;
 }
+
+.lower-padding th, .lower-padding td{
+  padding: 10px !important;
+}
+
+.customized-title h2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

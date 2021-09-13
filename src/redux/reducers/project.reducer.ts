@@ -2,7 +2,8 @@ import { ActionInterface } from ".";
 import config from '../../config/project.config'
 
 const intialStatue = {
-    drawerOpen: false
+    drawerOpen: false,
+    menue: 1
 }
 
 
@@ -19,6 +20,12 @@ const AppReducer = (state = intialStatue, action: ActionInterface ) => {
             return {
                 ...state,
                 drawerOpen: false
+            }
+
+        case config.SET_MENUE: 
+            return {
+                ...state,
+                menue: action.payload
             }
         
         default:

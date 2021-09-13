@@ -61,7 +61,8 @@ export function getAllStatus() {
 
 const projectReduxConfigs = {
     OPEN_DRAWER: 'OPEN_DRAWER',
-    CLOSE_DRAWER: 'CLOSE_DRAWER'
+    CLOSE_DRAWER: 'CLOSE_DRAWER',
+    SET_MENUE: 'SET_MENUE'
 }
 
 export default projectReduxConfigs

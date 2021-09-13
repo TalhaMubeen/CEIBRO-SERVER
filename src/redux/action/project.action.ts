@@ -10,6 +10,12 @@ const projectActions = {
         return {
             type: configs.CLOSE_DRAWER
         }
+    },
+    setMenue: (id: number) => {
+        return {
+            type: configs.SET_MENUE,
+            payload: id
+        }
     }
 }
 
