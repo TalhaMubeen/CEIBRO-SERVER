@@ -1,4 +1,6 @@
-import { Button, Grid, ListItemIcon, makeStyles } from '@material-ui/core'
+import { Button, Grid, makeStyles } from '@material-ui/core'
+import ListItemIcon from '@material-ui/icons/List'
+import { TramSharp } from '@material-ui/icons'
 import React from 'react'
 import { AiOutlineUnorderedList } from 'react-icons/ai'
 import { BsGrid } from 'react-icons/bs'
@@ -54,7 +56,8 @@ export default ProjectDocumentHeader
 const useStyles = makeStyles({
     actionWrapper: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'flex-start'
     },
     secondActionWrapper: {
         display: 'flex',

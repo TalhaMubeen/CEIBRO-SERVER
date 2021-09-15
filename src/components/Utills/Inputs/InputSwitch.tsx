@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import React, { FC, useState } from 'react'
 import { withStyles, Theme, createStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch, { SwitchClassKey, SwitchProps } from '@material-ui/core/Switch';
@@ -19,13 +19,17 @@ interface Styles extends Partial<Record<SwitchClassKey, string>> {
   }
 
 const InputTextArea: FC<InputSwitchtInterface> = (props) => {
+    const [checked, setChecked] = useState(true)
     const { label } = props
+
+    const toggle = () => setChecked(!checked)
+
     return (
         <div style={styles.wrapper}>
             <FormControlLabel
-                control={<IOSSwitch checked={true} name="checkedB" />}
+                control={<IOSSwitch checked={checked} name="checkedB" />}
                 label={<Typography style={styles.formControlLabel}>{label}</Typography>}
-                
+                onClick={toggle}
             />
         </div>
     )

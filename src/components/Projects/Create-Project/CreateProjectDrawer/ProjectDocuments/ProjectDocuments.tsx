@@ -14,7 +14,7 @@ const ProjectDocuments = () => {
 
     return (
         <>
-            <Grid container>
+            <Grid container alignItems="flex-start">
                 <ProjectDocumentHeader/>
 
                 {/* <Grid item xs={12} className={classes.titleWrapper}>

@@ -42,7 +42,7 @@ const CreateWork = () => {
           <Typography className={classes.headerTitle}>
             Add work
           </Typography>
-          <div className={classes.headerAction}>
+          <div className={classes.headerAction} onClick={handleClose}>
             <Close/>
           </div>
         </DialogTitle>

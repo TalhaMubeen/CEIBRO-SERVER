@@ -1,0 +1,18 @@
+{
+    "app.text": "Edit <code>src/App.js</code> and save to reload.<br/>Now with {what}!",
+    "app.learn-react-link": "Learn React.",
+    "login.btn": "Login",
+    "input.Email": "Email",
+    "input.Password": "Password",
+    "input.RememberMe": "Remeber me",
+    "input.Login": "Login",
+    "input.ForgetPassword": "Forget Password",
+
+
+
+    "Dashboard": "Dashboard",
+    "Chat": "Chat",
+    "Tasks": "Tasks",
+    "Projects": "Projects"
+    
+}

@@ -52,7 +52,9 @@ export default ProjectRoles
 const useStyles = makeStyles({
     actionWrapper: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        paddingBottom: 10
     },
     actionButton: { 
         fontSize: 12,
@@ -60,7 +62,7 @@ const useStyles = makeStyles({
         fontStyle: 'normal'
     },
     titleWrapper: {
-        paddingTop: 20,
+        paddingTop: 0,
     },
     title: {
         fontSize: 12,

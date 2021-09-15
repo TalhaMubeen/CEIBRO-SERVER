@@ -38,7 +38,8 @@ export default TimeProfile
 const useStyles = makeStyles({
     actionWrapper: {
         display: 'flex',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     actionButton: { 
         fontSize: 12,

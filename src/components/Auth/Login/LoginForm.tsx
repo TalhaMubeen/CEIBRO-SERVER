@@ -5,11 +5,14 @@ import { useHistory } from "react-router";
 import assets from "../../../assets/assets";
 import colors from "../../../assets/colors";
 import TextField from "../../Utills/Inputs/TextField";
+import { useIntl } from 'react-intl';
 
 const LoginForm = () => {
   const classes = useStyles();
   const history = useHistory()
   const [checked, setChecked] = useState(true)
+  const intl = useIntl();
+  
 
   return (
     <div className="form-container">
@@ -20,7 +23,7 @@ const LoginForm = () => {
 
       <div className={classes.loginForm}>
         <TextField 
-          placeholder="Email" 
+          placeholder={intl.formatMessage({ id: 'input.Email' })} 
           className={classes.inputs}
           inputProps={{
             style: { height: 12 }
@@ -28,7 +31,7 @@ const LoginForm = () => {
         />
         <TextField
           type="password"
-          placeholder="Password"
+          placeholder={intl.formatMessage({ id: 'input.Password' })}
           className={classes.inputs}
           inputProps={{
             style: { height: 12 }
@@ -44,7 +47,7 @@ const LoginForm = () => {
             />
           }
           className={classes.remember}
-          label={<Typography className={classes.remember}>Remember me</Typography>}
+          label={<Typography className={classes.rememberText}>{intl.formatMessage({ id: 'input.RememberMe' })}</Typography>}
         />
         <div className={classes.actionWrapper}>
           <Button
@@ -55,14 +58,14 @@ const LoginForm = () => {
               history.push('/dashboard')
             }}
           >
-            Login
+            {intl.formatMessage({ id: 'input.Login' })}
           </Button>
           <Typography
             className={`${classes.titles} ${classes.forget}`}
             variant="body1"
             gutterBottom
           >
-            Forget Password?
+            {intl.formatMessage({ id: 'input.ForgetPassword' })} ?
           </Typography>
         </div>
       </div>
@@ -92,6 +95,9 @@ const useStyles = makeStyles({
   },
   remember: {
     marginTop: 25 ,
+    fontSize: 14
+  },
+  rememberText: {
     fontSize: 14
   },
   inputs: {

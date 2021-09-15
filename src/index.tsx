@@ -7,6 +7,16 @@ import { ThemeProvider } from '@material-ui/styles';
 import store from './redux/store';
 import reportWebVitals from './reportWebVitals';
 import colors from './assets/colors';
+import {IntlProvider} from "react-intl";
+import messages_en from "./translation/en.json";
+
+const messages: any = {
+  'en': messages_en
+};
+
+const language: string = navigator.language.split(/[-_]/)[0];
+
+console.log('langulage i s', language)
 
 const theme = createTheme({
   palette: {
@@ -29,7 +39,9 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <Provider store={store}>
-        <App />
+        <IntlProvider locale={language} messages={messages[language]}>
+          <App />
+        </IntlProvider>
       </Provider>
     </ThemeProvider>
   </React.StrictMode>,

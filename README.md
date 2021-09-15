@@ -1,29 +1,15 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+1. Install Node js latest version
 
-### What is this repository for? ###
+2. install React.js latest version
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+3. clone this project.
 
-### How do I get set up? ###
+4. After clone open this project in terminal
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+5. enter 'npm install' in root of this project
 
-### Contribution guidelines ###
+6. Once above command completed, Run 'npm start'
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+7. Project will run over 3000 port
