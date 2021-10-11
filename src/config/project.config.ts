@@ -9,7 +9,9 @@ const colorsByStatus: ColorCodes = {
     ongoing: colors.darkYellow,
     approved: colors.primary,
     completed: colors.mediumGrey,
-    draft: colors.lightBlack
+    draft: colors.lightBlack,
+    submitted: colors.aquaGreen,
+    rejected: colors.btnRed
 }
 
 const textColorsByStatus: ColorCodes  = {
@@ -18,6 +20,8 @@ const textColorsByStatus: ColorCodes  = {
     approved: colors.white,
     completed: colors.white,
     draft: colors.white,
+    submitted: colors.white,
+    rejected: colors.white
 }
 
 
@@ -29,7 +33,12 @@ export function getTextColorByStatus(status: string): string {
     return textColorsByStatus[status.toLowerCase()]
 }
 
-export function getAllStatus() {
+interface ProjectMenues {
+    title: string;
+    count: number
+}
+
+export function getAllStatus(): ProjectMenues[] {
     return [
         {
             title: 'All',

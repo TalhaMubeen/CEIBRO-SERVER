@@ -17,12 +17,12 @@ const colors = {
     purpleGrey: '#DBDBE5',
     
     lightGreen: 'rgb(93, 198, 97)',
-    accent: 'rgb(201, 226, 217)',
+    aquaGreen: '#55BCB3',
 
     lightRed: 'rgb(246, 128, 128)',
     primaryRed: 'rgb(234, 96, 104)',
     secondaryRed: 'rgb(247, 104, 91)',
-    btnRed: 'rgb(254, 235, 230)',
+    btnRed: '#F94340',
 
     darkNavy: 'rgb(65, 154, 154)',
     

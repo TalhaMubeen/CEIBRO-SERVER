@@ -1,7 +1,5 @@
 {
-    "app.text": "Edit <code>src/App.js</code> and save to reload.<br/>Now with {what}!",
-    "app.learn-react-link": "Learn React.",
-    "login.btn": "Login",
+    "login.btn": "Login dyn3",
     "input.Email": "Email",
     "input.Password": "Password",
     "input.RememberMe": "Remeber me",
@@ -14,5 +12,4 @@
     "Chat": "Chat",
     "Tasks": "Tasks",
     "Projects": "Projects"
-    
-}
+ }

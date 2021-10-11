@@ -5,33 +5,14 @@ import SelectDropdown from '../../Utills/Inputs/SelectDropdown'
 import { Badge, Grid, makeStyles, Typography } from '@material-ui/core'
 import { getAllStatus, getColorByStatus } from '../../../config/project.config'
 import CreateProjectDrawer from '../Create-Project/CreateProjectDrawer/CreateProjectDrawer'
+import { getStyleClass } from '../../../config/styles.config'
+import StatusMenu from '../../Utills/Others/StatusMenu'
 
 const Project = () => {
 
     const classes = useStyles()
 
     const allStatus = getAllStatus()
-
-    const getStyleClass = (status: string) => {
-        switch(status.toLowerCase()) {
-            case 'all':
-            return 'all-badge';
-
-            case 'ongoing':
-                return 'ongoing-badge';
-
-            case 'completed':
-                return 'completed-badge'
-            case 'done':
-                return 'completed-badge';
-            case 'approved':
-                return 'approved-badge';
-
-            case 'draft':
-                return 'draft-badge'
-            
-        }
-    }
 
     return (
         <Grid item xs={12}>
@@ -51,17 +32,9 @@ const Project = () => {
             </Grid>
 
             <Grid container className={classes.allStatus}>
-                {allStatus && allStatus.map((status, index) => {
-                    return (
-                    <div key={index} className={`${classes.statusChip} ${getStyleClass(status.title)}`}>
-                        <Typography>
-                            {status.title}
-                        </Typography>
-                        <Badge color="primary" badgeContent={status.count}>
-                        </Badge>
-                    </div>
-                )
-                })}
+                <StatusMenu
+                    options={allStatus}
+                />
             </Grid>
 
             <ProjectList/>

@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { useMediaQuery } from 'react-responsive'
 // import { RootState } from '../../redux/reducers'
 import colors from '../../assets/colors';
+import { Link } from 'react-router-dom';
 
 const Topbar = () => {
     const classes = useStyles()
@@ -102,7 +103,9 @@ const Topbar = () => {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        <MenuItem>Profile</MenuItem>
+                        <MenuItem>
+                            <Link to="/profile">Profile</Link>
+                        </MenuItem>
                         <MenuItem>My account</MenuItem>
                         <MenuItem>Logout</MenuItem>
                     </Menu>

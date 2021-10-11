@@ -10,6 +10,9 @@ import colors from './assets/colors';
 import {IntlProvider} from "react-intl";
 import messages_en from "./translation/en.json";
 
+import './translation/i18next';
+
+
 const messages: any = {
   'en': messages_en
 };
