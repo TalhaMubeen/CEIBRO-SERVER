@@ -6,6 +6,7 @@
   --dark-yellow: #F1B740;
   --medium-grey: #bdc3c7;
   --light-black: rgb(125, 126, 128);
+  --btn-red: #F94340
 }
 
 
@@ -32,6 +33,11 @@ body {
 
 .draft-badge .MuiBadge-colorPrimary{
   background: var(--light-black);
+  color: white;
+}
+
+.rejected-badge .MuiBadge-colorPrimary{
+  background: var(--btn-red);
   color: white;
 }
 

@@ -1,6 +1,6 @@
-import { Badge, Button, Grid, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core'
+import { Badge, Button, Grid, ListItemIcon, ListItemText, makeStyles, Menu, MenuItem, Typography } from '@material-ui/core'
 import Textfield from '../Utills/Inputs/TextField'
-import { NotificationsNoneSharp } from '@material-ui/icons'
+import { Create, NotificationsNoneSharp } from '@material-ui/icons'
 import React from 'react'
 import Avatar from '@material-ui/core/Avatar';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -12,6 +12,7 @@ import { useMediaQuery } from 'react-responsive'
 // import { RootState } from '../../redux/reducers'
 import colors from '../../assets/colors';
 import { Link } from 'react-router-dom';
+import ProfileBtn from './ProfileBtn'
 
 const Topbar = () => {
     const classes = useStyles()
@@ -92,23 +93,8 @@ const Topbar = () => {
                             Nikolajev
                         </Typography>
                     </div>
-                    
-                    <Button style={{ padding: 0}} onClick={handleClick} aria-controls="simple-menu" aria-haspopup="true">
-                        <Avatar variant="square"  alt="Cindy Baker" className={classes.small} src="https://material-ui.com/static/images/avatar/2.jpg" />
-                    </Button>
-                    <Menu
-                        id="simple-menu"
-                        anchorEl={anchorEl}
-                        keepMounted
-                        open={Boolean(anchorEl)}
-                        onClose={handleClose}
-                    >
-                        <MenuItem>
-                            <Link to="/profile">Profile</Link>
-                        </MenuItem>
-                        <MenuItem>My account</MenuItem>
-                        <MenuItem>Logout</MenuItem>
-                    </Menu>
+
+                    <ProfileBtn/>
 
                     <Typography>
                         <Badge badgeContent={4}>
@@ -139,10 +125,6 @@ const useStyles = makeStyles(theme => ({
     bell: {
         // color: colors.white,
         fontSize: 20
-    },
-    small: {
-        width: theme.spacing(3),
-        height: theme.spacing(3),
     },
     titleContainer: {
         display: 'flex',
