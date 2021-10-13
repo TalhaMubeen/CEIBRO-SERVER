@@ -4,6 +4,7 @@ const colors = {
     textPrimary: 'rgb(0, 118, 200)',
     lightPurpuple: 'rgb(122, 177, 251)',
     secondaryBlue: 'rgb(0, 82, 204)',
+    lightSkyBlue: '#81bbe3',
     
     white: 'rgb(255, 255, 255)',
     black: 'black',

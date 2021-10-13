@@ -16,7 +16,7 @@ const ProjectSection: React.FC<ProjectSectionInt> = () => {
             <Grid container alignItems="center">
                 <Grid item xs={6} style={styles.titleContainer}>
                     <Typography component="h1" variant="h5">
-                        My Tasks
+                        My Project
                     </Typography>
                     <Button variant="contained" color="primary" size="small" style={styles.btn}>
                         Create

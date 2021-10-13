@@ -7,25 +7,12 @@ import { HiOutlineChatAlt } from 'react-icons/hi'
 import { getColorByStatus, getTextColorByStatus } from '../../../config/project.config'
 import { AttachFile } from '@material-ui/icons'
 
-interface ProjectCardInterface {
-    project: ProjectInterface
-}
+import { TaskCardInterface } from '../../../constants/interfaces/task.interface'
 
-export interface ProjectInterface {
-    dueDate: string
-    assignedTo: string
-    title: string
-    subTasks: number
-    docs: number
-    chat: number
-    status: string
-    owner: string
-}
-
-const ProjectCard: FC<ProjectCardInterface> = (props) =>  {
+const ProjectCard: FC<TaskCardInterface> = (props) =>  {
     
-    const { project } = props
-    const { dueDate, owner, title, subTasks, docs, chat, status, assignedTo } = project
+    const { task } = props
+    const { dueDate, owner, title, subTasks, docs, chat, status, assignedTo } = task
     const classes = useStyles()
     
     return (

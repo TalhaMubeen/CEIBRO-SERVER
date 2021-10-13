@@ -1,25 +1,6 @@
+import { TaskInterface } from "./interfaces/task.interface";
 
-import { Grid } from '@material-ui/core'
-import React from 'react'
-import TaskCard, { ProjectInterface } from '../../Utills/TaskCard/TaskCard'
-
-const TaskList = () => {
-    return (
-        <Grid container>
-            {projects && 
-                projects.map((project: ProjectInterface, index: number) => {
-                    return (
-                        <TaskCard key={index} project={project}/>
-                    )
-                })
-            }
-        </Grid>
-    )
-}
-
-export default TaskList 
-
-const projects: ProjectInterface[] = [
+export const TASKS: TaskInterface[] = [
     {
         dueDate: '26-07-2021',
         owner: 'Ilja Nikolajev',
@@ -47,7 +28,7 @@ const projects: ProjectInterface[] = [
         subTasks: 50,
         docs: 250,
         chat: 0,
-        status: "Rejected",
+        status: "Ongoing",
         assignedTo: "PaeVellja 112-4"
     },
     {
@@ -127,7 +108,7 @@ const projects: ProjectInterface[] = [
         subTasks: 50,
         docs: 250,
         chat: 0,
-        status: "Submitted",
+        status: "Done",
         assignedTo: "Vesse-18"
     },
     {

@@ -1,5 +1,5 @@
 import React from 'react'
-import ProjectList from './ProjectList'
+import SubTaskList from './SubTaskList'
 import DatePicker from '../../Utills/Inputs/DatePicker'
 import SelectDropdown from '../../Utills/Inputs/SelectDropdown'
 import { Badge, Grid, makeStyles, Typography } from '@material-ui/core'
@@ -37,7 +37,7 @@ const Project = () => {
                 />
             </Grid>
 
-            <ProjectList/>
+            <SubTaskList/>
         </Grid>
     )
 }

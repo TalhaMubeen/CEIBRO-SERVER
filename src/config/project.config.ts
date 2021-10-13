@@ -11,7 +11,8 @@ const colorsByStatus: ColorCodes = {
     completed: colors.mediumGrey,
     draft: colors.lightBlack,
     submitted: colors.aquaGreen,
-    rejected: colors.btnRed
+    rejected: colors.btnRed,
+    done: colors.mediumGrey
 }
 
 const textColorsByStatus: ColorCodes  = {
@@ -21,7 +22,8 @@ const textColorsByStatus: ColorCodes  = {
     completed: colors.white,
     draft: colors.white,
     submitted: colors.white,
-    rejected: colors.white
+    rejected: colors.white,
+    done: colors.white
 }
 
 
