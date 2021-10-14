@@ -65,16 +65,11 @@ const useStyles = makeStyles({
     ,
     completed: {
         background: getColorByStatus('completed')
-    }
-
-    ,
+    },
     draft: {
         background: getColorByStatus('draft')
     },
-
     approved: {
         background: getColorByStatus('approved')
     },
-
-
 })

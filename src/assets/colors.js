@@ -14,7 +14,7 @@ const colors = {
     lightGreySecondary: 'rgb(213, 213, 213)',
     grey: 'rgb(236, 240, 241)',
     mediumGrey: '#bdc3c7',
-    textGrey: '#81bbe3',
+    textGrey: '#605C5C',
     purpleGrey: '#DBDBE5',
     
     lightGreen: 'rgb(93, 198, 97)',

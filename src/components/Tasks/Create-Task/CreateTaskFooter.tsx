@@ -1,15 +1,8 @@
 import React from 'react'
 import { Button, Grid, makeStyles } from '@material-ui/core'
-import ProjectOverview from './ProjectOverview/ProjectOverview'
-import ProjectRoles from './ProjectRoles/ProjectRoles'
-import ProjectMembers from './ProjectMember/ProjectMembers'
-import ProjectGroups from './ProjectGroups/ProjectGroups'
-import ProjectDocuments from './ProjectDocuments/ProjectDocuments'
-import TimeProfile from './TimeProfile/TimeProfile'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../../../redux/reducers'
-import colors from '../../../../assets/colors'
-import { BiTrash } from 'react-icons/bi'
+import { RootState } from '../../../redux/reducers'
+import colors from '../../../assets/colors'
 import { FaTrash } from 'react-icons/fa'
 
 const CreateProjectBody = () => {

@@ -13,6 +13,7 @@ import { useMediaQuery } from 'react-responsive'
 import colors from '../../assets/colors';
 import { Link } from 'react-router-dom';
 import ProfileBtn from './ProfileBtn'
+import Title from './Title'
 
 const Topbar = () => {
     const classes = useStyles()
@@ -35,10 +36,6 @@ const Topbar = () => {
         dispatch(appActions.toggleNavbar())
     }
 
-    const openProjectDrawer = () => {
-        dispatch(projectActions.openDrawer())
-    }
-
     return (
         <div className={`topbar ${classes.topNavbarWrapper}`}>
             <Grid 
@@ -55,10 +52,7 @@ const Topbar = () => {
                 }
 
                 <Grid item xs={4} md={3} className={classes.titleContainer}>
-                    <Typography variant="h6" component="h6">
-                        Projects
-                    </Typography>
-                    <Button onClick={openProjectDrawer} size="small" color="primary" variant="contained">Create</Button>
+                    <Title/>
                 </Grid>
 
                 <Grid item xs={1} md={4}></Grid>

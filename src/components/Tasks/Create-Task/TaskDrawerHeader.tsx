@@ -1,25 +1,25 @@
 import React from 'react'
 import { Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import colors from '../../../../assets/colors';
+import colors from '../../../assets/colors';
 import { GrClose } from 'react-icons/gr'
 import { useDispatch } from 'react-redux';
-import projectActions from '../../../../redux/action/project.action';
+import taskActions from '../../../redux/action/task.action';
 
-const ProjectDrawerHeader = () => {
+const TaskDrawerHeader = () => {
     const classes = useStyles()
 
     const dispatch = useDispatch()
 
     const handleClose = () => {
-        dispatch(projectActions.closeDrawer())
+        dispatch(taskActions.closeDrawer())
     }
 
     return (
         <div className={classes.drawerHeader}>
             <div className={classes.headerTitleWrapper}>
                 <Typography className={classes.headerTitle}>
-                    New Project
+                    New Task
                 </Typography>
             </div>
             <div className={classes.headerIcons} onClick={handleClose}>
@@ -32,7 +32,7 @@ const ProjectDrawerHeader = () => {
     )
 }
 
-export default ProjectDrawerHeader;
+export default TaskDrawerHeader;
 
 const useStyles = makeStyles({
     drawerHeader: {
@@ -42,7 +42,9 @@ const useStyles = makeStyles({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingLeft: 20,
-        paddingRight: 20
+        paddingRight: 20,
+        paddingBottom: 10,
+        borderBottom: `0.5px solid ${colors.grey}`
     },
     headerTitleWrapper: {
     },
