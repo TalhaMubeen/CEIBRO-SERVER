@@ -5,6 +5,7 @@ import Dashboard from '../components/Dashboard/Dashboard'
 import Profile from '../components/Profile/Profile'
 import Tasks from '../components/Tasks/TaskList/Task'
 import SubTask from '../components/Tasks/SubTasks/SubTask'
+import Chat from '../components/Chat/Chat'
 import AppLayout from "./AppLayout";
 
 interface Configs {
@@ -21,6 +22,7 @@ const RouterConfig: React.FC<Configs> = () => {
               <Route path="/projects" component={Projects} />
               <Route path="/tasks" component={Tasks} />
               <Route path="/task/:id" component={SubTask} />
+              <Route path="/chat" component={Chat} />
               <Route path="/dashboard" component={Dashboard} />
             </AppLayout>
         </Switch>

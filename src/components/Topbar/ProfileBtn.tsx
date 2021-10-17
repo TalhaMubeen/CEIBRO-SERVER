@@ -2,6 +2,7 @@ import { Avatar, Badge, Button, makeStyles, Typography } from '@material-ui/core
 import { ContactPhone, Create, PermContactCalendar, PersonAdd } from '@material-ui/icons'
 import React from 'react'
 import { BiLogOut } from 'react-icons/bi'
+import { useHistory } from 'react-router'
 import colors from '../../assets/colors'
 import './ProfileBtn.css'
 
@@ -11,6 +12,12 @@ const ProfileBtn = () => {
 
     const image = "https://pbs.twimg.com/profile_images/974736784906248192/gPZwCbdS.jpg"
 
+    const history = useHistory()
+
+    const handleProfileClick = () => {
+        history.push('/profile')
+    }
+
     return (
         
         <div className="dropdown" style={{float:"right"}}>
@@ -18,7 +25,7 @@ const ProfileBtn = () => {
                 <Avatar variant="square"  alt="Cindy Baker" className={classes.small} src={image}></Avatar> 
             </Button>
             <div className="dropdown-content">
-                <div className={classes.menuItem}>
+                <div onClick={handleProfileClick} className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.menuText}>
                         <Typography>
                             IIJA Nikojlave
@@ -35,7 +42,7 @@ const ProfileBtn = () => {
                 <hr className={classes.break}/>
                 
 
-                <div className={classes.menuItem}>
+                <div className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.smallMenuText}>
                             <PermContactCalendar className={classes.smallMenuIcon}/>
                         <Typography className={classes.smallText}>
@@ -49,7 +56,7 @@ const ProfileBtn = () => {
                 </div>
 
 
-                <div className={classes.menuItem}>
+                <div className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.smallMenuText}>
                             <PersonAdd className={classes.smallMenuIcon}/>
                         <Typography className={classes.smallText}>
@@ -66,7 +73,7 @@ const ProfileBtn = () => {
                 <hr className={classes.break}/>
                 
 
-                <div className={classes.menuItem}>
+                <div className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.smallMenuText}>
                             <BiLogOut className={classes.smallMenuIcon}/>
                         <Typography className={classes.smallText}>
