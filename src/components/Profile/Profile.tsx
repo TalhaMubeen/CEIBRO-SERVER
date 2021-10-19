@@ -3,6 +3,7 @@ import { Button, Grid, makeStyles, TextField } from '@material-ui/core'
 import { BiTrash } from 'react-icons/bi'
 import colors from '../../assets/colors'
 import { Create, Delete } from '@material-ui/icons'
+import Requests from './Requests'
 
 const Dashboard = () => {
 
@@ -12,7 +13,7 @@ const Dashboard = () => {
 
     return (
         <Grid container>
-        <Grid xs={12} md={2} className={classes.imageWrapper}>
+        <Grid item xs={12} md={2} className={classes.imageWrapper}>
             <div className={classes.imageInnerWrapper}>
                 <img src={image} className={classes.userImage}  />
                 <div className={classes.imageIconWrapper}>
@@ -21,7 +22,7 @@ const Dashboard = () => {
                 </div>
             </div>
         </Grid>
-        <Grid xs={12} md={6}>
+        <Grid item xs={12} md={6}>
             <Grid container>
                 <Grid item xs={12} className={classes.rowWrapper}>
                     <TextField fullWidth size="small" id="outlined-basic" label="Username" variant="outlined" />
@@ -61,9 +62,6 @@ const Dashboard = () => {
                 <Grid item xs={12} className={classes.rowWrapper}>
                     <hr className={classes.break}/>
                 </Grid>
-
-
-
                 <Grid item xs={12} md={6} className={classes.rowWrapper}>
                     <TextField fullWidth size="small" id="outlined-basic" label="Company" variant="outlined" />
                 </Grid>
@@ -82,7 +80,7 @@ const Dashboard = () => {
 
             </Grid>                    
         </Grid>
-        <Grid xs={12} md={4}>Connection Seciton</Grid>
+        <Requests/>
     </Grid>
     )
 }
@@ -101,7 +99,6 @@ const useStyles = makeStyles({
         borderTop: `1px solid ${colors.white}`
     },
     imageWrapper: {
-        padding: 20
     },
     userImage: {
         width: '100%',
