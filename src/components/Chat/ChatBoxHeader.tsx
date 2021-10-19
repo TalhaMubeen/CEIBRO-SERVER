@@ -1,9 +1,10 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { Create, MoreVert } from "@material-ui/icons"
+import { Create } from "@material-ui/icons"
 import colors from "../../assets/colors"
 import { ChatListInterface } from "../../constants/interfaces/chat.interface"
 import NameAvatar from "../Utills/Others/NameAvatar"
 import InputText from "../Utills/Inputs/InputText"
+import ChatUserMenu from '../Utills/ChatChip/ChatUserMenu'
 
 interface ChatBoxHeaderProps {
     chat: ChatListInterface
@@ -33,7 +34,7 @@ const ChatBoxHeader: React.FC<ChatBoxHeaderProps> = (props) => {
                 <InputText placeholder="Chat Search" />
             </Grid>
             <Grid item xs={1} className={classes.moreWrapper}>
-                <MoreVert/>
+                <ChatUserMenu/>
             </Grid>
         </Grid>
     )

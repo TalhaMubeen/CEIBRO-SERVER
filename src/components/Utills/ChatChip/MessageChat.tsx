@@ -1,5 +1,4 @@
 import { Grid, makeStyles, Typography } from "@material-ui/core"
-import { MoreVert } from "@material-ui/icons"
 import { AiOutlinePushpin } from "react-icons/ai"
 import { BsDownload } from "react-icons/bs"
 import colors from "../../../assets/colors"
@@ -8,6 +7,7 @@ import NameAvatar from "../Others/NameAvatar"
 import { IoReturnUpForward } from 'react-icons/io5'
 import FileView from './FileView'
 import { useState } from "react"
+import ChatMessageMenu from "./ChatMessageMenu"
 
 interface MessageChatProps {
     message: ChatMessageInterface
@@ -113,7 +113,7 @@ const MessageChat: React.FC<MessageChatProps> = (props) => {
             </Grid>
             <Grid item xs={1} className={classes.iconsWrapper}>
                 <AiOutlinePushpin className={classes.pinIcon} />
-                <MoreVert className={classes.moreIcon} />
+                <ChatMessageMenu/>
             </Grid>
         </Grid>
     )

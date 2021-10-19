@@ -18,6 +18,11 @@ const ProfileBtn = () => {
         history.push('/profile')
     }
 
+    const handleConnectionClick = () => {
+        history.push('/connections')
+    }
+
+
     return (
         
         <div className="dropdown" style={{float:"right"}}>
@@ -42,9 +47,9 @@ const ProfileBtn = () => {
                 <hr className={classes.break}/>
                 
 
-                <div className={`${classes.menuItem} dropdown-menu`}>
-                    <div className={classes.smallMenuText}>
-                            <PermContactCalendar className={classes.smallMenuIcon}/>
+                <div className={`${classes.menuItem} dropdown-menu`} onClick={handleConnectionClick}>
+                    <div className={classes.smallMenuText} >
+                        <PermContactCalendar className={classes.smallMenuIcon}/>
                         <Typography className={classes.smallText}>
                             My connections
                         </Typography>

@@ -1,12 +1,10 @@
 import { makeStyles, Typography } from "@material-ui/core"
-import { BookmarkBorder, Chat, Delete, MoreVert } from "@material-ui/icons"
+import { Delete, Image, Info, MoreVert, PeopleOutline, PersonAddOutlined } from "@material-ui/icons"
 import { useState } from "react"
-import { BsBookmark } from "react-icons/bs"
-import { GrVolumeMute } from "react-icons/gr"
 import OutsideClickHandler from "react-outside-click-handler"
 import colors from "../../../assets/colors"
 
-const ChatListMenu = () => {
+const ChatUserMenu = () => {
     const classes = useStyles()
     const [show, setShow] = useState(false)
 
@@ -21,24 +19,31 @@ const ChatListMenu = () => {
                     <OutsideClickHandler onOutsideClick={handleToggle}>
                         <div className={`dropdown-content ${classes.dropdownContent}`}>
                             <div className={`${classes.menuWrapper} dropdown-menu`}>
-                                <Chat className={classes.menuIcon} />
+                                <Info className={classes.menuIcon} />
                                 <Typography className={classes.menuText}>
-                                    Mark unread
+                                    View Profile
                                 </Typography>
                             </div>
                             <div className={`${classes.menuWrapper} dropdown-menu`}>
-                                <GrVolumeMute className={classes.menuIcon} />
+                                <Image className={classes.menuIcon} />
                                 <Typography className={classes.menuText}>
-                                    Mute chat
+                                    View media and files
                                 </Typography>
                             </div>
 
                             <hr className={classes.break} />
 
                             <div className={`${classes.menuWrapper} dropdown-menu`}>
-                                <BsBookmark className={classes.menuIcon} />
+                                <PersonAddOutlined className={classes.menuIcon} />
                                 <Typography className={classes.menuText}>
-                                    Add to favorites
+                                    Add People
+                                </Typography>
+                            </div>
+
+                            <div className={`${classes.menuWrapper} dropdown-menu`}>
+                                <PeopleOutline className={classes.menuIcon} />
+                                <Typography className={classes.menuText}>
+                                    Chat members
                                 </Typography>
                             </div>
 
@@ -58,7 +63,7 @@ const ChatListMenu = () => {
     )
 }
 
-export default ChatListMenu
+export default ChatUserMenu
 
 const useStyles = makeStyles({
     moreIcon: {
@@ -66,7 +71,7 @@ const useStyles = makeStyles({
         color: colors.textPrimary
     },
     dropdownContent: {
-        minWidth: 160,
+        minWidth: 180,
         display: 'block'
     },
     menuWrapper: {
