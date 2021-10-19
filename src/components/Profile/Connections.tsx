@@ -1,6 +1,7 @@
 import { Badge, Button, Grid, makeStyles, Typography } from '@material-ui/core';
 import { ContactPhoneOutlined } from '@material-ui/icons';
 import * as React from 'react';
+import { useHistory } from 'react-router';
 import colors from '../../assets/colors';
 
 interface IConnectionsProps {
@@ -9,20 +10,25 @@ interface IConnectionsProps {
 const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
 
     const classes = useStyles()
+    const history = useHistory()
 
-  return (
-    <Grid container>
-        <Grid item xs={12} className={classes.connections}>
-            <Typography className={`${classes.connectionText} ongoing-badge`}>
-                <ContactPhoneOutlined className={classes.contactPhone}/>
+    const handleClick = () => {
+        history.push('/connections')
+    }
+
+    return (
+        <Grid container>
+            <Grid item xs={12} className={classes.connections}>
+                <Typography className={`${classes.connectionText} ongoing-badge`}>
+                    <ContactPhoneOutlined className={classes.contactPhone} />
                     My conections
-                <Badge color="primary" badgeContent={123} className={classes.badge}>
-                </Badge>
-            </Typography>
-            <Button color="primary" variant="outlined">View</Button>
+                    <Badge color="primary" badgeContent={123} className={classes.badge}>
+                    </Badge>
+                </Typography>
+                <Button onClick={handleClick} color="primary" variant="outlined">View</Button>
+            </Grid>
         </Grid>
-    </Grid>
-  )
+    )
 };
 
 export default Connections;

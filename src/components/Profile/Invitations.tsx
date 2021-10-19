@@ -2,6 +2,7 @@ import { Badge, Button, Grid, makeStyles, Typography } from '@material-ui/core';
 import * as React from 'react';
 import colors from '../../assets/colors';
 import InputInvite from './InputInvite';
+import ViewInvitations from './ViewInvitations'
 
 interface InvitationsProps {
 }
@@ -21,7 +22,7 @@ const Invitations: React.FunctionComponent<InvitationsProps> = (props) => {
                 <Badge badgeContent={4} className={classes.badge}>
                 </Badge>
             </Typography>
-            <Button color="primary" variant="outlined">View</Button>
+            <ViewInvitations/>
         </Grid>
     </Grid>
   )
