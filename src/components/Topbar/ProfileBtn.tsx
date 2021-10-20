@@ -7,7 +7,7 @@ import colors from '../../assets/colors'
 import './ProfileBtn.css'
 
 const ProfileBtn = () => {
-    
+
     const classes = useStyles()
 
     const image = "https://pbs.twimg.com/profile_images/974736784906248192/gPZwCbdS.jpg"
@@ -24,10 +24,10 @@ const ProfileBtn = () => {
 
 
     return (
-        
-        <div className="dropdown" style={{float:"right"}}>
-            <Button style={{ padding: 0}} aria-controls="simple-menu" aria-haspopup="true">
-                <Avatar variant="square"  alt="Cindy Baker" className={classes.small} src={image}></Avatar> 
+
+        <div className="dropdown" style={{ float: "right" }}>
+            <Button style={{ padding: 0 }} aria-controls="simple-menu" aria-haspopup="true">
+                <Avatar variant="square" alt="Cindy Baker" className={classes.small} src={image}></Avatar>
             </Button>
             <div className="dropdown-content">
                 <div onClick={handleProfileClick} className={`${classes.menuItem} dropdown-menu`}>
@@ -40,16 +40,16 @@ const ProfileBtn = () => {
                         </Typography>
                     </div>
                     <div className={classes.menuAction}>
-                        <Create className={classes.createIcon}/>
+                        <Create className={classes.createIcon} />
                     </div>
                 </div>
 
-                <hr className={classes.break}/>
-                
+                <hr className={classes.break} />
+
 
                 <div className={`${classes.menuItem} dropdown-menu`} onClick={handleConnectionClick}>
                     <div className={classes.smallMenuText} >
-                        <PermContactCalendar className={classes.smallMenuIcon}/>
+                        <PermContactCalendar className={classes.smallMenuIcon} />
                         <Typography className={classes.smallText}>
                             My connections
                         </Typography>
@@ -63,7 +63,7 @@ const ProfileBtn = () => {
 
                 <div className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.smallMenuText}>
-                            <PersonAdd className={classes.smallMenuIcon}/>
+                        <PersonAdd className={classes.smallMenuIcon} />
                         <Typography className={classes.smallText}>
                             Invitations
                         </Typography>
@@ -75,12 +75,12 @@ const ProfileBtn = () => {
                 </div>
 
 
-                <hr className={classes.break}/>
-                
+                <hr className={classes.break} />
+
 
                 <div className={`${classes.menuItem} dropdown-menu`}>
                     <div className={classes.smallMenuText}>
-                            <BiLogOut className={classes.smallMenuIcon}/>
+                        <BiLogOut className={classes.smallMenuIcon} />
                         <Typography className={classes.smallText}>
                             Logout
                         </Typography>
@@ -121,14 +121,14 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center'
     },
     menuAction: {
-    paddingRight: 10        
+        paddingRight: 10
     },
     createIcon: {
         fontSize: 16,
         color: colors.lightPurpuple
     },
     menuIcon: {
-        
+
     },
     subMenuText: {
         fontSize: 12,
@@ -145,7 +145,8 @@ const useStyles = makeStyles(theme => ({
     smallText: {
         fontSize: 14,
         fontWeight: 500,
-        color: colors.textPrimary
+        color: colors.textPrimary,
+        marginLeft: 5
     }
-    
+
 }))
