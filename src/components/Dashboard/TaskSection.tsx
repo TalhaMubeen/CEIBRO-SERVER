@@ -3,6 +3,8 @@ import { Button, Grid, Typography } from '@material-ui/core'
 import StatusMenu from '../Utills/Others/StatusMenu'
 import { getAllStatus } from '../../config/project.config'
 import TaskList from './TaskList'
+import taskActions from '../../redux/action/task.action'
+import { useDispatch } from 'react-redux'
 
 interface TaskSectionInt {
 
@@ -10,6 +12,12 @@ interface TaskSectionInt {
 
 const TaskSection: React.FC<TaskSectionInt> = () => {
     const allStatus = getAllStatus()
+    const dispatch = useDispatch()
+
+    const openTaskDrawer = () => {
+        dispatch(taskActions.openDrawer())
+    }
+
     
     return (
         <div>
@@ -18,7 +26,7 @@ const TaskSection: React.FC<TaskSectionInt> = () => {
                     <Typography component="h1" variant="h5">
                         My Tasks
                     </Typography>
-                    <Button variant="contained" color="primary" size="small" style={styles.btn}>
+                    <Button onClick={openTaskDrawer} variant="contained" color="primary" size="small" style={styles.btn}>
                         Create
                     </Button>
                 </Grid>

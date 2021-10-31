@@ -3,7 +3,8 @@ import { Clear } from '@material-ui/icons';
 import * as React from 'react';
 import colors from '../../assets/colors';
 import NameAvatar from '../Utills/Others/NameAvatar';
-
+import { useDispatch } from 'react-redux'
+import taskActions from '../../redux/action/task.action'
 interface IViewProfileProps {
 }
 
@@ -11,10 +12,16 @@ const ViewProfile: React.FunctionComponent<IViewProfileProps> = (props) => {
     
     const classes = useStyles()
     const [open, setOpen] = React.useState(false)
+    const dispatch = useDispatch()
 
     const handleToggle = () => {
         setOpen(!open)
     }
+
+    const openTaskDrawer = () => {
+        dispatch(taskActions.openDrawer())
+    }
+
 
     const user = {
         image: "https://pbs.twimg.com/profile_images/974736784906248192/gPZwCbdS.jpg",
@@ -90,7 +97,7 @@ const ViewProfile: React.FunctionComponent<IViewProfileProps> = (props) => {
 
                         <Grid item xs={12} className={classes.btnWrapper}>
                             <Button className={classes.btn} variant="contained" size="medium" color="primary">Start conversation</Button>
-                            <Button className={classes.btn} variant="contained" size="medium" color="primary">Create task</Button>
+                            <Button className={classes.btn} variant="contained" size="medium" color="primary" onClick={openTaskDrawer}>Create task</Button>
                         </Grid>
                     </Grid>
                 </DialogContent>

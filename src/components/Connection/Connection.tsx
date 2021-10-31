@@ -4,12 +4,19 @@ import colors from '../../assets/colors';
 import { INVITATIONS_LIST } from '../../constants/invitations.constants';
 import NameAvatar from '../Utills/Others/NameAvatar';
 import ViewProfile from './ViewProfile'
-
+import taskActions from '../../redux/action/project.action'
+import { useDispatch } from 'react-redux'
 interface IConnectionsProps {
 }
 
 const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
     const classes = useStyles()
+    const dispatch = useDispatch()
+
+    const openTaskDrawer = () => {
+        dispatch(taskActions.openDrawer())
+    }
+
     return (
         <Grid container className={classes.wrapper}>
             {INVITATIONS_LIST && INVITATIONS_LIST.map(connection => {
@@ -29,7 +36,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
                             </Grid>
                             <Grid item xs={5} className={classes.btnWrapper}>
                                 <Button className={classes.btn} variant="contained" size="medium" color="primary">Start conversation</Button>
-                                <Button className={classes.btn} variant="contained" size="medium" color="primary">Create task</Button>
+                                <Button className={classes.btn} variant="contained" onClick={openTaskDrawer} size="medium" color="primary">Create task</Button>
                                 <ViewProfile/>
                             </Grid>
                         </Grid>

@@ -3,6 +3,8 @@ import { Button, Grid, Typography } from '@material-ui/core'
 import StatusMenu from '../Utills/Others/StatusMenu'
 import { getAllStatus } from '../../config/project.config'
 import ProjectList from './ProjectList'
+import projectActions from '../../redux/action/project.action'
+import { useDispatch } from 'react-redux'
 
 interface ProjectSectionInt {
 
@@ -10,6 +12,11 @@ interface ProjectSectionInt {
 
 const ProjectSection: React.FC<ProjectSectionInt> = () => {
     const allStatus = getAllStatus()
+    const dispatch = useDispatch()
+
+    const openProjectDrawer = () => {
+        dispatch(projectActions.openDrawer())
+    }
 
     return (
         <div>
@@ -18,7 +25,7 @@ const ProjectSection: React.FC<ProjectSectionInt> = () => {
                     <Typography component="h1" variant="h5">
                         My Project
                     </Typography>
-                    <Button variant="contained" color="primary" size="small" style={styles.btn}>
+                    <Button variant="contained" color="primary" size="small" style={styles.btn} onClick={openProjectDrawer}>
                         Create
                     </Button>
                 </Grid>

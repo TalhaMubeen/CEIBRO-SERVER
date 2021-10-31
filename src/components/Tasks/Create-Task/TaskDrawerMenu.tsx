@@ -9,6 +9,7 @@ import InputText from '../../Utills/Inputs/InputText'
 import SelectDropdown from '../../Utills/Inputs/SelectDropdown'
 import DatePicker from '../../Utills/Inputs/DatePicker'
 import DrawerSubTasks from './DrawerSubTask'
+import CreateSubTask from '../SubTasks/CreateSubTaskDrawer'
 
 function TaskDrawerMenu() {
     const classes = useStyles()
@@ -57,6 +58,12 @@ function TaskDrawerMenu() {
                 </div>
             </Grid>
 
+            <Grid xs={12} >
+                <div className={classes.createSubTask}>
+                    <CreateSubTask/>
+                </div>
+            </Grid>
+
         </Grid>
     )
 }
@@ -82,5 +89,9 @@ const useStyles = makeStyles({
     dateWrapper: {
         paddingTop: 10,
         paddingLeft: 10
+    },
+    createSubTask: {
+        display: 'flex',
+        justifyContent: 'flex-end'
     }
 })

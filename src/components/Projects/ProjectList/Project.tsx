@@ -16,7 +16,6 @@ const Project = () => {
 
     return (
         <Grid item xs={12}>
-            <CreateProjectDrawer/>
             <Grid container>
                 <Grid item xs={3} className={classes.datePicker}>
                     <DatePicker/>
