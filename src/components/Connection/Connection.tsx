@@ -10,6 +10,7 @@ interface IConnectionsProps {
 }
 
 const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
+    
     const classes = useStyles()
     const dispatch = useDispatch()
 
