@@ -18,7 +18,7 @@ function TaskDrawerMenu() {
     const selectedMenue = useSelector((state: RootState) => state.project.menue)
 
     const handleClick = (id:number) => {
-        dispatch(projectActions.setMenue(id))
+        // dispatch(projectActions.setMenue(id))
     }
 
     return (
