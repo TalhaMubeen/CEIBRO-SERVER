@@ -13,11 +13,11 @@ const Login: React.FC<LoginInterface> = () => {
     
     return (
         <Grid container className={classes.login}>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} lg={4}>
                 <LoginForm />
             </Grid>
 
-            <Grid item xs={12} md={8} className={classes.tileWrapper}>
+            <Grid item xs={12} lg={8} className={classes.tileWrapper}>
                 <ImageTile/>
             </Grid>
         </Grid>

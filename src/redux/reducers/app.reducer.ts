@@ -4,7 +4,7 @@ import SidebarConfig from "../../navigation/SidebarConfig";
 
 
 const intialStatue = {
-    navbar: true,
+    navbar: false,
     collapse: false,
     sidebarRoutes: SidebarConfig
 }

@@ -16,7 +16,7 @@ const ProjectCard: FC<TaskCardInterface> = (props) =>  {
     const classes = useStyles()
     
     return (
-        <Grid className={classes.cardOuterWrapper} item xs={12} sm={6} md={3}>
+        <Grid className={classes.cardOuterWrapper} item xs={12} sm={6} md={4} lg={3}>
             <Grid item xs={12} className={classes.cardWrapper} style={{ borderColor: getColorByStatus(status) }}>
                 <Grid item xs={12} className={classes.imageWrapper}>
                     <div className={classes.tagWrapper}>

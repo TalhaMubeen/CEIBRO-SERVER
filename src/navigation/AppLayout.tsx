@@ -3,16 +3,22 @@ import React from 'react'
 import colors from '../assets/colors'
 import Sidebar from '../components/Sidebar/Sidebar'
 import Topbar from '../components/Topbar/Topbar'
+import { RootState } from '../redux/reducers/index'
+import { useSelector } from 'react-redux'
+import { useMediaQuery } from 'react-responsive'
 
 interface AppLayoutInterface {
 }
 
 const AppLayout: React.FC<AppLayoutInterface> = ({ children }) => {
     const classes = useStyles()
+    const navbarOpen = useSelector((state: RootState) => state.app.navbar)
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
 
     return (
         <div className={classes.wrapper}>
             <Sidebar/>
+            {navbarOpen && isTabletOrMobile && <div className={classes.blackWrapper}></div>}
             <div className={classes.content}>
                 <Topbar/>
                 <div className={classes.children}>
@@ -30,7 +36,6 @@ const useStyles = makeStyles(theme => ({
     wrapper: {
         height: '100vh',
         overflow: 'hidden',
-        background: 'green'
     },
     content: {
         height: '100vh',
@@ -38,13 +43,21 @@ const useStyles = makeStyles(theme => ({
         overflowX: 'hidden',
         overflowY: 'auto',
         background: colors.lightGrey,
-        [theme.breakpoints.down('md')]: {
+        ['@media (max-width:960px)']: {
             marginLeft: 0,
-            padding: 10
+            padding: 0
         }
     },
     children: {
         paddingBottom: 50,
         padding: '10px 35px',
+    },
+    blackWrapper: {
+        position: "absolute",
+        background: colors.black,
+        opacity: 0.3,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 1
     }
 }))

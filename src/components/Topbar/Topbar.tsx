@@ -46,16 +46,18 @@ const Topbar = () => {
             >
 
                 {isTabletOrMobile && 
-                    <Grid item xs={2}>
+                    <Grid item xs={2} className={classes.menuIconWrapper}>
                         <MenuIcon onClick={toggleNavbar}/>
                     </Grid>
                 }
 
-                <Grid item xs={4} md={3} className={classes.titleContainer}>
-                    <Title/>
-                </Grid>
+                {!isTabletOrMobile && 
+                    <Grid item xs={3} md={3} className={classes.titleContainer}>
+                        <Title/>
+                    </Grid>
+                }
 
-                <Grid item xs={1} md={4}></Grid>
+                {!isTabletOrMobile && <Grid item xs={1} md={4}></Grid>}
 
                 <Grid 
                     xs={5}
@@ -73,10 +75,10 @@ const Topbar = () => {
                     />
                 </Grid>
                 <Grid 
-                    xs={3}
+                    xs={4}
                     md={2}
                     item
-                    style={{display: 'flex', justifyContent: 'flex-start'}}
+                    style={{display: 'flex', justifyContent: 'center'}}
                 >
 
                     <div className={classes.nameWrapper}>
@@ -109,6 +111,14 @@ const useStyles = makeStyles(theme => ({
         height: 60,
         paddingRight: 20,
         background: colors.white
+    },
+    menuIconWrapper: {
+        [theme.breakpoints.down('md')]: {
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%"
+        }
     },
     container: {
         height: '100%',
