@@ -5,23 +5,49 @@ import { getAllStatus } from '../../config/project.config'
 import ProjectList from './ProjectList'
 import projectActions from '../../redux/action/project.action'
 import { useDispatch } from 'react-redux'
+import { useHistory } from 'react-router'
 
 interface ProjectSectionInt {
 
 }
 
+const myStatus = [
+    
+    {
+        title: 'Ongoing',
+        count: 1
+    },
+    {
+        title: 'Approved',
+        count: 2
+    },
+    {
+        title: 'Done',
+        count: 1
+    },
+    {
+        title: 'Draft',
+        count: 1
+    }
+]
+
 const ProjectSection: React.FC<ProjectSectionInt> = () => {
-    const allStatus = getAllStatus()
+    const allStatus = myStatus
     const dispatch = useDispatch()
+    const history = useHistory()
 
     const openProjectDrawer = () => {
         dispatch(projectActions.openDrawer())
     }
 
+    const handleClick = () => {
+        history.push('/projects')
+    }
+
     return (
         <div>
             <Grid container alignItems="center">
-                <Grid item xs={6} style={styles.titleContainer}>
+                <Grid item xs={12} md={5} style={styles.titleContainer}>
                     <Typography component="h1" variant="h5">
                         My Project
                     </Typography>
@@ -29,10 +55,15 @@ const ProjectSection: React.FC<ProjectSectionInt> = () => {
                         Create
                     </Button>
                 </Grid>
-                <Grid style={styles.menuWrapper} item xs={6}>
+                <Grid style={styles.menuWrapper} item xs={12} md={6}>
                     <StatusMenu
-                        options={allStatus.splice(1, allStatus.length)}
+                        options={allStatus}
                     />
+                </Grid>
+                <Grid item xs={12} md={1}>
+                    <Button onClick={handleClick} variant="outlined" color="primary" size="medium" style={styles.viewAll} >
+                        View all
+                    </Button>
                 </Grid>
             </Grid>
             <ProjectList />
@@ -51,5 +82,8 @@ const styles = {
     },
     btn: {
         marginLeft: 10
+    },
+    viewAll: {
+        fontSize: 9
     }
 }

@@ -7,8 +7,8 @@ import colors from '../../../assets/colors'
 
 const options = [
     { value: 'All', label: 'All', color: 'green' },
-    { value: 'strawberry', label: 'Strawberry', color: 'yellow' },
-    { value: 'vanilla', label: 'Vanilla', color: 'brown' }
+    { value: 'Project1', label: 'Project 1', color: 'yellow' },
+    { value: 'Project2', label: 'Project 2', color: 'brown' }
   ]
 
 

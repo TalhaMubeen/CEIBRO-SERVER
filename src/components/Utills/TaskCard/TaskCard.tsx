@@ -164,7 +164,7 @@ const useStyles = makeStyles({
         fontWeight: "bold",
         fontSize: 14,
         marginTop: 10,
-        color: colors.secondaryBlue
+        color: colors.textPrimary
     },
     viewMap: {
         color: colors.primary,

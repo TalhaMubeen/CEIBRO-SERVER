@@ -2,7 +2,6 @@ import { Badge, Button, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ContactPhone } from '@material-ui/icons'
 import colors from '../../assets/colors'
 import InputInvite from '../Profile/InputInvite'
-import TextField from '../Utills/Inputs/TextField'
 
 const SmartMenuBar = () => {
     const classes = useStyles()
@@ -26,7 +25,7 @@ const SmartMenuBar = () => {
                     <Typography className={classes.connectionTitle}>
                         Invitations
                     </Typography>
-                    <Badge badgeContent={4} color="primary">
+                    <Badge badgeContent={4} color="error">
                     </Badge>
                     <Button size="small" color="primary" variant="outlined">View</Button>
                 </div>
@@ -34,17 +33,7 @@ const SmartMenuBar = () => {
 
             <Grid item xs={12} md={5}>
                 <div className={classes.searchWrapper}>
-                <InputInvite/>
-                    {/* <TextField
-                        id="input-with-icon-adornment"
-                        placeholder="Search"
-                        className={classes.searchInput}
-                        size="small"
-                        inputProps={{
-                            className: classes.searchInput
-                        }}
-                    />
-                    <Button size="small" color="primary" variant="contained">Invite</Button> */}
+                    <InputInvite/>
                 </div>
             </Grid>
         </Grid>
@@ -59,7 +48,11 @@ const useStyles = makeStyles({
         display: 'flex',
         justifyContent: "space-evenly",
         alignItems: 'center',
-        padding: "10px 2px"
+        padding: "10px 2px",
+        ['@media (max-width:960px)']: {
+            justifyContent: "space-between",
+            padding: "10px 10px"
+        }
     },
     connectionTitle: {
         fontSize: 14,

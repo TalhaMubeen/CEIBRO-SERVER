@@ -69,7 +69,8 @@ const useStyles = makeStyles({
         height: 130,
         borderBottom: `0.5px solid ${colors.textGrey}`,
         paddingBottom: 20,
-        paddingTop: 15 
+        paddingTop: 15,
+        minWidth: 1000
     },
     dateWrapper: {
         display: 'flex',

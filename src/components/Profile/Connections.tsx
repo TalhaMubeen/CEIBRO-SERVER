@@ -21,7 +21,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
             <Grid item xs={12} className={classes.connections}>
                 <Typography className={`${classes.connectionText} ongoing-badge`}>
                     <ContactPhoneOutlined className={classes.contactPhone} />
-                    My conections
+                        My conections
                     <Badge color="primary" badgeContent={123} className={classes.badge}>
                     </Badge>
                 </Typography>

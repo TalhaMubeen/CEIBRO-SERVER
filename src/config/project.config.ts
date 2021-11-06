@@ -51,6 +51,39 @@ export function getAllStatus(): ProjectMenues[] {
             count: 1
         },
         {
+            title: 'Submitted',
+            count: 3
+        },
+        {
+            title: 'Rejected',
+            count: 5
+        },
+        {
+            title: 'Approved',
+            count: 0
+        },
+        {
+            title: 'Done',
+            count: 1
+        },
+        {
+            title: 'Draft',
+            count: 1
+        }
+    ]
+
+}
+export function getProjectStatus(): ProjectMenues[] {
+    return [
+        {
+            title: 'All',
+            count: 3
+        },
+        {
+            title: 'Ongoing',
+            count: 1
+        },
+        {
             title: 'Approved',
             count: 0
         },

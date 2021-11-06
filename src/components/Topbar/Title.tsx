@@ -6,6 +6,7 @@ import taskActions from '../../redux/action/task.action'
 import { useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import colors from '../../assets/colors'
+import SelectDropdown from '../Utills/Inputs/SelectDropdown'
 
 const Title = () => {
     
@@ -33,7 +34,7 @@ const Title = () => {
                     color="primary" 
                     variant="contained"
                 >
-                    Create
+                    Create new
                 </Button>
             </>
         )
@@ -50,7 +51,7 @@ const Title = () => {
                     color="primary" 
                     variant="contained"
                 >
-                    Create
+                    Create new
                 </Button>
             </>
         )
@@ -71,6 +72,19 @@ const Title = () => {
                 </Button>
             </>
         )
+
+        if(location.pathname.includes('chat')) return (
+            <>
+                <div className={classes.chatTitle}>
+                    <Typography variant="h6" component="h6">
+                        Chat
+                    </Typography>
+                </div>
+                <div style={{ width: '100%'}}>
+                    <SelectDropdown title="project"/>
+                </div>
+            </>
+        )
         
     }
     
@@ -87,5 +101,9 @@ const useStyles = makeStyles({
     login: {
         color: colors.white,
         textDecoration: 'none'
+    },
+    chatTitle: {
+        paddingLeft: 33,
+        paddingRight: 20
     }
 })

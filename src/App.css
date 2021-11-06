@@ -6,7 +6,8 @@
   --dark-yellow: #F1B740;
   --medium-grey: #bdc3c7;
   --light-black: rgb(125, 126, 128);
-  --btn-red: #F94340
+  --btn-red: #F94340;
+  --aqua-green: #55BCB3;
 }
 
 
@@ -23,6 +24,11 @@ body {
 
 .ongoing-badge .MuiBadge-colorPrimary{
   background: var(--dark-yellow);
+  color: white;
+}
+
+.submitted-badge .MuiBadge-colorPrimary{
+  background: var(--aqua-green);
   color: white;
 }
 

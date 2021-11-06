@@ -36,6 +36,9 @@ const useStyles = makeStyles({
     outerWrapper: {
         width: 'calc(100vw - 200px)',
         backgroundColor: colors.lightGrey,
-        height: '100vh'
+        height: '100vh',
+        ['@media (max-width:960px)']: {
+            width: '80vw'
+        }
     }
 })

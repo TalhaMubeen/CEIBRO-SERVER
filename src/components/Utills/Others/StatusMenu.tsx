@@ -26,7 +26,7 @@ export const StatusMenu: React.FC<StatusMenuProps> = (props) => {
                         <Typography className={classes.chipTitle}>
                             {option.title}
                         </Typography>
-                        <Badge color="primary" badgeContent={option.count}>
+                        <Badge color="primary" badgeContent={option.count} >
                         </Badge>
                     </div>
                 )
@@ -48,7 +48,9 @@ const useStyles = makeStyles({
         justifyContent: 'space-around'
     },
     chipTitle: {
-        color: colors.secondaryBlue
+        color: colors.primary,
+        fontSize: 14,
+        fontWeight: 500
     },
     ongoing: {
         background: getColorByStatus('ongoing')
@@ -64,4 +66,10 @@ const useStyles = makeStyles({
     approved: {
         background: getColorByStatus('approved')
     },
+    submitted: {
+        background: getColorByStatus('submitted')
+    },
+    rejeced: {
+        background: getColorByStatus('rejected')    
+    }
 })

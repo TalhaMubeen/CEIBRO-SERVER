@@ -14,11 +14,13 @@ import colors from '../../assets/colors';
 import { Link } from 'react-router-dom';
 import ProfileBtn from './ProfileBtn'
 import Title from './Title'
+import { useHistory } from 'react-router'
 
-const Topbar = () => {
+const Topbar = (props: any) => {
     const classes = useStyles()
 
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
+    const history = useHistory() 
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -36,6 +38,8 @@ const Topbar = () => {
         dispatch(appActions.toggleNavbar())
     }
 
+
+
     return (
         <div className={`topbar ${classes.topNavbarWrapper}`}>
             <Grid 
@@ -51,54 +55,56 @@ const Topbar = () => {
                     </Grid>
                 }
 
+                <Grid item xs={7} md={history.location.pathname.includes('chat') ? 5: 3} className={classes.titleContainer}>
+                    <Title/>
+                </Grid>
+
+                {!isTabletOrMobile && <Grid item xs={1} md={history?.location.pathname.includes('chat')? 2: 4}></Grid>}
+
                 {!isTabletOrMobile && 
-                    <Grid item xs={3} md={3} className={classes.titleContainer}>
-                        <Title/>
+                    <Grid 
+                        xs={5}
+                        md={3}
+                        item
+                    >
+                        <Textfield
+                            id="input-with-icon-adornment"
+                            placeholder="Search"
+                            className={classes.searchInput}
+                            size="small"
+                            inputProps={{
+                                className: classes.searchInput
+                            }}
+                        />
                     </Grid>
                 }
-
-                {!isTabletOrMobile && <Grid item xs={1} md={4}></Grid>}
-
                 <Grid 
-                    xs={5}
-                    md={3}
-                    item
-                >
-                    <Textfield
-                        id="input-with-icon-adornment"
-                        placeholder="Search"
-                        className={classes.searchInput}
-                        size="small"
-                        inputProps={{
-                            className: classes.searchInput
-                        }}
-                    />
-                </Grid>
-                <Grid 
-                    xs={4}
+                    xs={3}
                     md={2}
                     item
                     style={{display: 'flex', justifyContent: 'center'}}
                 >
 
-                    <div className={classes.nameWrapper}>
-                        <Typography>
-                            IIja
-                        </Typography>
-                        <Typography>
-                            Nikolajev
-                        </Typography>
-                    </div>
-
+                    {!isTabletOrMobile && 
+                        <div className={classes.nameWrapper}>
+                            <Typography>
+                                IIja
+                            </Typography>
+                            <Typography>
+                                Nikolajev
+                            </Typography>
+                        </div>
+                    }
                     <ProfileBtn/>
 
-                    <Typography>
-                        <Badge badgeContent={4}>
-                            <NotificationsNoneSharp className={classes.bell}/>
-                        </Badge>
-                    </Typography>
+                    {!isTabletOrMobile && 
+                        <Typography>
+                            <Badge badgeContent={4}>
+                                <NotificationsNoneSharp className={classes.bell}/>
+                            </Badge>
+                        </Typography>
+                    }
                 </Grid>
-
             </Grid>
         </div>
     )

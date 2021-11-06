@@ -18,15 +18,15 @@ const Project = () => {
     return (
         <Grid item xs={12}>
             <Grid container>
-                <Grid item xs={3} className={classes.datePicker}>
+                <Grid item xs={12} md={3} className={classes.datePicker}>
                     <DatePicker/>
                 </Grid>
 
-                <Grid item xs={4} className={classes.datePicker}>
+                <Grid item xs={12} md={4} className={classes.datePicker}>
                     <SelectDropdown title="Assigned to" />
                 </Grid>
 
-                <Grid item xs={4} className={classes.datePicker}>
+                <Grid item xs={12} md={4} className={classes.datePicker}>
                     <SelectDropdown title="Projects" />
                 </Grid>
             </Grid>

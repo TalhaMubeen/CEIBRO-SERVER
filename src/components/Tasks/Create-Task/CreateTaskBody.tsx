@@ -33,7 +33,7 @@ export default CreateProjectBody
 const useStyles = makeStyles({
     body: {
         padding: 20,
-        overflowY: 'scroll',
-        height: 'calc(100vh - 230px)'
+        overflow: 'scroll',
+        height: 'calc(100vh - 230px)',    
     }
 })

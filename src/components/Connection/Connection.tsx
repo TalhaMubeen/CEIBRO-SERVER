@@ -6,6 +6,7 @@ import NameAvatar from '../Utills/Others/NameAvatar';
 import ViewProfile from './ViewProfile'
 import taskActions from '../../redux/action/project.action'
 import { useDispatch } from 'react-redux'
+import { useMediaQuery } from 'react-responsive';
 interface IConnectionsProps {
 }
 
@@ -13,6 +14,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
     
     const classes = useStyles()
     const dispatch = useDispatch()
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
 
     const openTaskDrawer = () => {
         dispatch(taskActions.openDrawer())
@@ -24,7 +26,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
                 return (
                     <Grid item xs={12} className={classes.chipWrapper}>
                         <Grid container>
-                            <Grid item xs={7} className={classes.userWrapper}>
+                            <Grid item xs={12} md={7} className={classes.userWrapper}>
                                 <NameAvatar name={connection.name}/>
                                 <div className={classes.nameWrapper}>
                                     <Typography className={classes.name}>
@@ -35,9 +37,9 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
                                     </Typography>
                                 </div>
                             </Grid>
-                            <Grid item xs={5} className={classes.btnWrapper}>
-                                <Button className={classes.btn} variant="contained" size="medium" color="primary">Start conversation</Button>
-                                <Button className={classes.btn} variant="contained" onClick={openTaskDrawer} size="medium" color="primary">Create task</Button>
+                            <Grid item xs={12} md={5} className={classes.btnWrapper}>
+                                <Button className={classes.btn} variant="contained" size={isTabletOrMobile? 'small': 'medium'} color="primary">Start conversation</Button>
+                                <Button className={classes.btn} variant="contained" onClick={openTaskDrawer} size={isTabletOrMobile? 'small': 'medium'} color="primary">Create task</Button>
                                 <ViewProfile/>
                             </Grid>
                         </Grid>

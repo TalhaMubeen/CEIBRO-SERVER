@@ -58,6 +58,6 @@ const useStyles = makeStyles(theme => ({
         opacity: 0.3,
         width: '100vw',
         height: '100vh',
-        zIndex: 1
+        zIndex: 3
     }
 }))

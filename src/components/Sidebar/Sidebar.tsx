@@ -12,6 +12,7 @@ import { useMediaQuery } from 'react-responsive'
 import OutsideClickHandler from 'react-outside-click-handler';
 import appActions from '../../redux/action/app.action'
 import './sidebar.css'
+import { IoHelpCircle, IoHelpCircleOutline } from 'react-icons/io5'
 
 
 function Sidebar() {
@@ -81,6 +82,15 @@ function Sidebar() {
                         )
                     }) }
                 </div>
+
+                <div className={classes.help}>
+                    <div className={classes.helpInnerWrapper}>
+                    </div>
+                        <IoHelpCircle className={classes.helpIcon}/>
+                    <Typography className={classes.helpText}>
+                        Help
+                    </Typography>
+                </div>
             </div>
         </OutsideClickHandler>
     )
@@ -96,14 +106,14 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         [theme.breakpoints.down('md')]: {
             position: "absolute",
-            zIndex: 2,
+            zIndex: 4
           }
     },
     logoWrapper: {
         maxHeight: 150,
     },
     menueWrapper: {
-        height: 'calc(100vh - 150px)',
+        height: 'calc(100vh - 200px)',
         overflowY: 'auto',
     },
     menue: {
@@ -141,5 +151,32 @@ const useStyles = makeStyles(theme => ({
     active: {
         background: colors.white,
         color: `${colors.black} !important`
+    },
+    help: {
+        height: '50px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        position: 'relative'
+    },
+    helpIcon: {
+        color: colors.white,
+        fontSize: 25,
+        position: 'absolute',
+        zIndex: 2,
+        left: 58
+    },
+    helpInnerWrapper: {
+        background: colors.black,
+        left: 65,
+        position: 'absolute',
+        zIndex: 1,
+        width: 10,
+        height: 10
+    },
+    helpText: {
+        fontSize: 14,
+        fontWeight: 500,
+        color: colors.primary
     }
 }))
