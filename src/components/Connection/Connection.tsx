@@ -14,7 +14,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
     
     const classes = useStyles()
     const dispatch = useDispatch()
-    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'});
 
     const openTaskDrawer = () => {
         dispatch(taskActions.openDrawer())

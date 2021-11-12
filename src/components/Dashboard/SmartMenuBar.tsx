@@ -2,20 +2,31 @@ import { Badge, Button, Grid, makeStyles, Typography } from '@material-ui/core'
 import { ContactPhone } from '@material-ui/icons'
 import colors from '../../assets/colors'
 import InputInvite from '../Profile/InputInvite'
+import { MdInsertInvitation } from 'react-icons/md'
+import { useMediaQuery } from 'react-responsive'
 
 const SmartMenuBar = () => {
     const classes = useStyles()
+
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
 
     return (
         <Grid container >
             <Grid item xs={12} md={4}>
                 <div className={`${classes.connectionWrapper} ongoing-badge`}>
-                    <ContactPhone className={classes.connectionIcon}/>
+                    
                     <Typography className={classes.connectionTitle}>
-                        My connections
+                        <ContactPhone className={classes.connectionIcon}/>
+                         <span className={classes.marginLeft}>My connections</span>
+                         {isTabletOrMobile && 
+                            <Badge badgeContent={4} color="primary">
+                            </Badge>
+                         }
                     </Typography>
-                    <Badge badgeContent={4} color="primary">
-                    </Badge>
+                    {!isTabletOrMobile && 
+                        <Badge badgeContent={4} color="primary">
+                        </Badge>
+                    }
                     <Button size="small" color="primary" variant="outlined">View</Button>
                 </div>
             </Grid>
@@ -23,10 +34,18 @@ const SmartMenuBar = () => {
             <Grid item xs={12} md={3} className={classes.invitationOuterWrapper}>
                 <div className={`${classes.connectionWrapper} ongoing-badge`}>
                     <Typography className={classes.connectionTitle}>
-                        Invitations
+                        {isTabletOrMobile && 
+                            <MdInsertInvitation className={classes.inviteIcon} />
+                        }
+                        <span className={classes.marginLeft}>Invitations</span>
+
+                        {isTabletOrMobile && 
+                            <Badge badgeContent={4} color="error">
+                            </Badge>
+                        }
                     </Typography>
-                    <Badge badgeContent={4} color="error">
-                    </Badge>
+                    {!isTabletOrMobile && <Badge badgeContent={4} color="error">
+                    </Badge>}
                     <Button size="small" color="primary" variant="outlined">View</Button>
                 </div>
             </Grid>
@@ -54,13 +73,24 @@ const useStyles = makeStyles({
             padding: "10px 10px"
         }
     },
+    marginLeft: {
+        paddingRight: 20
+    },
     connectionTitle: {
         fontSize: 14,
-        color: colors.black
+        color: colors.black,
+        display: 'flex',
+        alignItems: 'center'
     },
     connectionIcon: {
         width: 18,
-        color: colors.primary
+        color: colors.primary,
+        paddingRight: 10
+    },
+    inviteIcon: {
+        fontSize: 18,
+        color: colors.primary,
+        paddingRight: 10
     },
     invitationOuterWrapper: {
         paddingLeft: 10,

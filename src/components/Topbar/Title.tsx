@@ -7,12 +7,14 @@ import { useHistory } from 'react-router'
 import { Link } from 'react-router-dom'
 import colors from '../../assets/colors'
 import SelectDropdown from '../Utills/Inputs/SelectDropdown'
+import { useMediaQuery } from 'react-responsive'
 
 const Title = () => {
     
     const dispatch = useDispatch()
     const { location } = useHistory()
     const classes = useStyles()
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
 
     const openProjectDrawer = () => {
         dispatch(projectActions.openDrawer())
@@ -80,9 +82,11 @@ const Title = () => {
                         Chat
                     </Typography>
                 </div>
-                <div style={{ width: '100%'}}>
-                    <SelectDropdown title="project"/>
-                </div>
+                {!isTabletOrMobile && 
+                    <div style={{ width: '100%'}}>
+                        <SelectDropdown title="project"/>
+                    </div>
+                }
             </>
         )
         
