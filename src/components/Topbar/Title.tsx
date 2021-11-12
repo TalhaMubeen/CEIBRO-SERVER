@@ -78,7 +78,7 @@ const Title = () => {
                     <Typography variant="h6" component="h6">
                         Dashboard
                     </Typography>
-                    {!isTabletOrMobile && 
+                    {/* {!isTabletOrMobile && 
                         <Button 
                             size="small" 
                             color="primary" 
@@ -88,7 +88,7 @@ const Title = () => {
                                 Login
                             </Link>
                         </Button>
-                    }
+                    } */}
                 </div>
             </>
         )
