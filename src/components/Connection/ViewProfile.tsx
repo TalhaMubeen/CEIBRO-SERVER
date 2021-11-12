@@ -131,13 +131,20 @@ const useStyles = makeStyles({
     },
     btn: {
         fontSize: 12,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        ['@media (max-width:960px)']: {
+            width: '100%',
+            marginTop: 10
+        }
     },
     btnWrapper: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-evenly',
-        padding: `25px 0px`
+        padding: `25px 0px`,
+        ['@media (max-width:960px)']: {
+            flexDirection: 'column'
+        }
     },
     detailRow: {
         display: 'flex',

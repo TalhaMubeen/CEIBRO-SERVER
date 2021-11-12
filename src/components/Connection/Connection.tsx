@@ -26,7 +26,7 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
                 return (
                     <Grid item xs={12} className={classes.chipWrapper}>
                         <Grid container>
-                            <Grid item xs={12} md={7} className={classes.userWrapper}>
+                            <Grid item xs={12} md={4} lg={7} className={classes.userWrapper}>
                                 <NameAvatar name={connection.name}/>
                                 <div className={classes.nameWrapper}>
                                     <Typography className={classes.name}>
@@ -37,9 +37,9 @@ const Connections: React.FunctionComponent<IConnectionsProps> = (props) => {
                                     </Typography>
                                 </div>
                             </Grid>
-                            <Grid item xs={12} md={5} className={classes.btnWrapper}>
+                            <Grid item xs={12} md={8} lg={5} className={classes.btnWrapper}>
                                 <Button className={classes.btn} variant="contained" size={isTabletOrMobile? 'small': 'medium'} color="primary">Start conversation</Button>
-                                <Button className={classes.btn} variant="contained" onClick={openTaskDrawer} size={isTabletOrMobile? 'small': 'medium'} color="primary">Create task</Button>
+                                <Button className={`${classes.btn} ${classes.centerBtn}`} variant="contained" onClick={openTaskDrawer} size={isTabletOrMobile? 'small': 'medium'} color="primary">Create task</Button>
                                 <ViewProfile/>
                             </Grid>
                         </Grid>
@@ -58,7 +58,10 @@ const useStyles = makeStyles({
         padding: 20
     },
     chipWrapper: {
-        paddingTop: 10
+        paddingTop: 10,
+        ['@media (max-width:600px)']: {
+            paddingTop: 20
+        }
     },
     userWrapper: {
         display: 'flex',
@@ -80,10 +83,23 @@ const useStyles = makeStyles({
     btnWrapper: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+        ['@media (max-width:960px)']: {
+            flexDirection: 'column',
+            alignItems: 'center'
+        }
     },
     btn: {
         fontSize: 12,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        ['@media (max-width:960px)']: {
+            width: '100%',
+            marginTop: 10
+        }
+    },
+    centerBtn: {
+        ['@media (max-width:960px)']: {
+            marginTop: 10,
+        }
     }
 })

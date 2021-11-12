@@ -14,14 +14,6 @@ const myStatus = [
         count: 8
     },
     {
-        title: 'Submitted',
-        count: 3
-    },
-    {
-        title: 'Rejected',
-        count: 5
-    },
-    {
         title: 'Approved',
         count: 1
     },
@@ -31,7 +23,7 @@ const myStatus = [
     },
     {
         title: 'Draft',
-        count: 12
+        count: 2
     }
 ]
 
@@ -85,6 +77,7 @@ export default TaskSection
 const useStyles = makeStyles({
     menuWrapper: {
         display: 'flex',
+        justifyContent: 'flex-end',
         flexWrap: 'wrap'
     },
     titleContainer: {

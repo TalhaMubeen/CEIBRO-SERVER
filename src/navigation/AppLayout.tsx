@@ -51,6 +51,12 @@ const useStyles = makeStyles(theme => ({
     children: {
         paddingBottom: 50,
         padding: '10px 35px',
+        ['@media (max-width:960px)']: {
+            padding: '10px 10px'
+        },
+        ['@media (max-width:1280px)']: {
+            padding: '10px 20px'
+        }
     },
     blackWrapper: {
         position: "absolute",

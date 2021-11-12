@@ -25,7 +25,7 @@ function TaskDrawerMenu() {
         <Grid container className={classes.outerWrapper}>
             <Grid className={classes.titleWrapper} item xs={12}>
                 <InputText 
-                    placeholder="Enter Project title"
+                    placeholder="Enter Task title"
                 />
             </Grid>
             <Grid xs={12} md={3}>
@@ -81,14 +81,20 @@ const useStyles = makeStyles({
     },
     inputWrapper: {
         paddingTop: 10,
-        paddingLeft: 10
+        paddingLeft: 10,
+        ['@media (max-width:600px)']: {
+            paddingLeft: 0
+        }
     },
     projectWrapper: {
         padding: "10px 0px"
     },
     dateWrapper: {
         paddingTop: 10,
-        paddingLeft: 10
+        paddingLeft: 10,
+        ['@media (max-width:600px)']: {
+            paddingLeft: 0
+        }
     },
     createSubTask: {
         display: 'flex',

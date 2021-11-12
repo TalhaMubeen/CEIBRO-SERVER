@@ -60,7 +60,7 @@ export function getAllStatus(): ProjectMenues[] {
         },
         {
             title: 'Approved',
-            count: 0
+            count: 2
         },
         {
             title: 'Done',
@@ -85,7 +85,7 @@ export function getProjectStatus(): ProjectMenues[] {
         },
         {
             title: 'Approved',
-            count: 0
+            count: 4
         },
         {
             title: 'Done',

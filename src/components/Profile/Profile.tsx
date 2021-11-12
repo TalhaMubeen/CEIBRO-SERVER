@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Grid, makeStyles, TextField } from '@material-ui/core'
+import { Button, Checkbox, FormControlLabel, FormGroup, Grid, makeStyles, TextField } from '@material-ui/core'
 import { BiTrash } from 'react-icons/bi'
 import colors from '../../assets/colors'
 import { Create, Delete } from '@material-ui/icons'
@@ -24,9 +24,6 @@ const Dashboard = () => {
         </Grid>
         <Grid item xs={12} md={6}>
             <Grid container>
-                <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Username" variant="outlined" />
-                </Grid>
 
                 <Grid item xs={12} md={6} className={classes.rowWrapper}>
                     <TextField fullWidth size="small" id="outlined-basic" label="Name" variant="outlined" />
@@ -37,19 +34,19 @@ const Dashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Email" variant="outlined" />
+                    <TextField fullWidth size="small" id="outlined-basic" label="Contact email" variant="outlined" />
                 </Grid>
                 
                 <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Contact" variant="outlined" />
+                    <TextField fullWidth size="small" id="outlined-basic" label="Contact number" variant="outlined" />
+                </Grid>
+                
+                <Grid item xs={12} className={`${classes.rowWrapper} ${classes.passwordRow}`}>
+                    <TextField type="password" fullWidth size="small" id="outlined-basic" label="Password" variant="outlined" />
                 </Grid>
                 
                 <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Password" variant="outlined" />
-                </Grid>
-                
-                <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Confirm Password" variant="outlined" />
+                    <TextField type="password" fullWidth size="small" id="outlined-basic" label="Confirm password" variant="outlined" />
                 </Grid>
 
                 <Grid item xs={12} className={classes.rowWrapper}>
@@ -67,7 +64,7 @@ const Dashboard = () => {
                 </Grid>
 
                 <Grid item xs={12} md={6} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Vat" variant="outlined" />
+                    <TextField fullWidth size="small" id="outlined-basic" label="VAT" variant="outlined" />
                 </Grid>
 
                 <Grid item xs={12} className={classes.rowWrapper}>
@@ -75,7 +72,21 @@ const Dashboard = () => {
                 </Grid>
                 
                 <Grid item xs={12} className={classes.rowWrapper}>
-                    <TextField fullWidth size="small" id="outlined-basic" label="Contact" variant="outlined" />
+                    <TextField fullWidth size="small" id="outlined-basic" label="Contact number" variant="outlined" />
+                </Grid>
+
+                <Grid item xs={12} className={classes.rowWrapper}>
+                <FormGroup>
+                    <FormControlLabel 
+                        control={
+                            <Checkbox 
+                                defaultChecked 
+                                classes={{
+                                    root: classes.root,
+                                    checked: classes.checked,
+                                  }}
+                            />} label="Currently representing company" />
+                </FormGroup>
                 </Grid>
 
             </Grid>                    
@@ -124,5 +135,15 @@ const useStyles = makeStyles({
         background: colors.btnRed,
         color: colors.white,
         fontSize: 18
-    }
+    },
+    passwordRow: {
+        marginTop: 20
+    },
+    root: {
+        color: colors.darkYellow,
+        '&$checked': {
+          color: colors.darkYellow,
+        },
+      },
+    checked: {},
 })

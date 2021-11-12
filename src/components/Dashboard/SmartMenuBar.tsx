@@ -4,11 +4,16 @@ import colors from '../../assets/colors'
 import InputInvite from '../Profile/InputInvite'
 import { MdInsertInvitation } from 'react-icons/md'
 import { useMediaQuery } from 'react-responsive'
+import { useHistory } from 'react-router'
 
 const SmartMenuBar = () => {
     const classes = useStyles()
-
+    const history = useHistory()
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
+
+    const goToConnections = () => {
+        history.push('connections')
+    }
 
     return (
         <Grid container >
@@ -27,7 +32,7 @@ const SmartMenuBar = () => {
                         <Badge badgeContent={4} color="primary">
                         </Badge>
                     }
-                    <Button size="small" color="primary" variant="outlined">View</Button>
+                    <Button size="small" color="primary" variant="outlined" onClick={goToConnections}>View</Button>
                 </div>
             </Grid>
 

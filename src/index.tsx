@@ -19,7 +19,6 @@ const messages: any = {
 
 const language: string = navigator.language.split(/[-_]/)[0];
 
-console.log('langulage i s', language)
 
 const theme = createTheme({
   palette: {
@@ -28,6 +27,7 @@ const theme = createTheme({
     },
     secondary: {
       main: colors.secondaryBlue,
+
     },
   },
   typography: {

@@ -38,7 +38,7 @@ const useStyles = makeStyles({
         backgroundColor: colors.lightGrey,
         height: '100vh',
         ['@media (max-width:960px)']: {
-            width: '80vw'
+            width: '100vw'
         }
     }
 })

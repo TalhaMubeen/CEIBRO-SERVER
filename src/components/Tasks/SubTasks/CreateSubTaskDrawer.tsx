@@ -15,7 +15,7 @@ const CreateSubTaskDrawer = () => {
 
     return (
         <>
-            <Button variant="outlined" size="medium" color="primary" onClick={handleToggle}>Add subtask</Button>
+            <Button className={classes.create} variant="outlined" size="medium" color="primary" onClick={handleToggle}>Add subtask</Button>
             <Dialog onClose={handleToggle} open={open}>
                 <DialogContent>
                     <Grid container>
@@ -49,4 +49,7 @@ const useStyles = makeStyles({
     outerWrapper: {
         marginTop: 10
     },
+    create: {
+        marginTop: 10
+    }
 })

@@ -28,7 +28,7 @@ const ProjectOverview = () => {
             </Grid>
 
             <Grid container className={classes.secondForm}>
-                <Grid item xs={12} md={2}>
+                <Grid item xs={12} md={2} className={classes.imagePicker}>
                     <ImagePicker/>
                 </Grid>
 
@@ -47,10 +47,19 @@ export default ProjectOverview
 
 const useStyles = makeStyles({
     datePickerWrapper: {
-        paddingLeft: 20
+        paddingLeft: 20,
+        ['@media (max-width:600px)']: {
+            paddingLeft: 0,
+            paddingTop: 20
+        }
     },
     secondForm: {
         paddingTop: 0
+    },
+    imagePicker: {
+        ['@media (max-width:600px)']: {
+            paddingBottom: 20
+        }
     }
 })
 

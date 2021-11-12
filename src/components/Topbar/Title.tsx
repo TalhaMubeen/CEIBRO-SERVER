@@ -1,6 +1,6 @@
 import React from 'react'
 import { useDispatch } from 'react-redux'
-import { Typography, Button, makeStyles } from '@material-ui/core'
+import { Typography, Button, makeStyles, IconButton } from '@material-ui/core'
 import projectActions from '../../redux/action/project.action'
 import taskActions from '../../redux/action/task.action'
 import { useHistory } from 'react-router'
@@ -8,10 +8,12 @@ import { Link } from 'react-router-dom'
 import colors from '../../assets/colors'
 import SelectDropdown from '../Utills/Inputs/SelectDropdown'
 import { useMediaQuery } from 'react-responsive'
+import { ArrowBack } from '@material-ui/icons'
 
 const Title = () => {
     
     const dispatch = useDispatch()
+    const history = useHistory()
     const { location } = useHistory()
     const classes = useStyles()
     const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
@@ -24,54 +26,70 @@ const Title = () => {
         dispatch(taskActions.openDrawer())
     }
 
+    const goBack = () => {
+        history.goBack()
+    }
+
+    const BackIcon = () => (
+            <ArrowBack className={classes.backIcon} onClick={goBack}/>
+    )
+
     const getTitle = () => {
         if(location.pathname.includes('project')) return (
             <>
-                <Typography variant="h6" component="h6">
-                    Project
-                </Typography>
-                <Button 
-                    onClick={openProjectDrawer} 
-                    size="small" 
-                    color="primary" 
-                    variant="contained"
-                >
-                    Create new
-                </Button>
+               <div className={classes.projectTitle}>
+                    <Typography variant="h6" component="h6">
+                        Project
+                    </Typography>
+                    <Button 
+                        onClick={openProjectDrawer} 
+                        size="small" 
+                        color="primary" 
+                        variant="contained"
+                    >
+                        Create new
+                    </Button>
+               </div>
             </>
         )
 
 
         if(location.pathname.includes('task')) return (
             <>
-                <Typography variant="h6" component="h6">
-                    Task
-                </Typography>
-                <Button 
-                    onClick={openTaskDrawer} 
-                    size="small" 
-                    color="primary" 
-                    variant="contained"
-                >
-                    Create new
-                </Button>
+                <div className={classes.taskTitle}>
+                    <Typography variant="h6" component="h6">
+                        Task
+                    </Typography>
+                    <Button 
+                        onClick={openTaskDrawer} 
+                        size="small" 
+                        color="primary" 
+                        variant="contained"
+                    >
+                        Create new
+                    </Button>
+                </div>
             </>
         )
 
         if(location.pathname.includes('dashboard')) return (
             <>
-                <Typography variant="h6" component="h6">
-                    Dashboard
-                </Typography>
-                <Button 
-                    size="small" 
-                    color="primary" 
-                    variant="contained"
-                >
-                    <Link className={classes.login} to="/login">
-                        Login
-                    </Link>
-                </Button>
+                <div className={classes.dashboardTitle}>
+                    <Typography variant="h6" component="h6">
+                        Dashboard
+                    </Typography>
+                    {!isTabletOrMobile && 
+                        <Button 
+                            size="small" 
+                            color="primary" 
+                            variant="contained"
+                        >
+                            <Link className={classes.login} to="/login">
+                                Login
+                            </Link>
+                        </Button>
+                    }
+                </div>
             </>
         )
 
@@ -87,6 +105,28 @@ const Title = () => {
                         <SelectDropdown title="project"/>
                     </div>
                 }
+            </>
+        )
+        
+        if(location.pathname.includes('connections')) return (
+            <> 
+                <div className={classes.chatTitle}>
+                    <BackIcon/>
+                    <Typography variant="h6" component="h6">
+                        My connections
+                    </Typography>
+                </div>
+            </>
+        )
+        
+        if(location.pathname.includes('profile')) return (
+            <> 
+                <div className={classes.chatTitle}>
+                    <BackIcon/>
+                    <Typography variant="h6" component="h6">
+                        Profile
+                    </Typography>
+                </div>
             </>
         )
         
@@ -108,6 +148,40 @@ const useStyles = makeStyles({
     },
     chatTitle: {
         paddingLeft: 33,
-        paddingRight: 20
+        paddingRight: 20,
+        display: 'flex',
+        alignItems: 'center',
+        ['@media (max-width:960px)']: {
+            paddingLeft: 0
+        }
+    },
+    backIcon: {
+        color: colors.primary,
+        paddingRight: 20,
+        cursor: 'pointer'
+    },
+    projectTitle: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        width: '100%',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'space-between'
+        }
+    },
+    taskTitle: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        width: '100%',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'space-between'
+        }
+    },
+    dashboardTitle: {
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        width: '100%',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'space-between'
+        }
     }
 })

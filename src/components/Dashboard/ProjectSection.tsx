@@ -85,7 +85,8 @@ export default ProjectSection
 const useStyles = makeStyles({
     menuWrapper: {
         display: 'flex',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        justifyContent: 'flex-end'
     },
     titleContainer: {
         ['@media (max-width:960px)']: {

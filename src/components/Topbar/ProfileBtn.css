@@ -13,7 +13,6 @@
   }
   
   .dropdown-content {
-    display: none;
     position: absolute;
     right: 0;
     background-color: white;
@@ -35,10 +34,6 @@
   }
   
   .dropdown-content .dropdown-menu:hover {background-color: #f1f1f1;}
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
   
   .dropdown:hover .dropbtn {
     background-color: #3e8e41;

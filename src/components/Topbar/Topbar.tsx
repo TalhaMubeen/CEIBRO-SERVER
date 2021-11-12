@@ -138,7 +138,10 @@ const useStyles = makeStyles(theme => ({
     },
     titleContainer: {
         display: 'flex',
-        justifyContent: 'space-evenly'
+        // justifyContent: 'space-evenly',
+        // ['@media (max-width:960px)']: {
+            justifyContent: "space-between"
+        // }
     },
     nameWrapper: {
         display: 'flex',
