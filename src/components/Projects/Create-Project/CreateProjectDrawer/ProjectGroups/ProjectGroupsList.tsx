@@ -12,6 +12,16 @@ const ProjectGroupsList = () => {
             <GroupChip/>
             <GroupChip/>
             <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
+            <GroupChip/>
         </>
     )
 }

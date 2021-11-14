@@ -12,6 +12,10 @@ const rows = [
   createData('Project Manager', true, false),
   createData('Project Lead', false, true),
   createData('Worker', false, true),
+  createData('Owner', true, false),
+  createData('Project Manager', true, false),
+  createData('Project Lead', false, true),
+  createData('Worker', false, true),
 ];
 
 const RolesTable = () => {

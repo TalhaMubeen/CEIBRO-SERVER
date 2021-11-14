@@ -5,6 +5,7 @@ import HorizontalBreak from '../../../Utills/Others/HorizontalBreak'
 import { useDispatch, useSelector } from 'react-redux'
 import projectActions from '../../../../redux/action/project.action'
 import { RootState } from '../../../../redux/reducers'
+import { useMediaQuery } from 'react-responsive'
 
 const menus = [
     {
@@ -38,6 +39,7 @@ function ProjectDrawerMenu() {
     const dispatch = useDispatch()
 
     const selectedMenue = useSelector((state: RootState) => state.project.menue)
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'})
 
     const handleClick = (id:number) => {
         dispatch(projectActions.setMenue(id))
@@ -56,9 +58,9 @@ function ProjectDrawerMenu() {
                     )
                 })}
             </Grid>
-            <Grid container className={classes.breakContainer}>
+            {!isTabletOrMobile && <Grid container className={classes.breakContainer}>
                 <HorizontalBreak/>
-            </Grid>
+            </Grid>}
         </>
     )
 }
@@ -72,7 +74,10 @@ const useStyles = makeStyles({
         width: 80,
         display: 'flex', 
         alignItems: 'center',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'flex-start'
+        }
     },
     menu: {
         fontSize: 14,

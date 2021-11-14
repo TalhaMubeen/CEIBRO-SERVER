@@ -33,6 +33,9 @@ const useStyles = makeStyles({
     body: {
         padding: 20,
         overflowY: 'scroll',
-        height: 'calc(100vh - 230px)'
+        height: 'calc(100vh - 230px)',
+        ['@media (max-width:960px)']: {
+            paddingTop: 10
+        }
     }
 })

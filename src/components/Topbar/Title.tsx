@@ -181,7 +181,8 @@ const useStyles = makeStyles({
         paddingLeft: 33,
         width: '100%',
         ['@media (max-width:960px)']: {
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            paddingLeft: 0,
         }
     }
 })

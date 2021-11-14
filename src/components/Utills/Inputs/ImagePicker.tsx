@@ -8,7 +8,7 @@ const ImagePicker = () => {
 
     const ref = useRef<HTMLInputElement>(null);
     const [file , setFile] = useState<File | null>(null)
-    const [url , setUrl] = useState<string | null>(null)
+    const [url , setUrl] = useState<string | null>('https://lh3.googleusercontent.com/proxy/ten4SpJ9QmAd8hrlUGL5gWjVehpKHpO-SJskSTYNRF48cVO69HJdP5NaW_TOGDl2gOKmw1hcFIrlCqRZES_KPYuiGxgQ31L1vqw7o_HVX-uTaPQEq5qWG2jfpYCu')
     const classes = useStyles()
 
     const handleClick = () => {

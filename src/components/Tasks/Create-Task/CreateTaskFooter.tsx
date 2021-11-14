@@ -19,7 +19,6 @@ const CreateProjectBody = () => {
             <Button className={classes.create} variant="contained" color="primary">
                 Create project 
             </Button>
-
         </Grid>
     )
 }
@@ -30,7 +29,11 @@ export default CreateProjectBody
 const useStyles = makeStyles({
     body: {
         padding: 20,
-        background: colors.white
+        background: colors.white,
+        ['@media (max-width:960px)']: {
+            flexDirection: 'column',
+            alignItems: 'flex-end'
+        }
     },
     create: {
         marginLeft: 50,

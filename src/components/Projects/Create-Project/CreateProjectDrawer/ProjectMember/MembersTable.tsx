@@ -14,6 +14,10 @@ const rows = [
   createData('Project Manager', true, 2),
   createData('Project Lead', false, 3),
   createData('Worker', false, 1),
+  createData('Owner', true, 1),
+  createData('Project Manager', true, 2),
+  createData('Project Lead', false, 3),
+  createData('Worker', false, 1),
 ];
 
 const roleOptions = [

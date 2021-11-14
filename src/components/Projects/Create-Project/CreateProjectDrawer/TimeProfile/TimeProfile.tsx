@@ -39,7 +39,11 @@ const useStyles = makeStyles({
     actionWrapper: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        ['@media (max-width:960px)']: {
+            alignItems: 'flex-start',
+            paddingBottom: 20
+        }
     },
     actionButton: { 
         fontSize: 12,

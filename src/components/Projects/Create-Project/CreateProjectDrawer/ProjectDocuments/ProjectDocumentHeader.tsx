@@ -35,7 +35,7 @@ const ProjectDocumentHeader = () => {
                 color="primary"
                 className={classes.actionButton}
             >
-                Creaet a folder
+                Create a folder
             </Button>
 
             <div className={classes.viewIcons}>
@@ -57,12 +57,18 @@ const useStyles = makeStyles({
     actionWrapper: {
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        ['@media (max-width:960px)']: {
+            paddingBottom: 10
+        }
     },
     secondActionWrapper: {
         display: 'flex',
         justifyContent: 'space-evenly',
-        alignItems: 'center'
+        alignItems: 'center',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'space-between'
+        }
     },
     actionButton: { 
         fontSize: 12,

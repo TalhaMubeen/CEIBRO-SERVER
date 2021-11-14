@@ -86,7 +86,10 @@ const useStyles = makeStyles({
     menuWrapper: {
         display: 'flex',
         flexWrap: 'wrap',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        ['@media (max-width:960px)']: {
+            justifyContent: 'flex-start',
+        }
     },
     titleContainer: {
         ['@media (max-width:960px)']: {

@@ -63,6 +63,10 @@ const useStyles = makeStyles({
     },
     titleWrapper: {
         paddingTop: 0,
+        ['@media (max-width:960px)']: {
+            paddingBottom: 10,
+            paddingTop: 10,
+        }
     },
     title: {
         fontSize: 12,
@@ -71,7 +75,7 @@ const useStyles = makeStyles({
         paddingBottom: 10
     },
     groupsWrapper: {
-
+        
     }
 })
 
