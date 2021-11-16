@@ -5,21 +5,26 @@ import './login.css'
 import LoginForm from './LoginForm'
 
 import { LoginInterface } from '../../../interfaces/Login.interface'
+import { useMediaQuery } from 'react-responsive'
+import assets from '../../../assets/assets'
 
 
 
 const Login: React.FC<LoginInterface> = () => {
     const classes = useStyles()
-    
+    const isTabletOrMobile = useMediaQuery({ query: '(max-width: 960px)'}) 
+
     return (
         <Grid container className={classes.login}>
-            <Grid item xs={12} lg={4}>
+            <Grid item xs={12} md={6} lg={4} className={classes.form}>
                 <LoginForm />
             </Grid>
 
-            <Grid item xs={12} lg={8} className={classes.tileWrapper}>
-                <ImageTile/>
-            </Grid>
+            {!isTabletOrMobile && 
+                <Grid item xs={12} md={6} lg={8} className={classes.tileWrapper}>
+                    <ImageTile/>
+                </Grid>
+            }
         </Grid>
     )
 }
@@ -32,8 +37,17 @@ const useStyles = makeStyles(theme => {
     return {
     login: {
         display: 'flex',
-        [theme.breakpoints.down('md')]: {
-            flexDirection: 'column'
+        ['@media (max-width:960px)']: {
+            flexDirection: 'column',
+            height: '100vh'
+        }
+    },
+    form: {
+        height: '100vh',
+        ['@media (max-width:960px)']: {
+            background: `url(${assets.visual})`,
+            backgroundSize: '100vw 100vh',
+            backgroundRepeat: 'no-repeat'
         }
     },
     tileWrapper: {

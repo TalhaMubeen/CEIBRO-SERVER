@@ -91,7 +91,10 @@ const useStyles = makeStyles({
     display: "flex",
     flexDirection: "column",
     marginTop: 20,
-    padding: '70px 13%'
+    padding: '70px 13%',
+    ['@media (max-width:960px)']: {
+      padding: 30
+    }
   },
   remember: {
     marginTop: 25 ,

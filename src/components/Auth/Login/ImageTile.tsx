@@ -43,10 +43,7 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundSize: '100% 100vh',
-        backgroundRepeat: 'no-repeat',
-        [theme.breakpoints.down('md')]: {
-            width: '100vw !important' 
-        }
+        backgroundRepeat: 'no-repeat'
     }
 
 }))
