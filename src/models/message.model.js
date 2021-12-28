@@ -35,12 +35,12 @@ const messageSchema = mongoose.Schema(
 
 
 // add plugin that converts mongoose to json
-chatSchema.plugin(toJSON);
-chatSchema.plugin(paginate);
+messageSchema.plugin(toJSON);
+messageSchema.plugin(paginate);
 
 /**
  * @typedef Chat
  */
-const Chat = mongoose.model('Message', messageSchema);
+const Message = mongoose.model('Message', messageSchema);
 
-module.exports = Chat;
+module.exports = Message;
