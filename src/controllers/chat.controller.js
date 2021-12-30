@@ -1,21 +1,36 @@
 const httpStatus = require('http-status');
-// const pick = require('../utils/pick');
+const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { chatService } = require('../services');
+const { escapeRegex } = require('../helpers/query.helper');
 
 const createChat = catchAsync(async (req, res) => {
-  const chat = await chatService.createChat(req.body);
+  const { _id } = req.user;
+  const chat = await chatService.createChat(req.body, _id);
   res.status(httpStatus.CREATED).send(chat);
 });
 
-// Todo: return all chats allowed to this user
-// const getChats = catchAsync(async (req, res) => {
-//   const filter = pick(req.query, ['name', 'role']);
-//   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-//   const result = await chatService.queryChats(filter, options);
-//   res.send(result);
-// });
+const getChats = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  
+  let search = pick(req.query, ['name']);
+  let filter = {
+    members: {
+      $in: [_id]
+    }
+  }
+  if(search.name) {
+    const regex = new RegExp(escapeRegex(search.name), 'gi');
+    filter = {
+      ...filter,
+      name: regex
+    }
+  }
+
+  const chats = await chatService.getAllChats(filter, search);
+  res.send(chats);
+});
 
 const getChat = catchAsync(async (req, res) => {
   const chat = await chatService.getChatById(req.params.userId);
@@ -41,7 +56,7 @@ const updateChat = catchAsync(async (req, res) => {
 
 module.exports = {
   createChat,
-  // getChats,
+  getChats,
   getChat,
   updateChat,
 };

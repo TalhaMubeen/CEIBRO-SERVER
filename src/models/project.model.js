@@ -13,27 +13,8 @@ const projectSchema = mongoose.Schema(
     owner: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
-    groups: [
-      {
-        name: {
-          type: String,
-          require: true,
-          unique: true,
-        },
-        members: [
-          {
-            email: { type: String },
-            joinDate: { type: Date },
-            type: { type: String }, // temporary/permanent
-          },
-        ],
-        createdAt: {
-          type: Date,
-        },
-      },
-    ],
   },
   {
     timestamps: true,

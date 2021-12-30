@@ -5,9 +5,11 @@ const { toJSON, paginate } = require('./plugins');
 const chatSchema = mongoose.Schema(
   {
     // one-to-one chat
+    name: {
+      type: String,
+    },
     initiator: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     members: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
-    type: String,
 
     // group chat
     project: {
@@ -27,6 +29,9 @@ const chatSchema = mongoose.Schema(
 // add plugin that converts mongoose to json
 chatSchema.plugin(toJSON);
 chatSchema.plugin(paginate);
+
+
+chatSchema.index({ name: "text" });
 
 /**
  * @typedef Chat
