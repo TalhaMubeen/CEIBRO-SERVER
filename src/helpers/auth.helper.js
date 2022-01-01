@@ -7,7 +7,8 @@ const verifyBearerToken = (token) => {
 		{
 			token = token.replace('Bearer ', ''); 
 		}
-		const data  = jwt.verify(token, process.env.KEY || '');
+		console.log('lsdlfjaldf asi s', token, process.env.JWT_SECRET)
+		const data  = jwt.verify(token, process.env.JWT_SECRET || '');
 		return {
 			isVerified: true,
 			...data

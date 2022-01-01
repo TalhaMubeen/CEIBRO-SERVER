@@ -1,6 +1,7 @@
 const { verifyBearerToken } = require('../helpers/auth.helper');
 const ChatTypes = require('../config/chat.constants');
-const { User, Message, Chat: Room } = require('../models')
+const { User, Message, Chat: Room } = require('../models');
+const { chatService } = require('../services');
 
 
 class WebSocket {
@@ -11,53 +12,53 @@ class WebSocket {
             const { token } = socket.handshake.query;
             const tokenVerify = verifyBearerToken(token);
             let userId = null;
-      
             if (tokenVerify.isVerified) {
-                const {_id } = tokenVerify  
-                userId = _id
-                this.saveUsersSocket(tokenVerify._id, socket.id, io)
-      
+                const { sub } = tokenVerify  
+                userId = sub;
+                this.saveUsersSocket(tokenVerify.sub, socket, io);
+                
+                
+                
                 // Send message to another user
       
                 socket.on(ChatTypes.SEND_MESSAGE.value, (data) => {
-                    console.log('hello ', ChatTypes.SEND_MESSAGE.value)
-                    const { recieverId, message } = data
-                    this.sendMessageToUser(_id, recieverId, message, io)
+                    const { chat, message } = data
+                    this.sendMessageToChat(userId, chat, message, io)
                 })
       
-                socket.on(ChatTypes.TYPING_START.value, (data) => {
-                    console.log('Typing ', ChatTypes.TYPING_START.value)
-                    const { recieverId } = data
-                    this.typingStart(_id, recieverId, io)
-                })
+                // socket.on(ChatTypes.TYPING_START.value, (data) => {
+                //     console.log('Typing ', ChatTypes.TYPING_START.value)
+                //     const { recieverId } = data
+                //     this.typingStart(_id, recieverId, io)
+                // })
       
-                socket.on(ChatTypes.TYPING_END.value, (data) => {
-                    console.log('Typing Ejn', ChatTypes.TYPING_END.value)
-                    const { recieverId } = data
-                    this.typingEnd(_id, recieverId, io)
-                })
+                // socket.on(ChatTypes.TYPING_END.value, (data) => {
+                //     console.log('Typing Ejn', ChatTypes.TYPING_END.value)
+                //     const { recieverId } = data
+                //     this.typingEnd(_id, recieverId, io)
+                // })
       
-                socket.on(ChatTypes.MESSAGE_READ.value, (data) => {
-                    console.log(ChatTypes.MESSAGE_READ.value)
-                    const { messageId } = data
-                    this.markMessageRead(messageId)
-                })
+                // socket.on(ChatTypes.MESSAGE_READ.value, (data) => {
+                //     console.log(ChatTypes.MESSAGE_READ.value)
+                //     const { messageId } = data
+                //     this.markMessageRead(messageId)
+                // })
       
-                socket.on(ChatTypes.ALL_MESSAGE_READ.value, (data) => {
-                    console.log(ChatTypes.ALL_MESSAGE_READ.value)
-                    const { roomId } = data
-                    this.markAllMessagesRead(roomId)
-                })
+                // socket.on(ChatTypes.ALL_MESSAGE_READ.value, (data) => {
+                //     console.log(ChatTypes.ALL_MESSAGE_READ.value)
+                //     const { roomId } = data
+                //     this.markAllMessagesRead(roomId)
+                // })
             }
             else {
-                console.log('bad socket connection')
+                console.log('bad socket userIdconnection')
             }
             socket.on("disconnect", () => {
                 console.log('user disconnected')
                 this.handlUserDisconnect(userId, io)
             });
       
-        })
+        }) 
       
       }
       
@@ -94,53 +95,65 @@ class WebSocket {
         }
       }
       
-      async saveUsersSocket(_id, socketId, io) {
-        const user = await User.findById(_id)
+      async saveUsersSocket(_id, socket, io) {
+        const user = await User.findById(_id);
         if (user) {
             user.isOnline = true
-            user.socketId = socketId
+            user.socketId = socket.id;
             await user.save()
             io.emit(ChatTypes.USER_CONNECTED.value, { userId: user._id })
+
+            const chats = await chatService.getAllChats({ members: {
+                $in: _id
+            }});
+
+            chats?.map(chat => {
+                socket.join(String(chat._id));
+            });
         }
       }
       
       async handlUserDisconnect(userId, io) {
         const user = await User.findById(userId)
-        user.isOnline = false
-        user.socketId = null
-        await user.save()
+        if(user) {
+            user.isOnline = false
+            user.socketId = null
+            await user.save()
+        }
         io.emit(ChatTypes.USER_DISCONNECTED.value, { userId })
       }
       
-      async sendMessageToUser(senderId, receiverId, message, io) {
+      async sendMessageToChat(senderId, chatId, message, io) {
         try {
-            const user = await User.findById(receiverId)
-            if (user) {
-                let room = await Room.findOne({
-                    $or: [
-                        { sender: senderId, receiver: receiverId },
-                        { sender: receiverId, receiver: senderId }
-                    ]
-                })
-                if (!room) {
-                    room = new Room({
-                        sender: senderId,
-                        receiver: receiverId
-                    })
-                    await room.save()
-                }
+            const chat = await chatService.getChatById(chatId);
+            if(!chat) return;
+            // const user = await User.findById(receiverId)
+            // if (user) {
+            //     let room = await Room.findOne({
+            //         $or: [
+            //             { sender: senderId, receiver: receiverId },
+            //             { sender: receiverId, receiver: senderId }
+            //         ]
+            //     })
+            //     if (!room) {
+            //         room = new Room({
+            //             sender: senderId,
+            //             receiver: receiverId
+            //         })
+            //         await room.save()
+            //     }
       
-                const messageObj = new Message({
-                    room: room.id,
-                    message,
-                    sender: senderId
-                })
+            //     const messageObj = new Message({
+            //         room: room.id,
+            //         message,
+            //         sender: senderId
+            //     })
       
-                await messageObj.save()
-                io.to(user.socketId).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message });
-                room.lastMessage = messageObj._id
-                await room.save()
-            }
+            //     await messageObj.save()
+            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message, chat: String(chatId) });
+                // room.lastMessage = messageObj._id
+                // await room.save()
+            // }
         }
         catch (e) {
             console.log('error is ', e)

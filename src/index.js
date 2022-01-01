@@ -3,7 +3,7 @@ const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
 const http = require('http');
-const socketIo = require('socket.io');
+const { Server } = require('socket.io');
 const { webSocket } = require('./controllers');
 
 let server;
@@ -18,12 +18,14 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
       );
 
   const server = http.createServer(app)
-  const io = socketIo(server,{
+  const io = new Server(server,{
     cors: {
       origin: "*",
       methods: ["GET", "POST"]
     }
   });
+
+  global.io = io;
       
   webSocket.listenToChatServer(io)
   server.listen(config.port, () => {

@@ -51,7 +51,15 @@ const userSchema = mongoose.Schema(
     pinnedChat: [{
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Chat'
-    },]
+    },],
+    isOnline: {
+      type: Boolean,
+      default: false
+    },
+    socketId: {
+      type: String,
+      required: false
+    }
   },
   {
     timestamps: true,
