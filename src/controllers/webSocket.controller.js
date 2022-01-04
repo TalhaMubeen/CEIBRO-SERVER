@@ -2,7 +2,7 @@ const { verifyBearerToken } = require('../helpers/auth.helper');
 const ChatTypes = require('../config/chat.constants');
 const { User, Message, Chat: Room } = require('../models');
 const { chatService } = require('../services');
-
+const { formatMessage } = require('../helpers/chat.helper');
 
 class WebSocket {
     listenToChatServer(io) {
@@ -127,30 +127,16 @@ class WebSocket {
         try {
             const chat = await chatService.getChatById(chatId);
             if(!chat) return;
-            // const user = await User.findById(receiverId)
-            // if (user) {
-            //     let room = await Room.findOne({
-            //         $or: [
-            //             { sender: senderId, receiver: receiverId },
-            //             { sender: receiverId, receiver: senderId }
-            //         ]
-            //     })
-            //     if (!room) {
-            //         room = new Room({
-            //             sender: senderId,
-            //             receiver: receiverId
-            //         })
-            //         await room.save()
-            //     }
-      
-            //     const messageObj = new Message({
-            //         room: room.id,
-            //         message,
-            //         sender: senderId
-            //     })
-      
-            //     await messageObj.save()
-            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message, chat: String(chatId) });
+
+            const newMessage = new Message({
+                sender: senderId,
+                chat: chatId,
+                message
+            });
+
+            await newMessage.save();
+            const originalMessage = await chatService.getMessageById(newMessage._id);
+            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message: formatMessage(originalMessage), chat: String(chatId) });
                 // room.lastMessage = messageObj._id
                 // await room.save()
             // }

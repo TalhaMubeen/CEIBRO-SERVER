@@ -2,8 +2,9 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { chatService } = require('../services');
+const { chatService, userService } = require('../services');
 const { escapeRegex } = require('../helpers/query.helper');
+const { formatMessage } = require('../helpers/chat.helper');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -46,11 +47,29 @@ const updateChat = catchAsync(async (req, res) => {
 });
 
 
+const getConversationByRoomId = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { roomId } = req.params;
 
-
-
-
-
+  const room = await chatService.getChatRoomByRoomId(roomId);
+  if (!room) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No room exists for this id");
+  }
+  const options = {
+    page: parseInt(req.query.page) || 0,
+    limit: parseInt(req.query.limit) || 10,
+  };
+  let conversation = await chatService.getConversationByRoomId(
+    roomId,
+    options
+  );
+  conversation = conversation?.map(conversation => {
+    conversation = formatMessage(conversation);
+    console.log('checking i s', conversation)
+    return conversation;
+  });
+  res.status(httpStatus.CREATED).send({ conversation: conversation });
+});
 
 
 
@@ -59,4 +78,5 @@ module.exports = {
   getChats,
   getChat,
   updateChat,
+  getConversationByRoomId
 };

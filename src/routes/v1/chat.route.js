@@ -12,6 +12,10 @@ router.route('/rooms')
     .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat)
     .get(auth("getChatRooms"), chatController.getChats)
 
+
+router.route('/room/messages/:roomId')
+    .get(auth("getChatRooms"), chatController.getConversationByRoomId)
+
 module.exports = router;
 
 

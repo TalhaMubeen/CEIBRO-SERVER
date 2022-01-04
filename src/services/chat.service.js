@@ -1,6 +1,6 @@
 const httpStatus = require('http-status');
 const { projectService } = require('.');
-const { Chat, User } = require('../models');
+const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -87,10 +87,26 @@ const updateChatById = async (chatId, updateBody) => {
   .populate({ path: "project", select: "name" });
 };
 
+const getChatRoomByRoomId = async function (roomId) {
+  const room = await Chat.findOne({ _id: roomId });
+  return room;
+};
+
+const getConversationByRoomId = async function (chatRoomId, options = {}) {
+  return Message.find({ chat: chatRoomId }).populate("sender");
+};
+
+const getMessageById = async function (messagId, options = {}) {
+  return Message.findOne({ _id: messagId }).populate("sender");
+};
+
 module.exports = {
   createChat,
   getChatById,
   updateChatById,
   queryChats,
-  getAllChats
+  getAllChats,
+  getChatRoomByRoomId,
+  getConversationByRoomId,
+  getMessageById
 };
