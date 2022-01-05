@@ -16,6 +16,10 @@ router.route('/rooms')
 router.route('/room/messages/:roomId')
     .get(auth("getChatRooms"), chatController.getConversationByRoomId)
 
+
+router.route('/room/unread/:roomId')
+    .put(auth("getChatRooms"), chatController.setRoomMessagesRead);
+
 module.exports = router;
 
 

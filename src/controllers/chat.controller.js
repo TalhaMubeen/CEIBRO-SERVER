@@ -29,7 +29,7 @@ const getChats = catchAsync(async (req, res) => {
     }
   }
 
-  const chats = await chatService.getAllChats(filter, search);
+  const chats = await chatService.getAllChats(filter, _id);
   res.send(chats);
 });
 
@@ -71,6 +71,20 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ conversation: conversation });
 });
 
+const setRoomMessagesRead = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { roomId } = req.params;
+
+  const room = await chatService.getChatRoomByRoomId(roomId);
+  if (!room) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No room exists for this id");
+  }
+  
+  await chatService.setAllMessagesReadByRoomId(roomId, currentLoggedUser);
+
+  res.status(httpStatus.CREATED).send("All messages read by users");
+});
+
 
 
 module.exports = {
@@ -78,5 +92,6 @@ module.exports = {
   getChats,
   getChat,
   updateChat,
-  getConversationByRoomId
+  getConversationByRoomId,
+  setRoomMessagesRead
 };

@@ -131,6 +131,8 @@ class WebSocket {
             const newMessage = new Message({
                 sender: senderId,
                 chat: chatId,
+                receivedBy: [senderId],
+                readBy: [senderId],
                 message
             });
 

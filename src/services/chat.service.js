@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { projectService } = require('.');
+const { projectService, chatService } = require('.');
 const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
 
@@ -80,11 +80,53 @@ const updateChatById = async (chatId, updateBody) => {
   return Chat.paginate(filter, options);
 };
 
- const getAllChats = async (filter) => {
-  return Chat
+ const getAllChats = async (filter, userId) => {
+  // return Chat
+  // .find(filter)
+  // .populate({ path: "members", select: "name" })
+  // .populate({ path: "project", select: "name" });
+  const chats = await Chat
   .find(filter)
   .populate({ path: "members", select: "name" })
   .populate({ path: "project", select: "name" });
+
+  const chatIds = await chats.map(chat => chat._id);
+  const unreadMessages = await Message.aggregate([
+    {
+      "$match": {
+        "chat": {
+          "$in": chatIds
+        },
+        "readBy": {
+          "$ne": userId
+        }
+      }
+    },
+    {
+      "$sort": {
+        name: 1
+      }
+    },
+    {
+      "$group": {
+        "_id": "$chat",
+        "chatName": { "$last": "$name" },
+        "count": {
+          "$sum": 1
+        }
+      }
+    }
+  ]);
+
+  const data = chats.map(chat => {
+    return {
+      ...chat._doc,
+      unreadCount: unreadMessages?.find(myChat => String(myChat._id) === String(chat._doc._id))?.count
+    }
+  });
+
+  return data;
+
 };
 
 const getChatRoomByRoomId = async function (roomId) {
@@ -100,6 +142,11 @@ const getMessageById = async function (messagId, options = {}) {
   return Message.findOne({ _id: messagId }).populate("sender");
 };
 
+
+const setAllMessagesReadByRoomId = async function (roomId, userId) {
+  return Message.updateMany({ chat: roomId }, { $push: { readBy: userId } });
+};
+
 module.exports = {
   createChat,
   getChatById,
@@ -108,5 +155,6 @@ module.exports = {
   getAllChats,
   getChatRoomByRoomId,
   getConversationByRoomId,
-  getMessageById
+  getMessageById,
+  setAllMessagesReadByRoomId
 };
