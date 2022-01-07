@@ -88,7 +88,8 @@ const updateChatById = async (chatId, updateBody) => {
   const chats = await Chat
   .find(filter)
   .populate({ path: "members", select: "name" })
-  .populate({ path: "project", select: "name" });
+  .populate({ path: "project", select: "name" })
+  .populate({ path: "lastMessage", select: "message createdAt" });
 
   const chatIds = await chats.map(chat => chat._id);
   const unreadMessages = await Message.aggregate([

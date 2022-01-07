@@ -15,12 +15,13 @@ const createChat = catchAsync(async (req, res) => {
 const getChats = catchAsync(async (req, res) => {
   const { _id } = req.user;
   
-  let search = pick(req.query, ['name']);
+  let search = pick(req.query, ['name', 'type']);
   let filter = {
     members: {
       $in: [_id]
     }
   }
+  console.log('search is ', search)
   if(search.name) {
     const regex = new RegExp(escapeRegex(search.name), 'gi');
     filter = {
@@ -29,7 +30,16 @@ const getChats = catchAsync(async (req, res) => {
     }
   }
 
-  const chats = await chatService.getAllChats(filter, _id);
+  let chats = await chatService.getAllChats(filter, _id);
+  
+  if(search?.type === 'unread') {
+    chats = chats?.filter(chat => (chat.unreadCount && chat.unreadCount > 0));
+  }
+
+  if(search?.type === 'read') {
+    chats = chats?.filter(chat => (!chat.unreadCount || chat.unreadCount <= 0));
+  }
+
   res.send(chats);
 });
 
@@ -48,6 +58,7 @@ const updateChat = catchAsync(async (req, res) => {
 
 
 const getConversationByRoomId = catchAsync(async (req, res) => {
+  
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
 
@@ -63,8 +74,9 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     roomId,
     options
   );
+  console.log('converatsion i s', conversation)
   conversation = conversation?.map(conversation => {
-    conversation = formatMessage(conversation);
+    conversation = formatMessage(conversation, currentLoggedUser);
     console.log('checking i s', conversation)
     return conversation;
   });
