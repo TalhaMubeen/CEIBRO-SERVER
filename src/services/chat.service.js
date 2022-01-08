@@ -1,5 +1,5 @@
 const httpStatus = require('http-status');
-const { projectService, chatService } = require('.');
+const { projectService, chatService, userService } = require('.');
 const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
 
@@ -145,8 +145,51 @@ const getMessageById = async function (messagId, options = {}) {
 
 
 const setAllMessagesReadByRoomId = async function (roomId, userId) {
-  return Message.updateMany({ chat: roomId }, { $push: { readBy: userId } });
+  return Message.updateMany({ chat: roomId }, { $addToSet: { readBy: userId } });
 };
+
+const addOrRemoveChatRoomToFavourite = async function (roomId, userId) {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+  const index = user?.pinnedChat?.findIndex(chat => String(chat) === String(roomId));
+  if(index < 0) {
+    return Promise.all([
+      Chat.updateMany({ _id: roomId }, { $addToSet: { pinnedBy: userId } }),
+      User.updateMany({ _id: userId }, { $addToSet: { pinnedChat: roomId } }),
+      true
+    ]);
+  } else {
+      return Promise.all([
+        Chat.updateMany({ _id: roomId }, { $pull: { pinnedBy: userId } }),
+        User.updateMany({ _id: userId }, { $pull: { pinnedChat: roomId } }),
+        false
+      ]);
+    }
+};
+
+const muteOrUnmuteChat = async function (roomId, userId) {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+  const index = user?.mutedChat?.findIndex(chat => String(chat) === String(roomId));
+  if(index < 0) {
+    return Promise.all([
+      Chat.updateMany({ _id: roomId }, { $addToSet: { mutedBy: userId } }),
+      User.updateMany({ _id: userId }, { $addToSet: { mutedChat: roomId } }),
+      true
+    ]);
+  } else {
+      return Promise.all([
+        Chat.updateMany({ _id: roomId }, { $pull: { mutedBy: userId } }),
+        User.updateMany({ _id: userId }, { $pull: { mutedChat: roomId } }),
+        false
+      ]);
+    }
+};
+
 
 module.exports = {
   createChat,
@@ -157,5 +200,7 @@ module.exports = {
   getChatRoomByRoomId,
   getConversationByRoomId,
   getMessageById,
-  setAllMessagesReadByRoomId
+  setAllMessagesReadByRoomId,
+  addOrRemoveChatRoomToFavourite,
+  muteOrUnmuteChat
 };

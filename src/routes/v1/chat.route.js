@@ -20,16 +20,17 @@ router.route('/room/messages/:roomId')
 router.route('/room/unread/:roomId')
     .put(auth("getChatRooms"), chatController.setRoomMessagesRead);
 
+router.route('/room/favourite/:roomId')
+    .post(auth("getChatRooms"), chatController.addToFavouite);
+
+router.route('/room/mute/:roomId')
+    .post(auth("getChatRooms"), chatController.muteChat);
+
 module.exports = router;
 
 
 
-/**
- * @swagger
- * tags:
- *   name: Chat
- *   description: Chat management and retrieval
- */
+
 
 /**
  * @swagger
@@ -85,6 +86,11 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: chat name filter
+ *       - in: query
+ *         name: type
+ *         type: string
+ *         description: chat room type (all, read, unread)
+ *         required: false
  *     responses:
  *       "200":
  *         description: OK
@@ -100,5 +106,139 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
+
+
+
+/**
+ * @swagger
+ * /chat/room/messages/{roomId}:
+ *   get:
+ *     summary: get chat room messages
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+
+
+
+/**
+ * @swagger
+ * /chat/room/unread/{roomId}:
+ *   put:
+ *     summary: set all room messages uread
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+/**
+ * @swagger
+ * /chat/room/favourite/{roomId}:
+ *   post:
+ *     summary: add/remove chat room to favourite
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+
+/**
+ * @swagger
+ * /chat/room/mute/{roomId}:
+ *   post:
+ *     summary: mut/unmute chat room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
 
 

@@ -22,7 +22,15 @@ const chatSchema = mongoose.Schema(
     lastMessage: {
       type: mongoose.SchemaTypes.ObjectId, 
       ref: 'Message' 
-    }
+    },
+    pinnedBy: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User'
+    }],
+    mutedBy: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User'
+    }]
   },
   {
     timestamps: true,

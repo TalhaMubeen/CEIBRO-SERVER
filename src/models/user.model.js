@@ -47,11 +47,15 @@ const userSchema = mongoose.Schema(
     pinnedMessages: [{
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Message'
-    },],
+    }],
     pinnedChat: [{
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Chat'
-    },],
+    }],
+    mutedChat: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Chat'
+    }],
     isOnline: {
       type: Boolean,
       default: false

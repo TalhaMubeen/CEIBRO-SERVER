@@ -97,6 +97,32 @@ const setRoomMessagesRead = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send("All messages read by users");
 });
 
+const addToFavouite = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { roomId } = req.params;
+
+  const room = await chatService.getChatRoomByRoomId(roomId);
+  if (!room) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No room exists for this id");
+  }
+  const [,,added]  = await chatService.addOrRemoveChatRoomToFavourite(roomId, currentLoggedUser);
+  res.status(httpStatus.CREATED).send(`Chat ${added ? 'added to ': 'removed from '} favourite`);
+});
+
+const muteChat = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { roomId } = req.params;
+
+  const room = await chatService.getChatRoomByRoomId(roomId);
+  if (!room) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No room exists for this id");
+  }
+  const [,,muted]  = await chatService.muteOrUnmuteChat(roomId, currentLoggedUser);
+  res.status(httpStatus.CREATED).send(`Chat ${muted ? 'muted': 'unmuted' }`);
+});
+
+
+
 
 
 module.exports = {
@@ -105,5 +131,7 @@ module.exports = {
   getChat,
   updateChat,
   getConversationByRoomId,
-  setRoomMessagesRead
+  setRoomMessagesRead,
+  addToFavouite,
+  muteChat
 };

@@ -142,7 +142,7 @@ class WebSocket {
             chat.lastMessage = originalMessage._id;
             await chat.save();
             
-            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message: formatMessage(originalMessage), chat: String(chatId) });
+            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message: formatMessage(originalMessage), chat: String(chatId), mutedFor: chat.mutedBy });
                 // room.lastMessage = messageObj._id
                 // await room.save()
             // }
