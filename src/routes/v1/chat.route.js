@@ -26,6 +26,14 @@ router.route('/room/favourite/:roomId')
 router.route('/room/mute/:roomId')
     .post(auth("getChatRooms"), chatController.muteChat);
 
+router.route('/message/reply/:messageId')
+    .post(auth("getChatRooms"), chatController.replyMessage);
+
+router.route('/message/favourite/:messageId')
+    .post(auth("getChatRooms"), chatController.addMessageToFavourite)
+    .get(auth("getChatRooms"), chatController.getPinnedMessages);
+
+
 module.exports = router;
 
 
@@ -207,13 +215,11 @@ module.exports = router;
  *
  */
 
-
-
 /**
  * @swagger
  * /chat/room/mute/{roomId}:
  *   post:
- *     summary: mut/unmute chat room
+ *     summary: mute/unmute chat room
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -239,6 +245,107 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
+
+/**
+ * @swagger
+ * /chat/message/reply/{messageId}:
+ *   post:
+ *     summary: reply a message
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Message id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
+ *             properties:
+ *               message:
+ *                 type: string
+ *             example:
+ *                 message: This is reply
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /chat/message/favourite/{messageId}:
+ *   post:
+ *     summary: add message to favourite
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Message id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   get:
+ *     summary: get favourite messages of a room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: messageId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: this is basically room id. you will place room id instead of message id in get api.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
 
 
 

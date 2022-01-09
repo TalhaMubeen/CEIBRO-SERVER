@@ -2,6 +2,7 @@ module.exports =  {
     // Sender Side
      SEND_MESSAGE: { value: 'SEND_MESSAGE', description: "Send message from client side", data: "recieverId = sent by sender client and received by receiver cient  ,  message =  sent by sender client and received by receiver cient"},
      RECEIVE_MESSAGE: { value: 'RECEIVE_MESSAGE', description: "Message received at client side ", data: "from =  sent by server and received by receiver cient , message =  sent by sender client and received by receiver cient" },
+     REPLY_MESSAGE: { value: 'REPLY_MESSAGE' },
      TYPING_START: { value: 'TYPING_START', description: "Emit event from sender and receive event from receiver", data: "from = senderId sent by sender client and received by receiver cient"},
      TYPING_END: { value: 'TYPING_END', description: "Emit event from sender and receive event from receiver", data: "from = senderId sent by sender client and received by receiver cient "},
      USER_DISCONNECTED: { value: 'USER_DISCONNECTED', description: "A user is disconnected: event received on client side", data: "userId = sent from server and received by all clients"},

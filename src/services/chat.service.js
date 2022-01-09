@@ -40,11 +40,28 @@ const createChat = async (chatBody, initiator) => {
 const getChatById = async (id) => {
   const chat = await Chat.findById(id);
   if (!chat) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+    throw new ApiError(httpStatus.NOT_FOUND, 'Chat not found');
   }
-  // TODO: Validate if the requesting user is authorized for this chat
   return chat;
 };
+
+
+/**
+ * Get user by user id
+ * @param {ObjectId} userI
+ * @returns {Promise<chat>}
+ */
+ const checkChatAuthorization = async (userId, chatId) => {
+  const chat = await Chat.findOne({ members: { $in: userId }, _id: chatId });
+  
+  if (!chat) {
+    throw new ApiError(httpStatus.NON_AUTHORITATIVE_INFORMATION, 'User not authorized to perform this opernation');
+  }
+  // TODO: Validate if the requesting user is authorized for this chat
+  return true;
+};
+
+
 
 /**
  * Update chat by id
@@ -136,11 +153,11 @@ const getChatRoomByRoomId = async function (roomId) {
 };
 
 const getConversationByRoomId = async function (chatRoomId, options = {}) {
-  return Message.find({ chat: chatRoomId }).populate("sender");
+  return Message.find({ chat: chatRoomId }).populate("sender replyOf");
 };
 
 const getMessageById = async function (messagId, options = {}) {
-  return Message.findOne({ _id: messagId }).populate("sender");
+  return Message.findOne({ _id: messagId }).populate("sender replyOf");
 };
 
 
@@ -169,6 +186,40 @@ const addOrRemoveChatRoomToFavourite = async function (roomId, userId) {
     }
 };
 
+const addOrRemoveMessageToFavourite = async function (messageId, userId) {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+
+  const index = user?.pinnedMessages?.findIndex(chat => String(chat) === String(messageId));
+  if(index < 0) {
+    return Promise.all([
+      Message.updateMany({ _id: messageId }, { $addToSet: { pinnedBy: userId } }),
+      User.updateMany({ _id: userId }, { $addToSet: { pinnedMessages: messageId } }),
+      true
+    ]);
+  } else {
+      return Promise.all([
+        Message.updateMany({ _id: messageId }, { $pull: { pinnedBy: userId } }),
+        User.updateMany({ _id: userId }, { $pull: { pinnedMessages: messageId } }),
+        false
+      ]);
+    }
+};
+
+
+const getPinnedMessages = async function (roomId, userId) {
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+
+  return Message.find({ chat: roomId, pinnedBy: { $in: userId } }).populate("sender replyOf");
+
+};
+
+
 const muteOrUnmuteChat = async function (roomId, userId) {
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -190,6 +241,36 @@ const muteOrUnmuteChat = async function (roomId, userId) {
     }
 };
 
+const replyMessage = async function (replyMessage, messageId, userId) {
+console.log("🚀 ~ file: chat.service.js ~ line 194 ~ replyMessage ~ userId", userId)
+
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+  
+  const message = await getMessageById(messageId);
+  if(!message) {
+    throw new ApiError(400, "Message not found");
+  }
+
+  const reply = new Message({
+      sender: userId,
+      chat: message.chat,
+      receivedBy: [userId],
+      readBy: [userId],
+      message: replyMessage,
+      replyOf: messageId
+  });
+  
+  await reply.save();
+
+  return getMessageById(reply._id, [{
+    path: 'replyOf', select: "message",
+    
+  }])
+};
+
 
 module.exports = {
   createChat,
@@ -202,5 +283,9 @@ module.exports = {
   getMessageById,
   setAllMessagesReadByRoomId,
   addOrRemoveChatRoomToFavourite,
-  muteOrUnmuteChat
+  muteOrUnmuteChat,
+  replyMessage,
+  addOrRemoveMessageToFavourite,
+  checkChatAuthorization,
+  getPinnedMessages
 };

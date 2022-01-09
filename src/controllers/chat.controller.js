@@ -5,6 +5,8 @@ const catchAsync = require('../utils/catchAsync');
 const { chatService, userService } = require('../services');
 const { escapeRegex } = require('../helpers/query.helper');
 const { formatMessage } = require('../helpers/chat.helper');
+const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
+const io = require('./webSocket.controller')
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -40,7 +42,7 @@ const getChats = catchAsync(async (req, res) => {
     chats = chats?.filter(chat => (!chat.unreadCount || chat.unreadCount <= 0));
   }
 
-  res.send(chats);
+  res.send(chats.reverse());
 });
 
 const getChat = catchAsync(async (req, res) => {
@@ -74,10 +76,8 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     roomId,
     options
   );
-  console.log('converatsion i s', conversation)
   conversation = conversation?.map(conversation => {
     conversation = formatMessage(conversation, currentLoggedUser);
-    console.log('checking i s', conversation)
     return conversation;
   });
   res.status(httpStatus.CREATED).send({ conversation: conversation });
@@ -109,6 +109,31 @@ const addToFavouite = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(`Chat ${added ? 'added to ': 'removed from '} favourite`);
 });
 
+const addMessageToFavourite = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { messageId } = req.params;
+
+  const message = await chatService.getMessageById(messageId);
+  if (!message) {
+    throw new ApiError(httpStatus.NOT_FOUND, "No message exists for this id");
+  }
+
+  await chatService.checkChatAuthorization(currentLoggedUser, message.chat);
+
+  const [,,added]  = await chatService.addOrRemoveMessageToFavourite(messageId, currentLoggedUser);
+  res.status(httpStatus.CREATED).send(`Message ${added ? 'added to ': 'removed from '} favourite`);
+});
+
+
+const getPinnedMessages = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { messageId: roomId } = req.params;
+
+  const messages = await chatService.getPinnedMessages(roomId, currentLoggedUser);
+  res.status(httpStatus.CREATED).send(messages);
+});
+
+
 const muteChat = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
@@ -122,6 +147,20 @@ const muteChat = catchAsync(async (req, res) => {
 });
 
 
+const replyMessage = catchAsync(async (req, res) => {      
+  const currentLoggedUser = req.user._id;
+  const { messageId } = req.params;
+  const { message } = req.body;
+
+  const newMessage = await chatService.replyMessage(message, messageId, currentLoggedUser);
+  const chat = await chatService.getChatById(newMessage.chat);
+
+  global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, { from: currentLoggedUser, message: formatMessage(newMessage), chat: String(chat._id), mutedFor: chat.mutedBy });
+          
+  res.status(200).send(newMessage);
+
+});
+
 
 
 
@@ -133,5 +172,8 @@ module.exports = {
   getConversationByRoomId,
   setRoomMessagesRead,
   addToFavouite,
-  muteChat
+  muteChat,
+  replyMessage,
+  addMessageToFavourite,
+  getPinnedMessages
 };

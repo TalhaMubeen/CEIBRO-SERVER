@@ -30,7 +30,16 @@ const messageSchema = mongoose.Schema(
     ],
     media: [{
         type: String
-    }]
+    }],
+    replyOf: { 
+        type: mongoose.SchemaTypes.ObjectId, 
+        ref: 'Message',
+        required: false
+    },
+    pinnedBy: [{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User'
+      }],
   },
   {
     timestamps: true,

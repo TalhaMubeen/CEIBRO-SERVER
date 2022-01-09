@@ -6,9 +6,7 @@ const { formatMessage } = require('../helpers/chat.helper');
 
 class WebSocket {
     listenToChatServer(io) {
-
         io.on("connection", (socket) => {
-      
             const { token } = socket.handshake.query;
             const tokenVerify = verifyBearerToken(token);
             let userId = null;
@@ -23,8 +21,14 @@ class WebSocket {
       
                 socket.on(ChatTypes.SEND_MESSAGE.value, (data) => {
                     const { chat, message } = data
+
                     this.sendMessageToChat(userId, chat, message, io)
                 })
+
+                // socket.on(ChatTypes.REPLY_MESSAGE.value, (data) => {
+                //     const { message, messageId } = data
+                //     this.replyMessage(userId, messageId, message, io);
+                // })
       
                 // socket.on(ChatTypes.TYPING_START.value, (data) => {
                 //     console.log('Typing ', ChatTypes.TYPING_START.value)
@@ -141,9 +145,10 @@ class WebSocket {
 
             chat.lastMessage = originalMessage._id;
             await chat.save();
-            
+        
             io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message: formatMessage(originalMessage), chat: String(chatId), mutedFor: chat.mutedBy });
-                // room.lastMessage = messageObj._id
+            console.log('aslkjfa fj asf akljfal fj')
+            // room.lastMessage = messageObj._id
                 // await room.save()
             // }
         }
@@ -151,6 +156,18 @@ class WebSocket {
             console.log('error is ', e)
         }
       }
+
+
+       async replyMessage(currentLoggedUser, messageId, message, io) {
+            
+            const newMessage = await chatService.replyMessage(message, messageId, currentLoggedUser);
+            const chat = await chatService.getChatById(newMessage.chat);
+        
+            io.to(String(newMessage.chat)).emit(REPLY_MESSAGE.value, { from: currentLoggedUser, message: formatMessage(newMessage), chat: String(chat._id), mutedFor: chat.mutedBy });
+                    
+            res.status(200).send(newMessage);
+        
+        }
       
       getChatSocketEvents(_req, res, next) {
         try {
