@@ -5,7 +5,14 @@ const authController = require('../../controllers/auth.controller');
 const auth = require('../../middlewares/auth');
 const { chatController } = require('../../controllers');
 const { chatValidation } = require('../../validations');
-
+const multer = require("multer");
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    // no larger than 100mb.
+    fileSize: 1024 * 1024 * 1024,
+  },
+});
 const router = express.Router();
 
 router.route('/rooms')
@@ -26,7 +33,7 @@ router.route('/room/favourite/:roomId')
 router.route('/room/mute/:roomId')
     .post(auth("getChatRooms"), chatController.muteChat);
 
-router.route('/message/reply/:messageId')
+router.route('/message/reply/message')
     .post(auth("getChatRooms"), chatController.replyMessage);
 
 router.route('/message/favourite/:messageId')
@@ -34,8 +41,11 @@ router.route('/message/favourite/:messageId')
     .get(auth("getChatRooms"), chatController.getPinnedMessages);
 
 
-module.exports = router;
+// router.route('/file-upload')
+//     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
 
+
+module.exports = router;
 
 
 
@@ -248,19 +258,12 @@ module.exports = router;
 
 /**
  * @swagger
- * /chat/message/reply/{messageId}:
+ * /chat/message/reply/message:
  *   post:
- *     summary: reply a message
+ *     summary: send or reply a message
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: messageId
- *         required: true
- *         schema:
- *           type: string
- *         description: Message id
  *     requestBody:
  *       required: true
  *       content:
@@ -272,8 +275,14 @@ module.exports = router;
  *             properties:
  *               message:
  *                 type: string
+ *               chat:
+ *                 type: string
+ *               messageId:
+ *                 type: string
  *             example:
  *                 message: This is reply
+ *                 chat: 234234234
+ *                 messageId: afjaklfja
  *     responses:
  *       "200":
  *         description: OK
@@ -344,6 +353,38 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+/**
+ * @swagger
+ * /chat/file-upload:
+ *   post:
+ *     summary: Upload file
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               product:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
 
 

@@ -19,11 +19,18 @@ class WebSocket {
                 
                 // Send message to another user
       
-                socket.on(ChatTypes.SEND_MESSAGE.value, (data) => {
-                    const { chat, message } = data
+                // socket.on(ChatTypes.SEND_MESSAGE.value, (data) => {
+                    
+                
+                
+                // important!!!!!     changed to api
 
-                    this.sendMessageToChat(userId, chat, message, io)
-                })
+
+
+                //     const { chat, message } = data
+
+                //     this.sendMessageToChat(userId, chat, message, io)
+                // })
 
                 // socket.on(ChatTypes.REPLY_MESSAGE.value, (data) => {
                 //     const { message, messageId } = data

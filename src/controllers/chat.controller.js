@@ -7,6 +7,7 @@ const { escapeRegex } = require('../helpers/query.helper');
 const { formatMessage } = require('../helpers/chat.helper');
 const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
 const io = require('./webSocket.controller')
+const AWS = require('aws-sdk')
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -149,17 +150,43 @@ const muteChat = catchAsync(async (req, res) => {
 
 const replyMessage = catchAsync(async (req, res) => {      
   const currentLoggedUser = req.user._id;
-  const { messageId } = req.params;
-  const { message } = req.body;
+  const {message, chat, messageId} = req.body;
+  let newMessage = null;
+  if(messageId) {
+      newMessage = await chatService.replyMessage(message,  messageId, currentLoggedUser);
+  } else {
+    newMessage = await chatService.sendMessage(message,  chat, currentLoggedUser);
+  }
+  
+  const myChat = await chatService.getChatById(newMessage.chat);
 
-  const newMessage = await chatService.replyMessage(message, messageId, currentLoggedUser);
-  const chat = await chatService.getChatById(newMessage.chat);
-
-  global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, { from: currentLoggedUser, message: formatMessage(newMessage), chat: String(chat._id), mutedFor: chat.mutedBy });
+  global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, { from: currentLoggedUser, message: formatMessage(newMessage), chat: String(myChat._id), mutedFor: myChat.mutedBy });
           
   res.status(200).send(newMessage);
 
 });
+
+
+// const uploadImage = catchAsync(async (req, res) => {
+//   const currentLoggedUser = req.user._id;
+  
+//   const s3bucket = new AWS.S3({
+//     region: 'eu-north-1',
+//     'accessKeyId': 'AKIASRVOFC3PM5B3AOIC',
+//     secretAccessKey: '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'
+//    });
+//    console.log(req.file);
+//    var params = {
+//     Key: req.file.originalname,
+//     Body: req.file.buffer,
+//     Bucket: 'ceibro/chat-images',
+//     ACL:'public-read-write'
+//    };
+//   s3bucket.upload(params, (s, data) => {
+//     console.log('hello', s, data)
+//   })
+// });
+
 
 
 
@@ -175,5 +202,6 @@ module.exports = {
   muteChat,
   replyMessage,
   addMessageToFavourite,
-  getPinnedMessages
+  getPinnedMessages,
+  // uploadImage
 };

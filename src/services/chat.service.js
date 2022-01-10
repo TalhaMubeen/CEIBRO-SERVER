@@ -242,7 +242,6 @@ const muteOrUnmuteChat = async function (roomId, userId) {
 };
 
 const replyMessage = async function (replyMessage, messageId, userId) {
-console.log("🚀 ~ file: chat.service.js ~ line 194 ~ replyMessage ~ userId", userId)
 
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -271,6 +270,31 @@ console.log("🚀 ~ file: chat.service.js ~ line 194 ~ replyMessage ~ userId", u
   }])
 };
 
+const sendMessage = async function (message, chatId, userId) {
+
+  const user = await userService.getUserById(userId);
+  if(!user) {
+    throw new ApiError(400, "User not found");
+  }
+  
+  const chat = await getChatById(chatId);
+  if(!chat) {
+    throw new ApiError(400, "Chat not found");
+  }
+
+  const msg = new Message({
+      sender: userId,
+      chat: chatId,
+      receivedBy: [userId],
+      readBy: [userId],
+      message: message
+  });
+  
+  await msg.save();
+
+  return getMessageById(msg._id);
+};
+
 
 module.exports = {
   createChat,
@@ -287,5 +311,6 @@ module.exports = {
   replyMessage,
   addOrRemoveMessageToFavourite,
   checkChatAuthorization,
-  getPinnedMessages
+  getPinnedMessages,
+  sendMessage
 };
