@@ -28,9 +28,6 @@ const messageSchema = mongoose.Schema(
             ref: 'User' 
         }
     ],
-    media: [{
-        type: String
-    }],
     replyOf: { 
         type: mongoose.SchemaTypes.ObjectId, 
         ref: 'Message',
@@ -40,6 +37,9 @@ const messageSchema = mongoose.Schema(
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'User'
       }],
+    files: [{
+        type: String
+    }]
   },
   {
     timestamps: true,

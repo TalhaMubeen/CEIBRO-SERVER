@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const { projectService, chatService, userService } = require('.');
 const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
-
+const ObjectId = require('mongoose').Types.ObjectId
 /**
  * Create a user
  * @param {Object} chatBody
@@ -241,7 +241,7 @@ const muteOrUnmuteChat = async function (roomId, userId) {
     }
 };
 
-const replyMessage = async function (replyMessage, messageId, userId) {
+const replyMessage = async function (replyMessage, messageId, userId, files) {
 
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -259,7 +259,8 @@ const replyMessage = async function (replyMessage, messageId, userId) {
       receivedBy: [userId],
       readBy: [userId],
       message: replyMessage,
-      replyOf: messageId
+      replyOf: messageId,
+      files: files || []
   });
   
   await reply.save();
@@ -270,7 +271,7 @@ const replyMessage = async function (replyMessage, messageId, userId) {
   }])
 };
 
-const sendMessage = async function (message, chatId, userId) {
+const sendMessage = async function (message, chatId, userId, files) {
 
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -287,13 +288,28 @@ const sendMessage = async function (message, chatId, userId) {
       chat: chatId,
       receivedBy: [userId],
       readBy: [userId],
-      message: message
+      message: message,
+      files: files || []
   });
   
   await msg.save();
 
   return getMessageById(msg._id);
 };
+
+const getRoomMediaById = async (roomId) => {
+  return Message.aggregate([
+    {'$match': { chat: ObjectId(roomId)}},
+    {'$unwind': '$files'},
+    {'$group': 
+        {
+            '_id': '$chat',
+            'files': 
+                {'$push': '$files'}
+        }
+    }
+])
+}
 
 
 module.exports = {
@@ -312,5 +328,6 @@ module.exports = {
   addOrRemoveMessageToFavourite,
   checkChatAuthorization,
   getPinnedMessages,
-  sendMessage
+  sendMessage,
+  getRoomMediaById
 };

@@ -4,3 +4,4 @@ module.exports.tokenService = require('./token.service');
 module.exports.userService = require('./user.service');
 module.exports.projectService = require('./project.service');
 module.exports.chatService = require('./chat.service');
+module.exports.awsService = require('./aws.service');

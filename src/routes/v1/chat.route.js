@@ -33,12 +33,16 @@ router.route('/room/favourite/:roomId')
 router.route('/room/mute/:roomId')
     .post(auth("getChatRooms"), chatController.muteChat);
 
-router.route('/message/reply/message')
-    .post(auth("getChatRooms"), chatController.replyMessage);
+router.route('/message/reply')
+    .post(auth("getChatRooms"), upload.single('product'), chatController.replyMessage);
 
 router.route('/message/favourite/:messageId')
     .post(auth("getChatRooms"), chatController.addMessageToFavourite)
     .get(auth("getChatRooms"), chatController.getPinnedMessages);
+
+
+router.route('/media/:roomId')
+    .get(chatController.getChatRoomMedia);
 
 
 // router.route('/file-upload')
@@ -258,7 +262,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /chat/message/reply/message:
+ * /chat/message/reply:
  *   post:
  *     summary: send or reply a message
  *     tags: [Chat]
@@ -286,10 +290,6 @@ module.exports = router;
  *     responses:
  *       "200":
  *         description: OK
- *         content:
- *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/User'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -385,6 +385,38 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+
+/**
+ * @swagger
+ * /chat/media/{roomId}:
+ *   get:
+ *     summary: get rooms all media
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: chat room id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */
 
 

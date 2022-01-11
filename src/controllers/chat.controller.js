@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { chatService, userService } = require('../services');
+const { chatService, userService, awsService } = require('../services');
 const { escapeRegex } = require('../helpers/query.helper');
 const { formatMessage } = require('../helpers/chat.helper');
 const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
@@ -151,11 +151,16 @@ const muteChat = catchAsync(async (req, res) => {
 const replyMessage = catchAsync(async (req, res) => {      
   const currentLoggedUser = req.user._id;
   const {message, chat, messageId} = req.body;
+  let files = [];
+  if(req.file) {
+    const fileLink = await awsService.uploadFile(req.file);
+    files.push(fileLink.Location);
+  }
   let newMessage = null;
   if(messageId) {
-      newMessage = await chatService.replyMessage(message,  messageId, currentLoggedUser);
+      newMessage = await chatService.replyMessage(message,  messageId, currentLoggedUser, files);
   } else {
-    newMessage = await chatService.sendMessage(message,  chat, currentLoggedUser);
+    newMessage = await chatService.sendMessage(message,  chat, currentLoggedUser, files);
   }
   
   const myChat = await chatService.getChatById(newMessage.chat);
@@ -164,6 +169,14 @@ const replyMessage = catchAsync(async (req, res) => {
           
   res.status(200).send(newMessage);
 
+});
+
+
+
+const getChatRoomMedia = catchAsync(async (req, res) => {      
+  const {roomId} = req.params;
+  const media = await chatService.getRoomMediaById(roomId);
+  res.status(200).send(media[0].files);
 });
 
 
@@ -203,5 +216,6 @@ module.exports = {
   replyMessage,
   addMessageToFavourite,
   getPinnedMessages,
+  getChatRoomMedia,
   // uploadImage
 };
