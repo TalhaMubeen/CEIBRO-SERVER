@@ -1,6 +1,7 @@
 
 const AWS = require('aws-sdk')
 const { awsConfig } = require('../config/aws.config');
+const { getFileTypeByName } = require('../helpers/chat.helper');
 
 const s3bucket = new AWS.S3(awsConfig);
 console.log('aws configs are', awsConfig)
@@ -8,7 +9,6 @@ console.log('aws configs are', awsConfig)
 const uploadFile = (file) => {
     return new Promise((resolve, reject) => {
         try{
-            const fileName = file.originalname.replace(" ", "_");
             const params = {
                 Key:  file.originalname,
                 Body: file.buffer,
@@ -19,7 +19,10 @@ const uploadFile = (file) => {
                 if(error) {
                     reject(error);
                 }
-                resolve(data);
+                resolve({
+                    url: data.Location,
+                    fileType: getFileTypeByName(file.originalname)
+                });
             });
         } catch(e) {
             reject(e);

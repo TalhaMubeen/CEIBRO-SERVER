@@ -148,14 +148,15 @@ const muteChat = catchAsync(async (req, res) => {
 });
 
 
-const replyMessage = catchAsync(async (req, res) => {      
+const replyMessage = catchAsync(async (req, res) => {
+  console.log('files are', req.file, req.files)      
   const currentLoggedUser = req.user._id;
   const {message, chat, messageId} = req.body;
   let files = [];
-  if(req.file) {
-    const fileLink = await awsService.uploadFile(req.file);
-    files.push(fileLink.Location);
+  if(req.files) {
+    files = await Promise.all(req.files?.map(file => awsService.uploadFile(file)))
   }
+  console.log('file are', files)
   let newMessage = null;
   if(messageId) {
       newMessage = await chatService.replyMessage(message,  messageId, currentLoggedUser, files);

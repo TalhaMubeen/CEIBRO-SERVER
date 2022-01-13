@@ -283,6 +283,8 @@ const sendMessage = async function (message, chatId, userId, files) {
     throw new ApiError(400, "Chat not found");
   }
 
+  console.log('make changes', files)
+
   const msg = new Message({
       sender: userId,
       chat: chatId,

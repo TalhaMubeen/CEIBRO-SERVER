@@ -11,3 +11,8 @@ module.exports.formatMessage = function(conversation, currentLoggedUser) {
       seen: true,
     }
 }
+
+module.exports.getFileTypeByName = (fileName) => {
+  return fileName?.split?.('.')?.pop?.() || "Unknown";
+
+}

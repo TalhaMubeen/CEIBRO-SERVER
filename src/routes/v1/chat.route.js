@@ -34,7 +34,7 @@ router.route('/room/mute/:roomId')
     .post(auth("getChatRooms"), chatController.muteChat);
 
 router.route('/message/reply')
-    .post(auth("getChatRooms"), upload.single('product'), chatController.replyMessage);
+    .post(auth("getChatRooms"), upload.array('products'), chatController.replyMessage);
 
 router.route('/message/favourite/:messageId')
     .post(auth("getChatRooms"), chatController.addMessageToFavourite)
