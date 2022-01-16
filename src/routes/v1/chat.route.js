@@ -23,6 +23,9 @@ router.route('/rooms')
 router.route('/room/messages/:roomId')
     .get(auth("getChatRooms"), chatController.getConversationByRoomId)
 
+router.route('/unread/count')
+    .get(auth("getChatRooms"), chatController.getUnreadMessagesCount)
+
 
 router.route('/room/unread/:roomId')
     .put(auth("getChatRooms"), chatController.setRoomMessagesRead);
@@ -112,6 +115,11 @@ module.exports = router;
  *         name: type
  *         type: string
  *         description: chat room type (all, read, unread)
+ *         required: false
+ *       - in: query
+ *         name: favourite
+ *         type: boolean
+ *         description: get fovourite messages true/false
  *         required: false
  *     responses:
  *       "200":
@@ -403,6 +411,29 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: chat room id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+/**
+ * @swagger
+ * /chat/unread/count:
+ *   get:
+ *     summary: get unread messages count
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       "200":
  *         description: OK

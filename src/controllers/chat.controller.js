@@ -18,18 +18,27 @@ const createChat = catchAsync(async (req, res) => {
 const getChats = catchAsync(async (req, res) => {
   const { _id } = req.user;
   
-  let search = pick(req.query, ['name', 'type']);
+  let search = pick(req.query, ['name', 'type', 'favourite']);
   let filter = {
     members: {
       $in: [_id]
     }
   }
-  console.log('search is ', search)
+
   if(search.name) {
     const regex = new RegExp(escapeRegex(search.name), 'gi');
     filter = {
       ...filter,
       name: regex
+    }
+  }
+
+  if(search.favourite == 'true') {
+    filter = {
+      ...filter,
+      pinnedBy: {
+        $in: [_id]
+      }
     }
   }
 
@@ -152,11 +161,11 @@ const replyMessage = catchAsync(async (req, res) => {
   console.log('files are', req.file, req.files)      
   const currentLoggedUser = req.user._id;
   const {message, chat, messageId} = req.body;
+  console.log('messageId i s', messageId)
   let files = [];
   if(req.files) {
     files = await Promise.all(req.files?.map(file => awsService.uploadFile(file)))
   }
-  console.log('file are', files)
   let newMessage = null;
   if(messageId) {
       newMessage = await chatService.replyMessage(message,  messageId, currentLoggedUser, files);
@@ -172,12 +181,18 @@ const replyMessage = catchAsync(async (req, res) => {
 
 });
 
-
-
 const getChatRoomMedia = catchAsync(async (req, res) => {      
   const {roomId} = req.params;
   const media = await chatService.getRoomMediaById(roomId);
   res.status(200).send(media[0].files);
+});
+
+const getUnreadMessagesCount = catchAsync(async (req, res) => {    
+  const currentUser = req.user?._id;  
+  const count = await chatService.getUnreadCount(currentUser);
+  res.status(200).json({
+    count
+  })
 });
 
 
@@ -218,5 +233,6 @@ module.exports = {
   addMessageToFavourite,
   getPinnedMessages,
   getChatRoomMedia,
+  getUnreadMessagesCount
   // uploadImage
 };

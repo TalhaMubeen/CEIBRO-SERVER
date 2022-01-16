@@ -136,6 +136,12 @@ const updateChatById = async (chatId, updateBody) => {
     }
   ]);
 
+  console.log('unrea messages are', unreadMessages)
+  console.log('unrea messages are', unreadMessages)
+  console.log('unrea messages are', unreadMessages)
+  console.log('unrea messages are', unreadMessages)
+  console.log('unrea messages are', unreadMessages)
+
   const data = chats.map(chat => {
     return {
       ...chat._doc,
@@ -310,9 +316,55 @@ const getRoomMediaById = async (roomId) => {
                 {'$push': '$files'}
         }
     }
-])
+  ])
 }
 
+const getUnreadCount = async (userId) => {
+  console.log('userId: ', userId);
+  const chatRooms = await Chat.find({
+    members: {
+      $in: [userId]
+    }
+  })
+  const chatIds = chatRooms.map(room => room._id);
+  console.log('chatIds: ', chatIds);
+  
+  const unreadMessages = await Message.aggregate([
+    {
+      "$match": {
+        "chat": {
+          "$in": chatIds
+        },
+        "readBy": {
+          "$ne": userId
+        }
+      }
+    },
+    {
+      "$sort": {
+        name: 1
+      }
+    },
+    {
+      "$group": {
+        "_id": "$chat",
+        "chatName": { "$last": "$name" },
+        "count": {
+          "$sum": 1
+        }
+      }
+    }
+  ]);
+
+  let count = 0;
+  unreadMessages.forEach((message => {
+    console.log('message is ', message);
+    count += message.count;
+  }))
+  console.log('count is ', count)
+
+  return count;
+}
 
 module.exports = {
   createChat,
@@ -331,5 +383,6 @@ module.exports = {
   checkChatAuthorization,
   getPinnedMessages,
   sendMessage,
-  getRoomMediaById
+  getRoomMediaById,
+  getUnreadCount
 };
