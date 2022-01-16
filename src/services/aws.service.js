@@ -21,7 +21,8 @@ const uploadFile = (file) => {
                 }
                 resolve({
                     url: data.Location,
-                    fileType: getFileTypeByName(file.originalname)
+                    fileType: getFileTypeByName(file.originalname),
+                    fileName: file.originalname
                 });
             });
         } catch(e) {

@@ -136,12 +136,6 @@ const updateChatById = async (chatId, updateBody) => {
     }
   ]);
 
-  console.log('unrea messages are', unreadMessages)
-  console.log('unrea messages are', unreadMessages)
-  console.log('unrea messages are', unreadMessages)
-  console.log('unrea messages are', unreadMessages)
-  console.log('unrea messages are', unreadMessages)
-
   const data = chats.map(chat => {
     return {
       ...chat._doc,
