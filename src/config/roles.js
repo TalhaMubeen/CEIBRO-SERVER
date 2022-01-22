@@ -1,7 +1,8 @@
 const allRoles = {
   user: [
     "createChatRoom",
-    "getChatRooms"
+    "getChatRooms",
+    "getUsers"
   ],
   admin: [
     'getUsers', 

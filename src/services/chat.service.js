@@ -117,7 +117,8 @@ const updateChatById = async (chatId, updateBody) => {
         },
         "readBy": {
           "$ne": userId
-        }
+        },
+        access: { $eq: ObjectId(userId) }
       }
     },
     {
@@ -152,8 +153,16 @@ const getChatRoomByRoomId = async function (roomId) {
   return room;
 };
 
-const getConversationByRoomId = async function (chatRoomId, options = {}) {
-  return Message.find({ chat: chatRoomId }).populate("sender replyOf");
+const getConversationByRoomId = async function (chatRoomId, options = {}, userId) {
+  return Message.find({ chat: chatRoomId, access: { $eq: ObjectId(userId) } }).populate("sender replyOf");
+};
+
+const checkMessageAuthorization = async function (messageId, userId) {
+  const message = await Message.findOne({ _id: messageId, access: { $eq: ObjectId(userId) } });
+  if(!message) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Not authorized to perform this operation")
+  }
+  return true;
 };
 
 const getMessageById = async function (messagId, options = {}) {
@@ -191,6 +200,8 @@ const addOrRemoveMessageToFavourite = async function (messageId, userId) {
   if(!user) {
     throw new ApiError(400, "User not found");
   }
+
+  await checkMessageAuthorization(messageId, userId);
 
   const index = user?.pinnedMessages?.findIndex(chat => String(chat) === String(messageId));
   if(index < 0) {
@@ -241,6 +252,7 @@ const muteOrUnmuteChat = async function (roomId, userId) {
     }
 };
 
+
 const replyMessage = async function (replyMessage, messageId, userId, files) {
 
   const user = await userService.getUserById(userId);
@@ -253,6 +265,8 @@ const replyMessage = async function (replyMessage, messageId, userId, files) {
     throw new ApiError(400, "Message not found");
   }
 
+  const chat = await getChatById(message.chat);
+  console.log('chat members are', chat.members)
   const reply = new Message({
       sender: userId,
       chat: message.chat,
@@ -260,7 +274,8 @@ const replyMessage = async function (replyMessage, messageId, userId, files) {
       readBy: [userId],
       message: replyMessage,
       replyOf: messageId,
-      files: files || []
+      files: files || [],
+      access: chat.members.map(member => member)
   });
   
   await reply.save();
@@ -291,7 +306,8 @@ const sendMessage = async function (message, chatId, userId, files) {
       receivedBy: [userId],
       readBy: [userId],
       message: message,
-      files: files || []
+      files: files || [],
+      access: chat.members.map(member => member)
   });
   
   await msg.save();
@@ -299,9 +315,9 @@ const sendMessage = async function (message, chatId, userId, files) {
   return getMessageById(msg._id);
 };
 
-const getRoomMediaById = async (roomId) => {
+const getRoomMediaById = async (roomId, userId) => {
   return Message.aggregate([
-    {'$match': { chat: ObjectId(roomId)}},
+    {'$match': { chat: ObjectId(roomId),  access: { $eq: ObjectId(userId) }}},
     {'$unwind': '$files'},
     {'$group': 
         {
@@ -331,7 +347,8 @@ const getUnreadCount = async (userId) => {
         },
         "readBy": {
           "$ne": userId
-        }
+        },
+        access: { $eq: ObjectId(userId) }
       }
     },
     {
@@ -360,6 +377,30 @@ const getUnreadCount = async (userId) => {
   return count;
 }
 
+const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
+  const chat = await getChatRoomByRoomId(roomId);
+  if(!chat) {
+    throw new ApiError(400, 'Chat room not found')
+  }
+
+  const member = await userService.getUserById(userId);
+  if(!member) {
+    throw new ApiError(400, 'User not found')
+  }
+  const index = chat?.members?.findIndex(member => String(member) === String(userId));
+  if(index < 0) {
+      await Chat.updateOne({ _id: roomId }, { $addToSet: { members: userId } });
+      if(temporary != 'true') {
+        // condition runs when adding a permanent member
+        await Message.updateMany({ chat: roomId }, { $addToSet: { access: userId  } });
+      }
+      return true;
+  } else {
+        Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
+        return false;
+    }
+}
+
 module.exports = {
   createChat,
   getChatById,
@@ -378,5 +419,6 @@ module.exports = {
   getPinnedMessages,
   sendMessage,
   getRoomMediaById,
-  getUnreadCount
+  getUnreadCount,
+  addOrRemoveChatMember
 };

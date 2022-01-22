@@ -41,7 +41,13 @@ const messageSchema = mongoose.Schema(
         url: { type: String },
         fileType: { type: String },
         fileName: { type: String }
-    }]
+    }],
+    access:[
+        {
+          type: mongoose.SchemaTypes.ObjectId,
+          ref: 'User'
+        }
+      ]
   },
   {
     timestamps: true,

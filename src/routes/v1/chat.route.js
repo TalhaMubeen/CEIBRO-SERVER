@@ -45,7 +45,10 @@ router.route('/message/favourite/:messageId')
 
 
 router.route('/media/:roomId')
-    .get(chatController.getChatRoomMedia);
+    .get(auth('getChatRooms'), chatController.getChatRoomMedia);
+
+router.route('/member/:roomId/:memberId')
+    .post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
 
 
 // router.route('/file-upload')
@@ -449,6 +452,52 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
+/**
+ * @swagger
+ * /chat/member/{chatId}/{memberId}:
+ *   post:
+ *     summary: add or remove member to chat
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *       - in: path
+ *         name: memberId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Member id
+ *       - in: query
+ *         name: temporary
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: is temporary member (true/false)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+
+
 
 
 

@@ -84,7 +84,8 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   };
   let conversation = await chatService.getConversationByRoomId(
     roomId,
-    options
+    options,
+    currentLoggedUser
   );
   conversation = conversation?.map(conversation => {
     conversation = formatMessage(conversation, currentLoggedUser);
@@ -158,10 +159,8 @@ const muteChat = catchAsync(async (req, res) => {
 
 
 const replyMessage = catchAsync(async (req, res) => {
-  console.log('files are', req.file, req.files)      
   const currentLoggedUser = req.user._id;
   const {message, chat, messageId} = req.body;
-  console.log('messageId i s', messageId)
   let files = [];
   if(req.files) {
     files = await Promise.all(req.files?.map(file => awsService.uploadFile(file)))
@@ -181,10 +180,13 @@ const replyMessage = catchAsync(async (req, res) => {
 
 });
 
-const getChatRoomMedia = catchAsync(async (req, res) => {      
+const getChatRoomMedia = catchAsync(async (req, res) => { 
   const {roomId} = req.params;
-  const media = await chatService.getRoomMediaById(roomId);
-  res.status(200).send(media[0].files);
+  const currentUser = req.user?._id; 
+  console.log('current user is ', currentUser, req.user)
+  const media = await chatService.getRoomMediaById(roomId, currentUser);
+  console.log('media ', media)
+  res.status(200).send(media[0]?.files || []);
 });
 
 const getUnreadMessagesCount = catchAsync(async (req, res) => {    
@@ -195,6 +197,13 @@ const getUnreadMessagesCount = catchAsync(async (req, res) => {
   })
 });
 
+const addOrRemoveChatMembers = catchAsync(async (req, res) => {    
+  const { roomId, memberId } = req.params;
+  const { temporary = false } = req.query;
+
+  const result = await chatService.addOrRemoveChatMember(roomId, memberId, temporary);
+  
+});
 
 // const uploadImage = catchAsync(async (req, res) => {
 //   const currentLoggedUser = req.user._id;
@@ -233,6 +242,7 @@ module.exports = {
   addMessageToFavourite,
   getPinnedMessages,
   getChatRoomMedia,
+  addOrRemoveChatMembers,
   getUnreadMessagesCount
   // uploadImage
 };
