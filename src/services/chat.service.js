@@ -3,6 +3,7 @@ const { projectService, chatService, userService } = require('.');
 const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
 const ObjectId = require('mongoose').Types.ObjectId
+const { REFRESH_CHAT } = require('../config/chat.constants')
 /**
  * Create a user
  * @param {Object} chatBody
@@ -394,11 +395,18 @@ const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
         // condition runs when adding a permanent member
         await Message.updateMany({ chat: roomId }, { $addToSet: { access: userId  } });
       }
+      if(member.socketId) {
+        global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);     
+      }
       return true;
   } else {
         await Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
+        if(member.socketId) {
+          global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);     
+        }
         return false;
     }
+  
 }
 
 module.exports = {

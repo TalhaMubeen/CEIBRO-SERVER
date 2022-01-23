@@ -175,6 +175,8 @@ class WebSocket {
             res.status(200).send(newMessage);
         
         }
+        
+        
       
       getChatSocketEvents(_req, res, next) {
         try {
