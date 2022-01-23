@@ -454,7 +454,7 @@ module.exports = router;
  */
 /**
  * @swagger
- * /chat/member/{chatId}/{memberId}:
+ * /chat/member/{roomId}/{memberId}:
  *   post:
  *     summary: add or remove member to chat
  *     tags: [Chat]

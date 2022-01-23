@@ -201,8 +201,12 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
   const { roomId, memberId } = req.params;
   const { temporary = false } = req.query;
 
+  if(String(memberId) == String(req.user._id)) {
+    throw new ApiError(400, "Cannot remove yourself")
+  }
+
   const result = await chatService.addOrRemoveChatMember(roomId, memberId, temporary);
-  
+  res.status(200).send(`Member ${result? 'added': 'removed'}`)
 });
 
 // const uploadImage = catchAsync(async (req, res) => {

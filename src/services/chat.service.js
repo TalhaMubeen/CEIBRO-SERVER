@@ -396,7 +396,7 @@ const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
       }
       return true;
   } else {
-        Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
+        await Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
         return false;
     }
 }
