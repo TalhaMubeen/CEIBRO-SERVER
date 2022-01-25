@@ -13,5 +13,26 @@ module.exports.formatMessage = function(conversation, currentLoggedUser) {
 
 module.exports.getFileTypeByName = (fileName) => {
   return fileName?.split?.('.')?.pop?.() || "Unknown";
+}
 
+module.exports.verifyAnswersByTypes = ({ answer, type}) => {
+  if(type === 'multiple' ) {
+    // must be a number
+    return !isNaN(answer)
+  }
+  if(type === 'checkbox' ) {
+    // must be an array
+    let result = false;
+    if(Array.isArray(answer)) {
+      result = true;
+      // check if every answer in array is a number
+      if(!answer.every(ans => !isNaN(ans))) {
+        result = false;
+      }
+    }
+    return true;
+  }
+  if(type == 'shortAnswer') {
+    return typeof answer === 'string'
+  }
 }

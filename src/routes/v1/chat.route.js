@@ -5,7 +5,7 @@ const authController = require('../../controllers/auth.controller');
 const auth = require('../../middlewares/auth');
 const { chatController } = require('../../controllers');
 const { chatValidation } = require('../../validations');
-const multer = require("multer");
+const multer = require('multer');
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -15,50 +15,41 @@ const upload = multer({
 });
 const router = express.Router();
 
-router.route('/rooms')
-    .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat)
-    .get(auth("getChatRooms"), chatController.getChats)
+router
+  .route('/rooms')
+  .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat)
+  .get(auth('getChatRooms'), chatController.getChats);
 
+router.route('/room/messages/:roomId').get(auth('getChatRooms'), chatController.getConversationByRoomId);
 
-router.route('/room/messages/:roomId')
-    .get(auth("getChatRooms"), chatController.getConversationByRoomId)
+router.route('/unread/count').get(auth('getChatRooms'), chatController.getUnreadMessagesCount);
 
-router.route('/unread/count')
-    .get(auth("getChatRooms"), chatController.getUnreadMessagesCount)
+router.route('/room/unread/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesRead);
 
+router.route('/room/favourite/:roomId').post(auth('getChatRooms'), chatController.addToFavouite);
 
-router.route('/room/unread/:roomId')
-    .put(auth("getChatRooms"), chatController.setRoomMessagesRead);
+router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.muteChat);
 
-router.route('/room/favourite/:roomId')
-    .post(auth("getChatRooms"), chatController.addToFavouite);
+router.route('/message/reply').post(auth('getChatRooms'), upload.array('products'), chatController.replyMessage);
 
-router.route('/room/mute/:roomId')
-    .post(auth("getChatRooms"), chatController.muteChat);
+router
+  .route('/message/favourite/:messageId')
+  .post(auth('getChatRooms'), chatController.addMessageToFavourite)
+  .get(auth('getChatRooms'), chatController.getPinnedMessages);
 
-router.route('/message/reply')
-    .post(auth("getChatRooms"), upload.array('products'), chatController.replyMessage);
+router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatRoomMedia);
 
-router.route('/message/favourite/:messageId')
-    .post(auth("getChatRooms"), chatController.addMessageToFavourite)
-    .get(auth("getChatRooms"), chatController.getPinnedMessages);
+router.route('/member/:roomId/:memberId').post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
 
-
-router.route('/media/:roomId')
-    .get(auth('getChatRooms'), chatController.getChatRoomMedia);
-
-router.route('/member/:roomId/:memberId')
-    .post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
-
+router.route('/message/questioniar').post(auth('getChatRooms'), chatController.saveQuestioniar);
+router.route('/questioniar/view/:questioniarId')
+  .get(auth('getChatRooms'), chatController.getQuestioniarById)
+  .post(auth('getChatRooms'), chatController.saveQuestioniarAnswers)
 
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
 
-
 module.exports = router;
-
-
-
 
 /**
  * @swagger
@@ -140,8 +131,6 @@ module.exports = router;
  *
  */
 
-
-
 /**
  * @swagger
  * /chat/room/messages/{roomId}:
@@ -173,10 +162,6 @@ module.exports = router;
  *
  */
 
-
-
-
-
 /**
  * @swagger
  * /chat/room/unread/{roomId}:
@@ -207,7 +192,6 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
-
 
 /**
  * @swagger
@@ -398,7 +382,6 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  */
 
-
 /**
  * @swagger
  * /chat/media/{roomId}:
@@ -494,11 +477,3 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
-
-
-
-
-
-
-
-
