@@ -154,6 +154,10 @@ const getChatRoomByRoomId = async function (roomId) {
   return room;
 };
 
+const removeChatForUser = async function (roomId, userId) {
+  return Chat.updateOne({ _id: roomId }, { $pull: { members: userId } })
+};
+
 const getConversationByRoomId = async function (chatRoomId, options = {}, userId) {
   return Message.find({ chat: chatRoomId, access: { $eq: ObjectId(userId) } }).populate("sender replyOf");
 };
@@ -287,7 +291,7 @@ const replyMessage = async function (replyMessage, messageId, userId, files) {
   }])
 };
 
-const sendMessage = async function (message, chatId, userId, files) {
+const sendMessage = async function (message, chatId, userId, files, type) {
 
   const user = await userService.getUserById(userId);
   if(!user) {
@@ -307,11 +311,14 @@ const sendMessage = async function (message, chatId, userId, files) {
       receivedBy: [userId],
       readBy: [userId],
       message: message,
-      files: files || [],
+      files: type !== 'voice'? files || []: [],
+      type: type || 'message',
+      voiceUrl: type === 'voice'? files?.[0]?.url: null,
       access: chat.members.map(member => member)
   });
   
   await msg.save();
+  console.log('new msg is ', msg)
 
   return getMessageById(msg._id);
 };
@@ -428,5 +435,6 @@ module.exports = {
   sendMessage,
   getRoomMediaById,
   getUnreadCount,
-  addOrRemoveChatMember
+  addOrRemoveChatMember,
+  removeChatForUser
 };

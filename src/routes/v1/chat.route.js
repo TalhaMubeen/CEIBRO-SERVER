@@ -39,7 +39,12 @@ router
 
 router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatRoomMedia);
 
-router.route('/member/:roomId/:memberId').post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
+router.route('/member/:roomId/:memberId')
+  .post(auth('getChatRooms'), chatController.addOrRemoveChatMembers)
+
+router.route('/room/:roomId')
+  .delete(auth('getChatRooms'), chatController.deleteChatRoomForUser)
+
 
 router.route('/message/questioniar').post(auth('getChatRooms'), chatController.saveQuestioniar);
 router.route('/questioniar/view/:questioniarId')

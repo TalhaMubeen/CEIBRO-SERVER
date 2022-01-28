@@ -155,7 +155,7 @@ const muteChat = catchAsync(async (req, res) => {
 
 const replyMessage = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
-  const { message, chat, messageId } = req.body;
+  const { message, chat, messageId, type } = req.body;
   let files = [];
   if (req.files) {
     files = await Promise.all(req.files?.map((file) => awsService.uploadFile(file)));
@@ -164,7 +164,7 @@ const replyMessage = catchAsync(async (req, res) => {
   if (messageId) {
     newMessage = await chatService.replyMessage(message, messageId, currentLoggedUser, files);
   } else {
-    newMessage = await chatService.sendMessage(message, chat, currentLoggedUser, files);
+    newMessage = await chatService.sendMessage(message, chat, currentLoggedUser, files, type);
   }
 
   const myChat = await chatService.getChatById(newMessage.chat);
@@ -335,6 +335,25 @@ const saveQuestioniarAnswers = catchAsync(async (req, res) => {
 });
 
 
+const deleteChatRoomForUser = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+  const { _id } = req.user;
+  
+  const myChat = await chatService.getChatById(roomId);
+  if(!myChat) {
+    throw new ApiError(400, 'Invalid chat id')
+  }
+
+  if(myChat.members.findIndex(userId => String(userId) === String(_id)) < 0) {
+    throw new ApiError(400, 'User does not belongs to this chat room')  
+  }
+
+  await chatService.removeChatForUser(roomId, _id);
+  res.status(200).send("Room deleted")
+});
+
+
+
 // const uploadImage = catchAsync(async (req, res) => {
 //   const currentLoggedUser = req.user._id;
 
@@ -372,6 +391,7 @@ module.exports = {
   saveQuestioniar,
   getUnreadMessagesCount,
   getQuestioniarById,
-  saveQuestioniarAnswers
+  saveQuestioniarAnswers,
+  deleteChatRoomForUser
   // uploadImage
 };

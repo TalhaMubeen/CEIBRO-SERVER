@@ -14,10 +14,14 @@ const messageSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      Enum: ['message', 'questioniar'],
+      Enum: ['message', 'questioniar', 'voice'],
       default: 'message',
     },
     message: {
+      type: String,
+      required: false,
+    },
+    voiceUrl: {
       type: String,
       required: false,
     },
