@@ -42,6 +42,10 @@ const messageSchema = mongoose.Schema(
       ref: 'Message',
       required: false,
     },
+    dueDate: {
+      type: Date,
+      required: false
+    },
     pinnedBy: [
       {
         type: mongoose.SchemaTypes.ObjectId,

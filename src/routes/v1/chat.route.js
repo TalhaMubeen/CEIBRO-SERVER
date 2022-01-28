@@ -32,6 +32,8 @@ router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.mut
 
 router.route('/message/reply').post(auth('getChatRooms'), upload.array('products'), chatController.replyMessage);
 
+router.route('/message/forward').post(auth('getChatRooms'), chatController.forwardMessage);
+
 router
   .route('/message/favourite/:messageId')
   .post(auth('getChatRooms'), chatController.addMessageToFavourite)

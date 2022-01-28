@@ -179,6 +179,33 @@ const replyMessage = catchAsync(async (req, res) => {
   res.status(200).send(newMessage);
 });
 
+const forwardMessage = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { chatIds, messageId,  } = req.body;
+  const message = await chatService.getMessageById(messageId)
+  if(!message) {
+    throw new ApiError('Message not found')
+  }
+  
+
+  await Promise.all(chatIds.map(async chatId => {
+    const newMessage = await chatService.sendMessage(message.message, chatId, currentLoggedUser, message.type === 'voice' ? [{url: message.voiceUrl}]: message.files, message.type);
+    
+    const myChat = await chatService.getChatById(newMessage.chat);
+    global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, {
+      from: currentLoggedUser,
+      message: formatMessage(newMessage),
+      chat: String(myChat._id),
+      mutedFor: myChat.mutedBy,
+    });
+  }))
+
+
+  
+
+  res.status(200).send("forwarded");
+});
+
 const getChatRoomMedia = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const currentUser = req.user?._id;
@@ -243,23 +270,28 @@ const saveQuestioniar = catchAsync(async (req, res) => {
 
   await message.save();
 
+  const myMessage = await chatService.getMessageById(message._id);
+
+
   const users = await User.find({ 
     _id: members
   });
 
   users?.map(user => {
+    console.log('my user i s', user, user?.socketId);
     if(user?.socketId) {
-      global.io?.to(user._id)?.emit(ChatTypes.RECEIVE_MESSAGE.value, { from: userId, message: formatMessage(message), chat: String(chat), mutedFor: myChat.mutedBy });
+      global.io?.sockets?.to(user.socketId)?.emit(ChatTypes.RECEIVE_MESSAGE.value, { from: userId, message: formatMessage(myMessage), chat: String(chat), mutedFor: myChat.mutedBy });
     }
   })
   
 
-  res.status(200).send(`questioniar saved`);
+  res.status(200).send(message);
 });
 
 const getQuestioniarById = catchAsync(async (req, res) => {
-  const { questioniarId } = req.params;
+  const { questioniarId,  } = req.params;
   const { _id } = req.user;
+  const { userId } = req.query;
 
   const questioniar = await Message.findOne({
     _id: questioniarId,
@@ -275,16 +307,18 @@ const getQuestioniarById = catchAsync(async (req, res) => {
     const questionIds = await questioniar?.questions?.map((question) => {
       return question._id;
     })
+
+    const answerUser = userId || _id;
     
     const answers = await Answer.find({ 
       question: {
         $in: questionIds,
       },
-      user: _id
+      user: answerUser
     })
 
     questioniar.questions = questioniar?.questions.map(question => {
-      const myAnswer =  answers.find(answer => (String(answer.user) === String(_id) && String(answer.question) === String(question._id)))
+      const myAnswer =  answers.find(answer => (String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)))
       question._doc.answer = myAnswer.answer;
       if(question._doc.type === 'checkbox') {
         question._doc.answer = myAnswer.answer.split(",")  
@@ -392,6 +426,7 @@ module.exports = {
   getUnreadMessagesCount,
   getQuestioniarById,
   saveQuestioniarAnswers,
-  deleteChatRoomForUser
+  deleteChatRoomForUser,
+  forwardMessage
   // uploadImage
 };
