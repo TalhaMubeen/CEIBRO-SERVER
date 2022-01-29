@@ -52,6 +52,9 @@ router.route('/message/questioniar').post(auth('getChatRooms'), chatController.s
 router.route('/questioniar/view/:questioniarId')
   .get(auth('getChatRooms'), chatController.getQuestioniarById)
   .post(auth('getChatRooms'), chatController.saveQuestioniarAnswers)
+  
+router.route('/questioniar/view-answer/:questioniarId/:userId')
+  .get(auth('getChatRooms'), chatController.getQuestioniarAnswersByUser)
 
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);

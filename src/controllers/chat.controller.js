@@ -332,6 +332,62 @@ const getQuestioniarById = catchAsync(async (req, res) => {
   res.status(200).send(questioniar);
 });
 
+
+const getQuestioniarAnswersByUser = catchAsync(async (req, res) => {
+
+  const { questioniarId, userId } = req.params;
+  const { _id } = req.user;
+
+  
+  const questioniar = await Message.findOne({
+    _id: questioniarId,
+  }).populate('questions');
+  
+  if(!questioniar) {
+    throw new ApiError(404, 'Questioniar not found')
+  }
+
+  if(String(questioniar.sender) !== String(_id)) {
+    throw new ApiError(400, 'Not authorized')
+  }
+
+  const isAnswer = questioniar?.answeredBy?.includes(String(userId));
+  console.log('is answered is ', isAnswer)
+  if(isAnswer) {
+    const questionIds = await questioniar?.questions?.map((question) => {
+      return question._id;
+    })
+
+    const answerUser = userId;
+    
+    const answers = await Answer.find({ 
+      question: {
+        $in: questionIds,
+      },
+      user: answerUser
+    })
+
+    questioniar.questions = questioniar?.questions.map(question => {
+      const myAnswer =  answers.find(answer => (String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)))
+      console.log('my answer is ', myAnswer)
+      question._doc.answer = myAnswer.answer;
+      if(question._doc.type === 'checkbox') {
+        question._doc.answer = myAnswer.answer.split(",")  
+      }
+      return question;
+    })
+    questioniar._doc.answeredByMe = true;
+  } else {
+    questioniar._doc.answeredByMe = false; 
+  }
+  console.log('questioniar is ', questioniar)
+
+  return res.status(200).send(questioniar)
+
+});
+
+
+
 const saveQuestioniarAnswers = catchAsync(async (req, res) => {
   const { questioniarId } = req.params;
   const {questions} = req.body;
@@ -426,6 +482,7 @@ module.exports = {
   getUnreadMessagesCount,
   getQuestioniarById,
   saveQuestioniarAnswers,
+  getQuestioniarAnswersByUser,
   deleteChatRoomForUser,
   forwardMessage
   // uploadImage
