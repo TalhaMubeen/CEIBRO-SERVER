@@ -167,10 +167,8 @@ const getConversationByRoomId = async function (chatRoomId, options = {}, userId
   );
 };
 
-const getMessageIdsByRoomId = async function (roomId) {
-  const messages = await Message.find({
-    chat: roomId
-  })
+const getMessageIdsByFilter = async function (filter, options= {}) {
+  const messages = await Message.find(filter, options)
   return messages?.map?.(message => message._id) || []
 };
 
@@ -452,6 +450,6 @@ module.exports = {
   getUnreadCount,
   addOrRemoveChatMember,
   removeChatForUser,
-  getMessageIdsByRoomId,
+  getMessageIdsByFilter,
   getMessageByIds
 };

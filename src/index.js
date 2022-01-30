@@ -35,6 +35,8 @@ mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
   // server = app.listen(config.port, () => {
   //   logger.info(`Listening to port ${config.port}`);
   // });
+}).catch((err) => {
+  console.log('error connnecting mongo')
 });
 
 const exitHandler = () => {

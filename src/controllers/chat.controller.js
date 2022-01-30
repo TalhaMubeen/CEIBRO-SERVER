@@ -12,7 +12,7 @@ const { Message, User } = require('../models');
 const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
-const { getMessageIdsByRoomId, getMessageByIds } = require('../services/chat.service');
+const { getMessageIdsByRoomId, getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -76,7 +76,7 @@ const updateChat = catchAsync(async (req, res) => {
 const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
-  const { lastMessageId = null, down = 'false' } = req.query;
+  const { lastMessageId = null, down = 'false', search } = req.query;
   console.log("🚀 ~ file: chat.controller.js ~ line 80 ~ getConversationByRoomId ~ lastMessageId", lastMessageId)
 
   const room = await chatService.getChatRoomByRoomId(roomId);
@@ -84,7 +84,19 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
 
-  const messageIds = await getMessageIdsByRoomId(room._id)
+  let idsFilter = {
+    chat: roomId
+  }
+
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), 'gi');
+    idsFilter = {
+      ...idsFilter,
+      message: regex,
+    };
+  }
+
+  const messageIds = await getMessageIdsByFilter(idsFilter)
   console.log("🚀 ~ file: chat.controller.js ~ line 88 ~ getConversationByRoomId ~ messageIds", messageIds)
 
   const options = {
