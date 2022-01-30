@@ -11,7 +11,8 @@ const AWS = require('aws-sdk');
 const { Message, User } = require('../models');
 const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
-const ChatTypes = require('../config/chat.constants')
+const ChatTypes = require('../config/chat.constants');
+const { getMessageIdsByRoomId, getMessageByIds } = require('../services/chat.service');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -75,21 +76,75 @@ const updateChat = catchAsync(async (req, res) => {
 const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
+  const { lastMessageId = null, down = 'false' } = req.query;
+  console.log("🚀 ~ file: chat.controller.js ~ line 80 ~ getConversationByRoomId ~ lastMessageId", lastMessageId)
 
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
+
+  const messageIds = await getMessageIdsByRoomId(room._id)
+  console.log("🚀 ~ file: chat.controller.js ~ line 88 ~ getConversationByRoomId ~ messageIds", messageIds)
+
   const options = {
     page: parseInt(req.query.page) || 0,
     limit: parseInt(req.query.limit) || 10,
+    upPagination: down != 'true',
   };
-  let conversation = await chatService.getConversationByRoomId(roomId, options, currentLoggedUser);
-  conversation = conversation?.map((conversation) => {
+  console.log("🚀 ~ file: chat.controller.js ~ line 95 ~ getConversationByRoomId ~ options", options)
+  
+  // zero index if start of paginatio || last message index if not start of pagination
+  let index = messageIds.length > 0 ? messageIds.length : -1;
+  
+  // if already some pagination is sent then last message id will be  required for next slice of messages 
+  if(lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
+    const oldIndex = messageIds.findIndex(id => String(lastMessageId) === String(id));
+    console.log('oldIndex: ', oldIndex);
+    if(oldIndex > -1) {
+      // if last message index found in messages array
+      index = oldIndex
+    }
+  }
+  console.log("🚀 ~ file: chat.controller.js ~ line 99 ~ getConversationByRoomId ~ index", index)
+
+  // Example1 down pagination{
+  //   index: 0,
+  //   limit: 3,
+  //   startingIndex: 0,
+  //   downIndex: 4
+  // }
+
+  // Example2 up pagination{
+  //   index: 5,
+  //   limit: 3,
+  //   startingIndex: 2,
+  //   downIndex: 5
+  // }
+
+  const startingIndex = options?.upPagination ? index - options.limit: index + 1;
+  console.log("🚀 ~ file: chat.controller.js ~ line 125 ~ getConversationByRoomId ~ startingIndex", startingIndex)
+  const downIndex = options?.upPagination? index : index + 1 + options.limit;  
+  console.log("🚀 ~ file: chat.controller.js ~ line 127 ~ getConversationByRoomId ~ downIndex", downIndex)
+  const myMessageIds = messageIds.slice(startingIndex, downIndex);
+  console.log('myMessageIds: ', myMessageIds);
+  let conversations = await getMessageByIds(myMessageIds);
+  conversations = conversations?.map((conversation) => {
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
   });
-  res.status(httpStatus.CREATED).send({ conversation: conversation });
+  res.status(httpStatus.CREATED).send(conversations);  
+
+
+
+
+  // let conversation = await chatService.getConversationByRoomId(roomId, options, currentLoggedUser);
+  // console.log('conversations are', conversation)
+  // conversation.results = conversation?.results?.map((conversation) => {
+  //   conversation = formatMessage(conversation, currentLoggedUser);
+  //   return conversation;
+  // });
+  // res.status(httpStatus.CREATED).send(conversation);
 });
 
 const setRoomMessagesRead = catchAsync(async (req, res) => {

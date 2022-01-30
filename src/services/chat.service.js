@@ -159,7 +159,19 @@ const removeChatForUser = async function (roomId, userId) {
 };
 
 const getConversationByRoomId = async function (chatRoomId, options = {}, userId) {
-  return Message.find({ chat: chatRoomId, access: { $eq: ObjectId(userId) } }).populate("sender replyOf");
+  return Message.paginate({ 
+      chat: chatRoomId, 
+      access: { $eq: ObjectId(userId) } 
+    }, 
+    options
+  );
+};
+
+const getMessageIdsByRoomId = async function (roomId) {
+  const messages = await Message.find({
+    chat: roomId
+  })
+  return messages?.map?.(message => message._id) || []
 };
 
 const checkMessageAuthorization = async function (messageId, userId) {
@@ -174,6 +186,9 @@ const getMessageById = async function (messagId, options = {}) {
   return Message.findOne({ _id: messagId }).populate("sender replyOf");
 };
 
+const getMessageByIds = async function(messagIds) {
+  return Message.find({ _id: messagIds}).populate("sender replyOf");
+};
 
 const setAllMessagesReadByRoomId = async function (roomId, userId) {
   return Message.updateMany({ chat: roomId }, { $addToSet: { readBy: userId } });
@@ -436,5 +451,7 @@ module.exports = {
   getRoomMediaById,
   getUnreadCount,
   addOrRemoveChatMember,
-  removeChatForUser
+  removeChatForUser,
+  getMessageIdsByRoomId,
+  getMessageByIds
 };
