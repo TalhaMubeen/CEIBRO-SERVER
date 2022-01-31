@@ -509,6 +509,22 @@ const deleteChatRoomForUser = catchAsync(async (req, res) => {
   res.status(200).send("Room deleted")
 });
 
+const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+  console.log('roomId: ', roomId);
+  const { _id } = req.user;
+
+  const typeQuestion = await Message.find({
+    type: 'questioniar', 
+    chat: roomId
+  });
+
+
+  console.log(typeQuestion)
+  res.status(200).send(typeQuestion)
+});
+
+
 
 
 // const uploadImage = catchAsync(async (req, res) => {
@@ -551,6 +567,7 @@ module.exports = {
   saveQuestioniarAnswers,
   getQuestioniarAnswersByUser,
   deleteChatRoomForUser,
-  forwardMessage
+  forwardMessage,
+  getQuestionairByTypeMessage
   // uploadImage
 };

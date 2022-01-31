@@ -56,6 +56,11 @@ router.route('/questioniar/view/:questioniarId')
 router.route('/questioniar/view-answer/:questioniarId/:userId')
   .get(auth('getChatRooms'), chatController.getQuestioniarAnswersByUser)
 
+
+router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage)
+
+
+
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
 
@@ -472,6 +477,37 @@ module.exports = router;
  *         schema:
  *           type: boolean
  *         description: is temporary member (true/false)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /chat/message/questionair/{roomId}:
+ *   get:
+ *     summary: get rooms Quetionaire Messages
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: questainer room id.
  *     responses:
  *       "200":
  *         description: OK
