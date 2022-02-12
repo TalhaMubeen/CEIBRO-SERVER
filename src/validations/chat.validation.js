@@ -8,6 +8,23 @@ const createChatRoom = {
   })
 };
 
+const sendMessage = {
+  body: Joi.object().keys({
+    message: Joi.string(),
+    chat: Joi.string().required(),
+    messageId: Joi.string(),
+    type: Joi.string().valid('message', 'questioniar', 'voice').optional()
+  })
+};
+
+const forwardMessage = {
+  body: Joi.object().keys({
+    messageId: Joi.string(),
+    chatIds: Joi.array().items(Joi.string()).required()
+  })
+};
+
 module.exports = {
   createChatRoom,
+  sendMessage
 };

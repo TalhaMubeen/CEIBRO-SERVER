@@ -30,9 +30,9 @@ router.route('/room/favourite/:roomId').post(auth('getChatRooms'), chatControlle
 
 router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.muteChat);
 
-router.route('/message/reply').post(auth('getChatRooms'), upload.array('products'), chatController.replyMessage);
+router.route('/message/reply').post(auth('getChatRooms'), upload.array('products'), validate(chatValidation.sendMessage), chatController.replyMessage);
 
-router.route('/message/forward').post(auth('getChatRooms'), chatController.forwardMessage);
+router.route('/message/forward').post(auth('getChatRooms'), validate(chatValidation.forwardMessage), chatController.forwardMessage);
 
 router
   .route('/message/favourite/:messageId')
@@ -161,6 +161,22 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: Room id
+ *       - in: query
+ *         name: lastMessageId
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: last message id after which you want next set of results in up or down pagination
+ *       - in: query
+ *         name: down
+ *         schema:
+ *          type: boolean
+ *         description: up or down pagination type
+ *       - in: query
+ *         name: search
+ *         type: string
+ *         description: search keyword for messages
+ *         required: false
  *     responses:
  *       "200":
  *         description: OK
@@ -297,6 +313,45 @@ module.exports = router;
  *                 message: This is reply
  *                 chat: 234234234
  *                 messageId: afjaklfja
+ *                 type: 'message || questioniar || voice'
+ *     responses:
+ *       "200":
+ *         description: OK
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+/**
+ * @swagger
+ * /chat/message/forward:
+ *   post:
+ *     summary: forward message to chat rooms
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ * 
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
+ *             properties:
+ *               chatIds:
+ *                 type: string
+ *               messageId:
+ *                 type: string
+ *             example:
+ *              messageId: 23423423424
+ *              chatIds: [234234234,23423423423]
  *     responses:
  *       "200":
  *         description: OK

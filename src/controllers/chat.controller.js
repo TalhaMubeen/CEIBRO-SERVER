@@ -77,8 +77,7 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
   const { lastMessageId = null, down = 'false', search } = req.query;
-  console.log("🚀 ~ file: chat.controller.js ~ line 80 ~ getConversationByRoomId ~ lastMessageId", lastMessageId)
-
+  
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
@@ -97,14 +96,12 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   }
 
   const messageIds = await getMessageIdsByFilter(idsFilter)
-  console.log("🚀 ~ file: chat.controller.js ~ line 88 ~ getConversationByRoomId ~ messageIds", messageIds)
-
+  
   const options = {
     page: parseInt(req.query.page) || 0,
     limit: parseInt(req.query.limit) || 10,
     upPagination: down != 'true',
   };
-  console.log("🚀 ~ file: chat.controller.js ~ line 95 ~ getConversationByRoomId ~ options", options)
   
   // zero index if start of paginatio || last message index if not start of pagination
   let index = messageIds.length > 0 ? messageIds.length : -1;
@@ -118,8 +115,7 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
       index = oldIndex
     }
   }
-  console.log("🚀 ~ file: chat.controller.js ~ line 99 ~ getConversationByRoomId ~ index", index)
-
+  
   // Example1 down pagination{
   //   index: 0,
   //   limit: 3,
@@ -135,11 +131,8 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   // }
 
   const startingIndex = options?.upPagination ? index - options.limit: index + 1;
-  console.log("🚀 ~ file: chat.controller.js ~ line 125 ~ getConversationByRoomId ~ startingIndex", startingIndex)
   const downIndex = options?.upPagination? index : index + 1 + options.limit;  
-  console.log("🚀 ~ file: chat.controller.js ~ line 127 ~ getConversationByRoomId ~ downIndex", downIndex)
   const myMessageIds = messageIds.slice(startingIndex, downIndex);
-  console.log('myMessageIds: ', myMessageIds);
   let conversations = await getMessageByIds(myMessageIds);
   conversations = conversations?.map((conversation) => {
     conversation = formatMessage(conversation, currentLoggedUser);
@@ -253,8 +246,6 @@ const forwardMessage = catchAsync(async (req, res) => {
   if(!message) {
     throw new ApiError('Message not found')
   }
-  
-
   await Promise.all(chatIds.map(async chatId => {
     const newMessage = await chatService.sendMessage(message.message, chatId, currentLoggedUser, message.type === 'voice' ? [{url: message.voiceUrl}]: message.files, message.type);
     
