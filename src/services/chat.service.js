@@ -2,8 +2,8 @@ const httpStatus = require('http-status');
 const { projectService, chatService, userService } = require('.');
 const { Chat, User, Message } = require('../models');
 const ApiError = require('../utils/ApiError');
-const ObjectId = require('mongoose').Types.ObjectId
-const { REFRESH_CHAT } = require('../config/chat.constants')
+const ObjectId = require('mongoose').Types.ObjectId;
+const { REFRESH_CHAT } = require('../config/chat.constants');
 /**
  * Create a user
  * @param {Object} chatBody
@@ -12,26 +12,26 @@ const { REFRESH_CHAT } = require('../config/chat.constants')
 // TODO: perform validations (user or group must exist, donot create if exist)
 const createChat = async (chatBody, initiator) => {
   const { name, projectId, members } = chatBody;
-  
+
   const membersCount = await User.count({ _id: members });
-  if(membersCount < members.length) {
-    throw new ApiError(400, "Invalid user ids");
+  if (membersCount < members.length) {
+    throw new ApiError(400, 'Invalid user ids');
   }
 
   const obj = {
     name,
     initiator,
-    members: [initiator, ...members]
-  }
+    members: [initiator, ...members],
+  };
 
-  if(projectId) {
+  if (projectId) {
     const project = await projectService.getProjectById(projectId);
-    if(!project) throw new ApiError(400, "Invalid project id")
+    if (!project) throw new ApiError(400, 'Invalid project id');
     obj.project = project._id;
   }
-  
+
   return Chat.create(obj);
-}
+};
 
 /**
  * Get user by id
@@ -46,23 +46,20 @@ const getChatById = async (id) => {
   return chat;
 };
 
-
 /**
  * Get user by user id
  * @param {ObjectId} userI
  * @returns {Promise<chat>}
  */
- const checkChatAuthorization = async (userId, chatId) => {
+const checkChatAuthorization = async (userId, chatId) => {
   const chat = await Chat.findOne({ members: { $in: userId }, _id: chatId });
-  
+
   if (!chat) {
     throw new ApiError(httpStatus.NON_AUTHORITATIVE_INFORMATION, 'User not authorized to perform this opernation');
   }
   // TODO: Validate if the requesting user is authorized for this chat
   return true;
 };
-
-
 
 /**
  * Update chat by id
@@ -75,15 +72,13 @@ const updateChatById = async (chatId, updateBody) => {
   if (!chat) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chat not found');
   }
-  if (updateBody.to || updateBody.from || updateBody.project || updateBody.group
-    || updateBody.Owner) {
+  if (updateBody.to || updateBody.from || updateBody.project || updateBody.group || updateBody.Owner) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'These fields cannot be updated. Only messages can be changed.');
   }
   Object.assign(chat, updateBody);
   await chat.save();
   return chat;
 };
-
 
 /**
  * Query for chats
@@ -94,59 +89,57 @@ const updateChatById = async (chatId, updateBody) => {
  * @param {number} [options.page] - Current page (default = 1)
  * @returns {Promise<QueryResult>}
  */
- const queryChats = async (filter, options) => {
+const queryChats = async (filter, options) => {
   return Chat.paginate(filter, options);
 };
 
- const getAllChats = async (filter, userId) => {
+const getAllChats = async (filter, userId) => {
   // return Chat
   // .find(filter)
   // .populate({ path: "members", select: "name" })
   // .populate({ path: "project", select: "name" });
-  const chats = await Chat
-  .find(filter)
-  .populate({ path: "members", select: "name" })
-  .populate({ path: "project", select: "name" })
-  .populate({ path: "lastMessage", select: "message createdAt" });
+  const chats = await Chat.find(filter)
+    .populate({ path: 'members', select: 'name' })
+    .populate({ path: 'project', select: 'name' })
+    .populate({ path: 'lastMessage', select: 'message createdAt' });
 
-  const chatIds = await chats.map(chat => chat._id);
+  const chatIds = await chats.map((chat) => chat._id);
   const unreadMessages = await Message.aggregate([
     {
-      "$match": {
-        "chat": {
-          "$in": chatIds
+      $match: {
+        chat: {
+          $in: chatIds,
         },
-        "readBy": {
-          "$ne": userId
+        readBy: {
+          $ne: userId,
         },
-        access: { $eq: ObjectId(userId) }
-      }
+        access: { $eq: ObjectId(userId) },
+      },
     },
     {
-      "$sort": {
-        name: 1
-      }
+      $sort: {
+        name: 1,
+      },
     },
     {
-      "$group": {
-        "_id": "$chat",
-        "chatName": { "$last": "$name" },
-        "count": {
-          "$sum": 1
-        }
-      }
-    }
+      $group: {
+        _id: '$chat',
+        chatName: { $last: '$name' },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
   ]);
 
-  const data = chats.map(chat => {
+  const data = chats.map((chat) => {
     return {
       ...chat._doc,
-      unreadCount: unreadMessages?.find(myChat => String(myChat._id) === String(chat._doc._id))?.count
-    }
+      unreadCount: unreadMessages?.find((myChat) => String(myChat._id) === String(chat._doc._id))?.count,
+    };
   });
 
   return data;
-
 };
 
 const getChatRoomByRoomId = async function (roomId) {
@@ -155,37 +148,38 @@ const getChatRoomByRoomId = async function (roomId) {
 };
 
 const removeChatForUser = async function (roomId, userId) {
-  return Chat.updateOne({ _id: roomId }, { $pull: { members: userId } })
+  return Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
 };
 
 const getConversationByRoomId = async function (chatRoomId, options = {}, userId) {
-  return Message.paginate({ 
-      chat: chatRoomId, 
-      access: { $eq: ObjectId(userId) } 
-    }, 
+  return Message.paginate(
+    {
+      chat: chatRoomId,
+      access: { $eq: ObjectId(userId) },
+    },
     options
   );
 };
 
-const getMessageIdsByFilter = async function (filter, options= {}) {
-  const messages = await Message.find(filter, options)
-  return messages?.map?.(message => message._id) || []
+const getMessageIdsByFilter = async function (filter, options = {}) {
+  const messages = await Message.find(filter, options);
+  return messages?.map?.((message) => message._id) || [];
 };
 
 const checkMessageAuthorization = async function (messageId, userId) {
   const message = await Message.findOne({ _id: messageId, access: { $eq: ObjectId(userId) } });
-  if(!message) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Not authorized to perform this operation")
+  if (!message) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Not authorized to perform this operation');
   }
   return true;
 };
 
 const getMessageById = async function (messagId, options = {}) {
-  return Message.findOne({ _id: messagId }).populate("sender replyOf");
+  return Message.findOne({ _id: messagId }).populate('sender replyOf');
 };
 
-const getMessageByIds = async function(messagIds) {
-  return Message.find({ _id: messagIds}).populate("sender replyOf");
+const getMessageByIds = async function (messagIds) {
+  return Message.find({ _id: messagIds }).populate('sender replyOf');
 };
 
 const setAllMessagesReadByRoomId = async function (roomId, userId) {
@@ -194,240 +188,239 @@ const setAllMessagesReadByRoomId = async function (roomId, userId) {
 
 const addOrRemoveChatRoomToFavourite = async function (roomId, userId) {
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
-  const index = user?.pinnedChat?.findIndex(chat => String(chat) === String(roomId));
-  if(index < 0) {
+  const index = user?.pinnedChat?.findIndex((chat) => String(chat) === String(roomId));
+  if (index < 0) {
     return Promise.all([
       Chat.updateMany({ _id: roomId }, { $addToSet: { pinnedBy: userId } }),
       User.updateMany({ _id: userId }, { $addToSet: { pinnedChat: roomId } }),
-      true
+      true,
     ]);
   } else {
-      return Promise.all([
-        Chat.updateMany({ _id: roomId }, { $pull: { pinnedBy: userId } }),
-        User.updateMany({ _id: userId }, { $pull: { pinnedChat: roomId } }),
-        false
-      ]);
-    }
+    return Promise.all([
+      Chat.updateMany({ _id: roomId }, { $pull: { pinnedBy: userId } }),
+      User.updateMany({ _id: userId }, { $pull: { pinnedChat: roomId } }),
+      false,
+    ]);
+  }
 };
 
 const addOrRemoveMessageToFavourite = async function (messageId, userId) {
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
 
   await checkMessageAuthorization(messageId, userId);
 
-  const index = user?.pinnedMessages?.findIndex(chat => String(chat) === String(messageId));
-  if(index < 0) {
+  const index = user?.pinnedMessages?.findIndex((chat) => String(chat) === String(messageId));
+  if (index < 0) {
     return Promise.all([
       Message.updateMany({ _id: messageId }, { $addToSet: { pinnedBy: userId } }),
       User.updateMany({ _id: userId }, { $addToSet: { pinnedMessages: messageId } }),
-      true
+      true,
     ]);
   } else {
-      return Promise.all([
-        Message.updateMany({ _id: messageId }, { $pull: { pinnedBy: userId } }),
-        User.updateMany({ _id: userId }, { $pull: { pinnedMessages: messageId } }),
-        false
-      ]);
-    }
+    return Promise.all([
+      Message.updateMany({ _id: messageId }, { $pull: { pinnedBy: userId } }),
+      User.updateMany({ _id: userId }, { $pull: { pinnedMessages: messageId } }),
+      false,
+    ]);
+  }
 };
-
 
 const getPinnedMessages = async function (roomId, userId) {
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
 
-  return Message.find({ chat: roomId, pinnedBy: { $in: userId } }).populate("sender replyOf");
-
+  return Message.find({ chat: roomId, pinnedBy: { $in: userId } }).populate('sender replyOf');
 };
-
 
 const muteOrUnmuteChat = async function (roomId, userId) {
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
-  const index = user?.mutedChat?.findIndex(chat => String(chat) === String(roomId));
-  if(index < 0) {
+  const index = user?.mutedChat?.findIndex((chat) => String(chat) === String(roomId));
+  if (index < 0) {
     return Promise.all([
       Chat.updateMany({ _id: roomId }, { $addToSet: { mutedBy: userId } }),
       User.updateMany({ _id: userId }, { $addToSet: { mutedChat: roomId } }),
-      true
+      true,
     ]);
   } else {
-      return Promise.all([
-        Chat.updateMany({ _id: roomId }, { $pull: { mutedBy: userId } }),
-        User.updateMany({ _id: userId }, { $pull: { mutedChat: roomId } }),
-        false
-      ]);
-    }
+    return Promise.all([
+      Chat.updateMany({ _id: roomId }, { $pull: { mutedBy: userId } }),
+      User.updateMany({ _id: userId }, { $pull: { mutedChat: roomId } }),
+      false,
+    ]);
+  }
 };
 
-
 const replyMessage = async function (replyMessage, messageId, userId, files) {
-
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
-  
+
   const message = await getMessageById(messageId);
-  if(!message) {
-    throw new ApiError(400, "Message not found");
+  if (!message) {
+    throw new ApiError(400, 'Message not found');
   }
 
   const chat = await getChatById(message.chat);
-  console.log('chat members are', chat.members)
+  console.log('chat members are', chat.members);
   const reply = new Message({
-      sender: userId,
-      chat: message.chat,
-      receivedBy: [userId],
-      readBy: [userId],
-      message: replyMessage,
-      replyOf: messageId,
-      files: files || [],
-      access: chat.members.map(member => member)
+    sender: userId,
+    chat: message.chat,
+    receivedBy: [userId],
+    readBy: [userId],
+    message: replyMessage,
+    replyOf: messageId,
+    files: files || [],
+    access: chat.members.map((member) => member),
   });
-  
+
   await reply.save();
 
-  return getMessageById(reply._id, [{
-    path: 'replyOf', select: "message",
-    
-  }])
+  chat.lastMessage = reply._id;
+  await chat.save();
+
+  return getMessageById(reply._id, [
+    {
+      path: 'replyOf',
+      select: 'message',
+    },
+  ]);
 };
 
 const sendMessage = async function (message, chatId, userId, files, type) {
-
   const user = await userService.getUserById(userId);
-  if(!user) {
-    throw new ApiError(400, "User not found");
-  }
-  
-  const chat = await getChatById(chatId);
-  if(!chat) {
-    throw new ApiError(400, "Chat not found");
+  if (!user) {
+    throw new ApiError(400, 'User not found');
   }
 
-  console.log('make changes', files)
+  const chat = await getChatById(chatId);
+  if (!chat) {
+    throw new ApiError(400, 'Chat not found');
+  }
+
+  console.log('make changes', files);
 
   const msg = new Message({
-      sender: userId,
-      chat: chatId,
-      receivedBy: [userId],
-      readBy: [userId],
-      message: message,
-      files: type !== 'voice'? files || []: [],
-      type: type || 'message',
-      voiceUrl: type === 'voice'? files?.[0]?.url: null,
-      access: chat.members.map(member => member)
+    sender: userId,
+    chat: chatId,
+    receivedBy: [userId],
+    readBy: [userId],
+    message: message,
+    files: type !== 'voice' ? files || [] : [],
+    type: type || 'message',
+    voiceUrl: type === 'voice' ? files?.[0]?.url : null,
+    access: chat.members.map((member) => member),
   });
-  
+
   await msg.save();
-  console.log('new msg is ', msg)
+
+  chat.lastMessage = msg._id;
+  await chat.save();
 
   return getMessageById(msg._id);
 };
 
 const getRoomMediaById = async (roomId, userId) => {
   return Message.aggregate([
-    {'$match': { chat: ObjectId(roomId),  access: { $eq: ObjectId(userId) }}},
-    {'$unwind': '$files'},
-    {'$group': 
-        {
-            '_id': '$chat',
-            'files': 
-                {'$push': '$files'}
-        }
-    }
-  ])
-}
+    { $match: { chat: ObjectId(roomId), access: { $eq: ObjectId(userId) } } },
+    { $unwind: '$files' },
+    {
+      $group: {
+        _id: '$chat',
+        files: { $push: '$files' },
+      },
+    },
+  ]);
+};
 
 const getUnreadCount = async (userId) => {
   console.log('userId: ', userId);
   const chatRooms = await Chat.find({
     members: {
-      $in: [userId]
-    }
-  })
-  const chatIds = chatRooms.map(room => room._id);
+      $in: [userId],
+    },
+  });
+  const chatIds = chatRooms.map((room) => room._id);
   console.log('chatIds: ', chatIds);
-  
+
   const unreadMessages = await Message.aggregate([
     {
-      "$match": {
-        "chat": {
-          "$in": chatIds
+      $match: {
+        chat: {
+          $in: chatIds,
         },
-        "readBy": {
-          "$ne": userId
+        readBy: {
+          $ne: userId,
         },
-        access: { $eq: ObjectId(userId) }
-      }
+        access: { $eq: ObjectId(userId) },
+      },
     },
     {
-      "$sort": {
-        name: 1
-      }
+      $sort: {
+        name: 1,
+      },
     },
     {
-      "$group": {
-        "_id": "$chat",
-        "chatName": { "$last": "$name" },
-        "count": {
-          "$sum": 1
-        }
-      }
-    }
+      $group: {
+        _id: '$chat',
+        chatName: { $last: '$name' },
+        count: {
+          $sum: 1,
+        },
+      },
+    },
   ]);
 
   let count = 0;
-  unreadMessages.forEach((message => {
+  unreadMessages.forEach((message) => {
     console.log('message is ', message);
     count += message.count;
-  }))
-  console.log('count is ', count)
+  });
+  console.log('count is ', count);
 
   return count;
-}
+};
 
 const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
   const chat = await getChatRoomByRoomId(roomId);
-  if(!chat) {
-    throw new ApiError(400, 'Chat room not found')
+  if (!chat) {
+    throw new ApiError(400, 'Chat room not found');
   }
 
   const member = await userService.getUserById(userId);
-  if(!member) {
-    throw new ApiError(400, 'User not found')
+  if (!member) {
+    throw new ApiError(400, 'User not found');
   }
-  const index = chat?.members?.findIndex(member => String(member) === String(userId));
-  if(index < 0) {
-      await Chat.updateOne({ _id: roomId }, { $addToSet: { members: userId } });
-      if(temporary != 'true') {
-        // condition runs when adding a permanent member
-        await Message.updateMany({ chat: roomId }, { $addToSet: { access: userId  } });
-      }
-      if(member.socketId) {
-        global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);     
-      }
-      return true;
-  } else {
-        await Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
-        if(member.socketId) {
-          global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);     
-        }
-        return false;
+  const index = chat?.members?.findIndex((member) => String(member) === String(userId));
+  if (index < 0) {
+    await Chat.updateOne({ _id: roomId }, { $addToSet: { members: userId } });
+    if (temporary != 'true') {
+      // condition runs when adding a permanent member
+      await Message.updateMany({ chat: roomId }, { $addToSet: { access: userId } });
     }
-  
-}
+    if (member.socketId) {
+      global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);
+    }
+    return true;
+  } else {
+    await Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
+    if (member.socketId) {
+      global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);
+    }
+    return false;
+  }
+};
 
 module.exports = {
   createChat,
@@ -451,5 +444,5 @@ module.exports = {
   addOrRemoveChatMember,
   removeChatForUser,
   getMessageIdsByFilter,
-  getMessageByIds
+  getMessageByIds,
 };

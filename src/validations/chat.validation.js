@@ -4,8 +4,8 @@ const createChatRoom = {
   body: Joi.object().keys({
     name: Joi.string(),
     members: Joi.array().items(Joi.string()).required(),
-    projectId: Joi.string()
-  })
+    projectId: Joi.string(),
+  }),
 };
 
 const sendMessage = {
@@ -13,18 +13,18 @@ const sendMessage = {
     message: Joi.string(),
     chat: Joi.string().required(),
     messageId: Joi.string(),
-    type: Joi.string().valid('message', 'questioniar', 'voice').optional()
-  })
+    type: Joi.string().valid('message', 'questioniar', 'voice').optional(),
+  }),
 };
 
 const forwardMessage = {
   body: Joi.object().keys({
     messageId: Joi.string(),
-    chatIds: Joi.array().items(Joi.string()).required()
-  })
+    chatIds: Joi.array().items(Joi.string()).required(),
+  }),
 };
 
 module.exports = {
   createChatRoom,
-  sendMessage
+  sendMessage,
 };
