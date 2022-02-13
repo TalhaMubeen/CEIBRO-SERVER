@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-// const validator = require('validator');
 const { toJSON, paginate } = require('./plugins');
 
 const projectSchema = mongoose.Schema(
@@ -10,6 +9,12 @@ const projectSchema = mongoose.Schema(
       trim: true,
       unique: true,
     },
+    members: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      },
+    ],
     owner: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
@@ -18,7 +23,7 @@ const projectSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json

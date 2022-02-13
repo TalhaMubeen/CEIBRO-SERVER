@@ -18,6 +18,20 @@ const getProjects = catchAsync(async (req, res) => {
   res.send(result);
 });
 
+const getAllProjects = catchAsync(async (req, res) => {
+  const result = await projectService.getAllProjects();
+  res.send(result);
+});
+
+const getProjectMembers = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { _id } = req.user;
+  const project = await projectService.getProjectById(projectId);
+  let members = project.members;
+  members = members?.filter?.((member) => String(member.id) !== String(_id)) || [];
+  res.send(members);
+});
+
 const getProject = catchAsync(async (req, res) => {
   const project = await projectService.getProjectById(req.params.projectId);
   if (!project) {
@@ -42,4 +56,6 @@ module.exports = {
   getProject,
   updateProject,
   deleteProject,
+  getProjectMembers,
+  getAllProjects,
 };

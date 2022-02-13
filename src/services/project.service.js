@@ -31,10 +31,20 @@ const queryProjects = async (filter, options) => {
  * @param {ObjectId} id
  * @returns {Promise<Project>}
  */
-const getProjectById = async (id) => Project.findById(id);
-// {
-//   return Project.findById(id);
-// };
+const getProjectById = async (id) => {
+  const project = await Project.findById(id).populate({
+    path: 'members',
+    select: 'name',
+  });
+  if (!project) {
+    throw new ApiError(400, 'Invalid project');
+  }
+  return project;
+};
+
+const getAllProjects = () => {
+  return Project.find({}, { name: 1 });
+};
 
 /**
  * Get by email
@@ -84,4 +94,5 @@ module.exports = {
   getProjectByOwner,
   updateProjectById,
   deleteProjectById,
+  getAllProjects,
 };
