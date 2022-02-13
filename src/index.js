@@ -7,37 +7,36 @@ const { Server } = require('socket.io');
 const { webSocket } = require('./controllers');
 
 let server;
-mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
-  logger.info('Connected to MongoDB');
+mongoose
+  .connect(config.mongoose.url, config.mongoose.options)
+  .then(() => {
+    logger.info('Connected to MongoDB');
 
-  const welcome = (p) => () =>
-      l.info(
-        `up and running in ${
-          process.env.NODE_ENV || 'development'
-        } @: ${os.hostname()} on port: ${p}}`
-      );
+    const welcome = (p) => () =>
+      l.info(`up and running in ${process.env.NODE_ENV || 'development'} @: ${os.hostname()} on port: ${p}}`);
 
-  const server = http.createServer(app)
-  const io = new Server(server,{
-    cors: {
-      origin: "*",
-      methods: ["GET", "POST"]
-    }
-  });
-
-  global.io = io;
-      
-  webSocket.listenToChatServer(io)
-  server.listen(config.port, () => {
-      logger.info(`Listening to port ${config.port}`);
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: '*',
+        methods: ['GET', 'POST'],
+      },
     });
 
-  // server = app.listen(config.port, () => {
-  //   logger.info(`Listening to port ${config.port}`);
-  // });
-}).catch((err) => {
-  console.log('error connnecting mongo')
-});
+    global.io = io;
+
+    server.listen(config.port || 3000, () => {
+      logger.info(`Listening to port ${config.port}`);
+    });
+    webSocket.listenToChatServer(io);
+
+    // server = app.listen(config.port, () => {
+    //   logger.info(`Listening to port ${config.port}`);
+    // });
+  })
+  .catch((err) => {
+    console.log('error connnecting mongo');
+  });
 
 const exitHandler = () => {
   if (server) {
