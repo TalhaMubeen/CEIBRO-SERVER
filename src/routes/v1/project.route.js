@@ -13,7 +13,7 @@ module.exports = router;
  * @swagger
  * /project/members/{projectId}:
  *   get:
- *     summary: getProjectMembers
+ *     summary: get Project Members
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
