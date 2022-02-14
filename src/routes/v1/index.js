@@ -25,6 +25,10 @@ const defaultRoutes = [
     path: '/project',
     route: projectRoute,
   },
+  {
+    path: '/docs',
+    route: docsRoute,
+  },
 ];
 
 const devRoutes = [
