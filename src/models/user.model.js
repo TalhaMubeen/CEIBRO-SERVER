@@ -52,37 +52,54 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    pinnedMessages: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'Message'
-    }],
-    pinnedChat: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'Chat'
-    }],
-    mutedChat: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'Chat'
-    }],
+    pinnedMessages: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Message',
+      },
+    ],
+    pinnedChat: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Chat',
+      },
+    ],
+    mutedChat: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Chat',
+      },
+    ],
     isOnline: {
       type: Boolean,
-      default: false
+      default: false,
     },
     socketId: {
       type: String,
-      required: false
+      required: false,
     },
-    company: {
-      type: String
+    companyName: {
+      type: String,
     },
-    vat: {
-      type: String
+    companyVat: {
+      type: String,
     },
-    
+    companyLocation: {
+      type: String,
+    },
+    companyPhone: {
+      type: String,
+    },
+    workEmail: {
+      type: String,
+    },
+    currentlyRepresenting: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json

@@ -7,6 +7,11 @@ const userController = require('../../controllers/user.controller');
 const router = express.Router();
 
 router
+  .route('/profile')
+  .get(auth('manageProfile'), userController.getMyProfile)
+  .patch(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
+
+router
   .route('/')
   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
@@ -243,6 +248,77 @@ module.exports = router;
  *     responses:
  *       "200":
  *         description: No content
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/profile:
+ *   get:
+ *     summary: Get my profile
+ *     description: get profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   patch:
+ *     summary: Update my profile
+ *     description: update profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstName
+ *               - surName
+ *               - password
+ *               - phone
+ *               - companyName
+ *               - companyVat
+ *               - companyLocation
+ *               - companyPhone
+ *               - workEmail
+ *               - currentlyRepresenting
+ *             example:
+ *               firstName: fake name
+ *               surName: fake name
+ *               password: test@123
+ *               phone: fake name
+ *               companyName: fake name
+ *               companyVat: fake name
+ *               companyPhone: fake name
+ *               companyLocation: fake name
+ *               workEmail: test@company.com
+ *               currentlyRepresenting: true
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":

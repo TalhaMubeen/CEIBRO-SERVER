@@ -45,10 +45,26 @@ const deleteUser = {
   }),
 };
 
+const updateProfile = {
+  body: Joi.object().keys({
+    firstName: Joi.string().required(),
+    surName: Joi.string().required(),
+    password: Joi.string().custom(password),
+    phone: Joi.string().required(),
+    companyName: Joi.string().required(),
+    companyVat: Joi.string().required(),
+    companyLocation: Joi.string().required(),
+    companyPhone: Joi.string().required(),
+    workEmail: Joi.string().email().required(),
+    currentlyRepresenting: Joi.boolean().required(),
+  }),
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
+  updateProfile,
 };

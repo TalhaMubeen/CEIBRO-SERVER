@@ -35,10 +35,32 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getMyProfile = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const user = await userService.getUserById(_id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  res.send(user);
+});
+
+const updateMyProfile = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  console.log('req body is ', req.body);
+  const user = await userService.getUserById(_id);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+  const newUser = await userService.updateUserById(_id, req.body);
+  res.send(newUser);
+});
+
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
+  getMyProfile,
+  updateMyProfile,
 };
