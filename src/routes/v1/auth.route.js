@@ -12,7 +12,7 @@ router.post('/logout', validate(authValidation.logout), authController.logout);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
 router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
-router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
+router.post('/send-verification-email', validate(authValidation.forgotPassword), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
 module.exports = router;
@@ -37,11 +37,14 @@ module.exports = router;
  *           schema:
  *             type: object
  *             required:
- *               - name
+ *               - firstName
+ *               - surName
  *               - email
  *               - password
  *             properties:
- *               name:
+ *               firstName:
+ *                 type: string
+ *               surName:
  *                 type: string
  *               email:
  *                 type: string
@@ -53,7 +56,8 @@ module.exports = router;
  *                 minLength: 8
  *                 description: At least one number and one letter
  *             example:
- *               name: fake name
+ *               firstName: fake
+ *               surName: name
  *               email: fake@example.com
  *               password: password1
  *     responses:
@@ -256,6 +260,20 @@ module.exports = router;
  *     tags: [Auth]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email address to re send verification email
+ *             example:
+ *               email: email@test.com
  *     responses:
  *       "204":
  *         description: No content

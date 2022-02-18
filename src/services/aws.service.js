@@ -4,7 +4,6 @@ const { awsConfig } = require('../config/aws.config');
 const { getFileTypeByName } = require('../helpers/chat.helper');
 
 const s3bucket = new AWS.S3(awsConfig);
-console.log('aws configs are', awsConfig)
 
 const uploadFile = (file) => {
     return new Promise((resolve, reject) => {

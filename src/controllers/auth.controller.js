@@ -1,11 +1,15 @@
 const httpStatus = require('http-status');
 const catchAsync = require('../utils/catchAsync');
 const { authService, userService, tokenService, emailService } = require('../services');
-const Product = require('../models/project.model')
+const Product = require('../models/project.model');
+const ApiError = require('../utils/ApiError');
+
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.CREATED).send({ user, tokens });
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
+  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
+
+  res.status(httpStatus.CREATED).send("Verification email sent");
 });
 
 const login = catchAsync(async (req, res) => {
@@ -37,8 +41,17 @@ const resetPassword = catchAsync(async (req, res) => {
 });
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-  await emailService.sendVerificationEmail(req.user.email, verifyEmailToken);
+  const { email } = req.body;
+  const user = await userService.getUserByEmail(email);
+  if(!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Email not registered")
+  }
+  if(user.isEmailVerified) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Email already verified");
+  }
+  
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
+  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
