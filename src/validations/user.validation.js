@@ -60,11 +60,18 @@ const updateProfile = {
   }),
 };
 
+const inviteUser = {
+  body: Joi.object().keys({
+    email: Joi.string().required().email()
+  }),
+};
+
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateUser,
-  deleteUser,
   updateProfile,
+  deleteUser,
+  inviteUser
 };

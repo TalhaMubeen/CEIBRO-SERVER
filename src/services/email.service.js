@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
 const logger = require('../config/logger');
-const { getVerifyEmailTemplate, getResetPasswordTemplate } = require('../helpers/email.helper');
+const { getVerifyEmailTemplate, getResetPasswordTemplate, getInviationEmailTemplate } = require('../helpers/email.helper');
 
 const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -40,6 +40,24 @@ const sendResetPasswordEmail = async (to, token) => {
 };
 
 /**
+ * Send invitation email
+ * @param {string} to
+ * @param {string} fromName
+ * @param {string} fromEmail
+ * @returns {Promise}
+ */
+ const sendInvitationEmail = async (to, fromName, fromEmail) => {
+  const subject = 'Ceibro invite';
+  const url = `${process.env.FRONTEND_URL}`;
+  const text = ``;
+
+  console.log('senfing ', url, text)
+
+  const html = getInviationEmailTemplate(url, fromName, fromEmail);
+  await sendEmail(to, subject, text, html);
+};
+
+/**
  * Send verification email
  * @param {string} to
  * @param {string} token
@@ -58,4 +76,5 @@ module.exports = {
   sendEmail,
   sendResetPasswordEmail,
   sendVerificationEmail,
+  sendInvitationEmail
 };

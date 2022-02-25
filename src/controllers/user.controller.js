@@ -55,6 +55,15 @@ const updateMyProfile = catchAsync(async (req, res) => {
   res.send(newUser);
 });
 
+const inviteUser = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { email } = req.body;
+
+  await userService.inviteUserByEmail(email, _id);
+  
+  res.send("Invitation sent");
+});
+
 module.exports = {
   createUser,
   getUsers,
@@ -63,4 +72,5 @@ module.exports = {
   deleteUser,
   getMyProfile,
   updateMyProfile,
+  inviteUser
 };

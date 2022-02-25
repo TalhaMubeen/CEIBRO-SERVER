@@ -17,6 +17,10 @@ router
   .get(auth('getUsers'), validate(userValidation.getUsers), userController.getUsers);
 
 router
+  .route('/invite')
+    .post(auth('manageProfile'), validate(userValidation.inviteUser), userController.inviteUser)
+
+router
   .route('/:userId')
   .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
   .patch(auth('manageUsers'), validate(userValidation.updateUser), userController.updateUser)
@@ -312,6 +316,41 @@ module.exports = router;
  *               companyLocation: fake name
  *               workEmail: test@company.com
  *               currentlyRepresenting: true
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+
+/**
+ * @swagger
+ * /users/invite:
+ *   post:
+ *     summary: Invite a user
+ *     description: Invite a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             example:
+ *               email: test@company.com
  *     responses:
  *       "200":
  *         description: OK

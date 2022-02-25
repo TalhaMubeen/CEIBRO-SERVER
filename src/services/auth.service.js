@@ -4,6 +4,7 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const { EmailInvite, Invite } = require('../models');
 
 /**
  * Login with username and password
@@ -12,7 +13,7 @@ const { tokenTypes } = require('../config/tokens');
  * @returns {Promise<User>}
  */
 const loginUserWithEmailAndPassword = async (email, password) => {
-  const user = await userService.getUserByEmail(email); 
+  const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
@@ -20,8 +21,8 @@ const loginUserWithEmailAndPassword = async (email, password) => {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Please verify you email address');
   }
   const isPasswordMatch = await user.isPasswordMatch(password);
-  if(!isPasswordMatch) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');  
+  if (!isPasswordMatch) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
 
   return user;
@@ -93,6 +94,15 @@ const verifyEmail = async (verifyEmailToken) => {
     }
     await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
     await userService.updateUserById(user.id, { isEmailVerified: true });
+
+    const emailInvites = await EmailInvite.find({ email: user.email });
+    emailInvites.map((emailInvite) => {
+      const myInvite = new Invite({
+        from: emailInvite._doc.from,
+        to: user._id,
+      });
+      return myInvite.save();
+    });
   } catch (error) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }

@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
-const { User } = require('../models');
+const emailService = require('./email.service');
+const { User, EmailInvite } = require('../models');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -79,6 +80,34 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+/**
+ * Invite user by email
+ * @param {ObjectId} email
+ * @returns {Promise<User>}
+ */
+const inviteUserByEmail = async (email, currentUserId) => {
+  const currentUser = await getUserById(currentUserId);
+  const user = await getUserByEmail(email);
+  if (!user) {
+    // if email not exists in users then sent him an email invite
+    const name = currentUser.firstName + ' ' + currentUser.surName;
+    const emailInvite = new EmailInvite({
+      from: currentUserId,
+      email: email,
+    });
+    await emailInvite.save();
+    await emailService.sendInvitationEmail(email, name, currentUser.email);
+  } else {
+    // if email exist then create invite for him
+    const myInvite = new Invite({
+      from: currentUser.email,
+      to: user._id,
+    });
+    await myInvite.save();
+  }
+  return ;
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -86,4 +115,5 @@ module.exports = {
   getUserByEmail,
   updateUserById,
   deleteUserById,
+  inviteUserByEmail,
 };

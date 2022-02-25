@@ -9,7 +9,7 @@ const register = catchAsync(async (req, res) => {
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);
 
-  res.status(httpStatus.CREATED).send("Verification email sent");
+  res.status(httpStatus.CREATED).send('Verification email sent');
 });
 
 const login = catchAsync(async (req, res) => {
@@ -43,21 +43,21 @@ const resetPassword = catchAsync(async (req, res) => {
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const { email } = req.body;
   const user = await userService.getUserByEmail(email);
-  if(!user) {
-    throw new ApiError(httpStatus.UNAUTHORIZED, "Email not registered")
+  if (!user) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, 'Email not registered');
   }
-  if(user.isEmailVerified) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "Email already verified");
+  if (user.isEmailVerified) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Email already verified');
   }
-  
+
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.send('Verification email sent');
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
   await authService.verifyEmail(req.query.token);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.send('Email verified');
 });
 
 module.exports = {
