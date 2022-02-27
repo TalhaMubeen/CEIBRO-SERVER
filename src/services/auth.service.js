@@ -104,6 +104,7 @@ const verifyEmail = async (verifyEmailToken) => {
       return myInvite.save();
     });
   } catch (error) {
+    console.log("🚀 ~ file: auth.service.js ~ line 107 ~ verifyEmail ~ error", error)
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };
