@@ -175,6 +175,20 @@ const rejectAllInvitations = async (currentUserId) => {
   );
 };
 
+const getConnectionsByUserId = async (currentUserId) => {
+  return Invite.find({
+    to: currentUserId,
+    status: invitesStatus.ACCEPTED,
+  }).populate('to from');
+};
+
+const getConnectionsCountByUserId = async (currentUserId) => {
+  return Invite.count({
+    to: currentUserId,
+    status: invitesStatus.ACCEPTED,
+  });
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -189,4 +203,6 @@ module.exports = {
   getPendingInvitesByUserId,
   rejectAllInvitations,
   acceptAllInvitations,
+  getConnectionsByUserId,
+  getConnectionsCountByUserId,
 };

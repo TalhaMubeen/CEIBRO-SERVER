@@ -114,6 +114,19 @@ const acceptAllInvites = catchAsync(async (req, res) => {
   res.send(`Invites ${accept ? 'accepted' : 'rejected'} `);
 });
 
+const getMyConnections = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+
+  const invites = await userService.getConnectionsByUserId(_id);
+  res.send(invites);
+});
+
+const getMyConnectionsCount = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const invites = await userService.getConnectionsCountByUserId(_id);
+  res.send(invites.toString());
+});
+
 module.exports = {
   createUser,
   getUsers,
@@ -127,4 +140,6 @@ module.exports = {
   getMyInvitesCount,
   acceptInvite,
   acceptAllInvites,
+  getMyConnections,
+  getMyConnectionsCount,
 };

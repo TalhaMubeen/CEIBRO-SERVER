@@ -31,6 +31,9 @@ router
   .route('/invite/accept-all/:accepted')
   .post(auth('manageProfile'), validate(userValidation.acceptAllInvites), userController.acceptAllInvites);
 
+router.route('/connections').get(auth('manageProfile'), userController.getMyConnections);
+router.route('/connections/count').get(auth('manageProfile'), userController.getMyConnectionsCount);
+
 router
   .route('/:userId')
   .get(auth('getUsers'), validate(userValidation.getUser), userController.getUser)
@@ -468,6 +471,52 @@ module.exports = router;
  *         schema:
  *           type: boolean
  *         description: accept or reject all invites
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/connections/count:
+ *   get:
+ *     summary: Get my connections count
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/connections:
+ *   get:
+ *     summary: Get my connections
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       "200":
  *         description: OK
