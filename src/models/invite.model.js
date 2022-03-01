@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
 // const validator = require('validator');
 const { toJSON, paginate } = require('./plugins');
+const { invitesStatus } = require('../config/user.config');
 
 const InvitaionSchema = mongoose.Schema(
   {
-    // one-to-one chat
     from: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
@@ -15,8 +15,8 @@ const InvitaionSchema = mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'accepted', 'rejected'],
-      default: 'user',
+      enum: Object.values(invitesStatus),
+      default: 'pending',
     },
   },
   {

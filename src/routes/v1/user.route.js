@@ -18,7 +18,18 @@ router
 
 router
   .route('/invite')
-    .post(auth('manageProfile'), validate(userValidation.inviteUser), userController.inviteUser)
+  .get(auth('manageProfile'), userController.getMyInvites)
+  .post(auth('manageProfile'), validate(userValidation.inviteUser), userController.inviteUser);
+
+router.route('/invite/count').get(auth('manageProfile'), userController.getMyInvitesCount);
+
+router
+  .route('/invite/accept/:accepted/:inviteId')
+  .post(auth('manageProfile'), validate(userValidation.acceptInvite), userController.acceptInvite);
+
+router
+  .route('/invite/accept-all/:accepted')
+  .post(auth('manageProfile'), validate(userValidation.acceptAllInvites), userController.acceptAllInvites);
 
 router
   .route('/:userId')
@@ -331,10 +342,27 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  */
 
-
 /**
  * @swagger
  * /users/invite:
+ *   get:
+ *     summary: Get my all invites
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   post:
  *     summary: Invite a user
  *     description: Invite a user
@@ -351,6 +379,95 @@ module.exports = router;
  *               - email
  *             example:
  *               email: test@company.com
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/invite/count:
+ *   get:
+ *     summary: Get my invites count
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/invite/accept/{accepted}/{inviteId}:
+ *   post:
+ *     summary: accept or reject an invite
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: accepted
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: accept or reject invite
+ *       - in: path
+ *         name: inviteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: invite id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/invite/accept/{accepted}:
+ *   post:
+ *     summary: accept or reject all invites
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: accepted
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: accept or reject all invites
  *     responses:
  *       "200":
  *         description: OK

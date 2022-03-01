@@ -2,6 +2,8 @@ const httpStatus = require('http-status');
 const emailService = require('./email.service');
 const { User, EmailInvite } = require('../models');
 const ApiError = require('../utils/ApiError');
+const Invite = require('../models/invite.model');
+const { invitesStatus } = require('../config/user.config');
 
 /**
  * Create a user
@@ -80,6 +82,13 @@ const deleteUserById = async (userId) => {
   return user;
 };
 
+const getInvitation = async (from, to) => {
+  return Invite.findOne({
+    from,
+    to,
+  });
+};
+
 /**
  * Invite user by email
  * @param {ObjectId} email
@@ -88,6 +97,7 @@ const deleteUserById = async (userId) => {
 const inviteUserByEmail = async (email, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const user = await getUserByEmail(email);
+
   if (!user) {
     // if email not exists in users then sent him an email invite
     const name = currentUser.firstName + ' ' + currentUser.surName;
@@ -98,14 +108,71 @@ const inviteUserByEmail = async (email, currentUserId) => {
     await emailInvite.save();
     await emailService.sendInvitationEmail(email, name, currentUser.email);
   } else {
+    if (String(currentUser._id) === String(user._id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Cannot send invite to yourself');
+    }
     // if email exist then create invite for him
-    const myInvite = new Invite({
-      from: currentUser.email,
-      to: user._id,
-    });
-    await myInvite.save();
+    const inviteExist = await getInvitation(currentUser._id, user._id);
+    if (!inviteExist) {
+      const myInvite = new Invite({
+        from: currentUser._id,
+        to: user._id,
+      });
+      await myInvite.save();
+    }
   }
-  return ;
+  return;
+};
+
+const getInvitesByUserId = async (currentUserId) => {
+  return Invite.find({
+    to: currentUserId,
+    status: invitesStatus.PENDING,
+  }).populate('to from');
+};
+
+const getInvitesCountByUserId = async (currentUserId) => {
+  return Invite.count({
+    to: currentUserId,
+    status: invitesStatus.PENDING,
+  });
+};
+
+const getInviteById = async (inviteId) => {
+  return Invite.findOne({
+    _id: inviteId,
+  });
+};
+
+const getPendingInvitesByUserId = async (inviteId) => {
+  return Invite.find({
+    _id: inviteId,
+    status: invitesStatus.PENDING,
+  });
+};
+
+const acceptAllInvitations = async (currentUserId) => {
+  return Invite.updateMany(
+    {
+      to: currentUserId,
+      status: invitesStatus.PENDING,
+    },
+    {
+      status: invitesStatus.ACCEPTED,
+    }
+  );
+};
+
+const rejectAllInvitations = async (currentUserId) => {
+  return Invite.updateMany(
+    {
+      to: currentUserId,
+      status: invitesStatus.PENDING,
+    },
+    {
+      status: invitesStatus.REJECTED,
+    }
+  );
 };
 
 module.exports = {
@@ -116,4 +183,10 @@ module.exports = {
   updateUserById,
   deleteUserById,
   inviteUserByEmail,
+  getInvitesByUserId,
+  getInvitesCountByUserId,
+  getInviteById,
+  getPendingInvitesByUserId,
+  rejectAllInvitations,
+  acceptAllInvitations,
 };

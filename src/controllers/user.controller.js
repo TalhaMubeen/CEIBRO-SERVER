@@ -3,6 +3,7 @@ const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService } = require('../services');
+const { invitesStatus } = require('../config/user.config');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -60,8 +61,57 @@ const inviteUser = catchAsync(async (req, res) => {
   const { email } = req.body;
 
   await userService.inviteUserByEmail(email, _id);
-  
-  res.send("Invitation sent");
+  res.send('Invitation sent');
+});
+
+const getMyInvites = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+
+  const invites = await userService.getInvitesByUserId(_id);
+  res.send(invites);
+});
+
+const getMyInvitesCount = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const invites = await userService.getInvitesCountByUserId(_id);
+  res.send(invites.toString());
+});
+
+const acceptInvite = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { accepted, inviteId } = req.params;
+  const invite = await userService.getInviteById(inviteId);
+  if (!invite || String(invite.to) !== String(_id)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid invite id');
+  }
+  if (invite.status !== invitesStatus.PENDING) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invite status not pending');
+  }
+
+  let accept = false;
+
+  if (accepted == 'true') {
+    accept = true;
+    invite.status = invitesStatus.ACCEPTED;
+  }
+  if (accepted == 'false') {
+    invite.status = invitesStatus.REJECTED;
+  }
+  await invite.save();
+
+  res.send(`Invite ${accept ? 'accepted' : 'rejected'} `);
+});
+
+const acceptAllInvites = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { accepted } = req.params;
+  if (accepted === 'true') {
+    await userService.acceptAllInvitations(_id);
+  } else {
+    await userService.rejectAllInvitations(_id);
+  }
+
+  res.send(`Invites ${accept ? 'accepted' : 'rejected'} `);
 });
 
 module.exports = {
@@ -72,5 +122,9 @@ module.exports = {
   deleteUser,
   getMyProfile,
   updateMyProfile,
-  inviteUser
+  inviteUser,
+  getMyInvites,
+  getMyInvitesCount,
+  acceptInvite,
+  acceptAllInvites,
 };

@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { password, objectId } = require('./custom.validation');
+const { password, objectId, accepted } = require('./custom.validation');
 
 const createUser = {
   body: Joi.object().keys({
@@ -62,7 +62,20 @@ const updateProfile = {
 
 const inviteUser = {
   body: Joi.object().keys({
-    email: Joi.string().required().email()
+    email: Joi.string().required().email(),
+  }),
+};
+
+const acceptInvite = {
+  params: Joi.object().keys({
+    accepted: Joi.string().custom(accepted),
+    inviteId: Joi.string().required(),
+  }),
+};
+
+const acceptAllInvites = {
+  params: Joi.object().keys({
+    accepted: Joi.string().custom(accepted),
   }),
 };
 
@@ -73,5 +86,7 @@ module.exports = {
   updateUser,
   updateProfile,
   deleteUser,
-  inviteUser
+  inviteUser,
+  acceptInvite,
+  acceptAllInvites,
 };
