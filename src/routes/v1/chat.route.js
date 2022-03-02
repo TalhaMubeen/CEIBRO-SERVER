@@ -5,14 +5,7 @@ const authController = require('../../controllers/auth.controller');
 const auth = require('../../middlewares/auth');
 const { chatController } = require('../../controllers');
 const { chatValidation } = require('../../validations');
-const multer = require('multer');
-const upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    // no larger than 100mb.
-    fileSize: 1024 * 1024 * 1024,
-  },
-});
+const { multerUpload } = require('../../config/aws.config');
 const router = express.Router();
 
 router
@@ -30,9 +23,18 @@ router.route('/room/favourite/:roomId').post(auth('getChatRooms'), chatControlle
 
 router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.muteChat);
 
-router.route('/message/reply').post(auth('getChatRooms'), upload.array('products'), validate(chatValidation.sendMessage), chatController.replyMessage);
+router
+  .route('/message/reply')
+  .post(
+    auth('getChatRooms'),
+    multerUpload.array('products'),
+    validate(chatValidation.sendMessage),
+    chatController.replyMessage
+  );
 
-router.route('/message/forward').post(auth('getChatRooms'), validate(chatValidation.forwardMessage), chatController.forwardMessage);
+router
+  .route('/message/forward')
+  .post(auth('getChatRooms'), validate(chatValidation.forwardMessage), chatController.forwardMessage);
 
 router
   .route('/message/favourite/:messageId')
@@ -41,25 +43,21 @@ router
 
 router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatRoomMedia);
 
-router.route('/member/:roomId/:memberId')
-  .post(auth('getChatRooms'), chatController.addOrRemoveChatMembers)
+router.route('/member/:roomId/:memberId').post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
 
-router.route('/room/:roomId')
-  .delete(auth('getChatRooms'), chatController.deleteChatRoomForUser)
-
+router.route('/room/:roomId').delete(auth('getChatRooms'), chatController.deleteChatRoomForUser);
 
 router.route('/message/questioniar').post(auth('getChatRooms'), chatController.saveQuestioniar);
-router.route('/questioniar/view/:questioniarId')
+router
+  .route('/questioniar/view/:questioniarId')
   .get(auth('getChatRooms'), chatController.getQuestioniarById)
-  .post(auth('getChatRooms'), chatController.saveQuestioniarAnswers)
-  
-router.route('/questioniar/view-answer/:questioniarId/:userId')
-  .get(auth('getChatRooms'), chatController.getQuestioniarAnswersByUser)
+  .post(auth('getChatRooms'), chatController.saveQuestioniarAnswers);
 
+router
+  .route('/questioniar/view-answer/:questioniarId/:userId')
+  .get(auth('getChatRooms'), chatController.getQuestioniarAnswersByUser);
 
-router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage)
-
-
+router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage);
 
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
@@ -326,7 +324,6 @@ module.exports = router;
  *
  */
 
-
 /**
  * @swagger
  * /chat/message/forward:
@@ -335,7 +332,7 @@ module.exports = router;
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
- * 
+ *
  *     requestBody:
  *       required: true
  *       content:

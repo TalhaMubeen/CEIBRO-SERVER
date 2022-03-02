@@ -119,7 +119,7 @@ const acceptAllInvites = catchAsync(async (req, res) => {
     await userService.rejectAllInvitations(_id);
   }
 
-  res.send(`Invites ${accept ? 'accepted' : 'rejected'} `);
+  res.send(`Invites ${accepted ? 'accepted' : 'rejected'} `);
 });
 
 const getMyConnections = catchAsync(async (req, res) => {

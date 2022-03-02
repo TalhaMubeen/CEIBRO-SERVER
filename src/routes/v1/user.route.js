@@ -11,6 +11,8 @@ router
   .get(auth('manageProfile'), userController.getMyProfile)
   .patch(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
 
+// router.route('/profile-pic').patch(auth('manageProfile'), userController.updateProfilePic);
+
 router
   .route('/')
   .post(auth('manageUsers'), validate(userValidation.createUser), userController.createUser)
@@ -458,7 +460,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /users/invite/accept/{accepted}:
+ * /users/invite/accept-all/{accepted}:
  *   post:
  *     summary: accept or reject all invites
  *     tags: [Users]
