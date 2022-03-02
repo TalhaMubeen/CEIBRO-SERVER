@@ -68,7 +68,15 @@ const getMyInvites = catchAsync(async (req, res) => {
   const { _id } = req.user;
 
   const invites = await userService.getInvitesByUserId(_id);
-  res.send(invites);
+  const result = invites.map((invite) => {
+    return {
+      status: invite.status,
+      _id: invite._id,
+      from: invite.from,
+      createdAt: invite.createdAt,
+    };
+  });
+  res.send(result);
 });
 
 const getMyInvitesCount = catchAsync(async (req, res) => {
