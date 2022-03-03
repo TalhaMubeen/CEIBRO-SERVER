@@ -4,6 +4,10 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { userService, awsService } = require('../services');
 const { invitesStatus } = require('../config/user.config');
+const TimeAgo = require('javascript-time-ago');
+const en = require('javascript-time-ago/locale/en.json');
+TimeAgo.addDefaultLocale(en);
+const timeAgo = new TimeAgo('en-US');
 const { bucketFolders } = require('../services/aws.service');
 
 const createUser = catchAsync(async (req, res) => {
@@ -80,13 +84,13 @@ const getMyInvites = catchAsync(async (req, res) => {
   const { _id } = req.user;
 
   const invites = await userService.getInvitesByUserId(_id);
-  console.log('🚀 ~ file: user.controller.js ~ line 83 ~ getMyInvites ~ invites', invites);
+
   const result = invites.map((invite) => {
     return {
       status: invite.status,
       _id: invite._id,
       from: invite.from,
-      createdAt: invite.createdAt,
+      createdAt: timeAgo.format(invite.createdAt, 'mini'),
     };
   });
   res.send(result);
