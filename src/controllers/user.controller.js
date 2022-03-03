@@ -2,8 +2,9 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userService } = require('../services');
+const { userService, awsService } = require('../services');
 const { invitesStatus } = require('../config/user.config');
+const { bucketFolders } = require('../services/aws.service');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -20,6 +21,7 @@ const getUsers = catchAsync(async (req, res) => {
 
 const getUser = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
+  console.log('🚀 ~ file: user.controller.js ~ line 24 ~ getUser ~ user', user);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -56,6 +58,16 @@ const updateMyProfile = catchAsync(async (req, res) => {
   res.send(newUser);
 });
 
+const updateUserProfilePic = catchAsync(async (req, res) => {
+  const { _id: myUserId } = req.user;
+  const file = req.file;
+  const path = await awsService.uploadFile(file, bucketFolders.USER_FOLDER);
+  const user = await userService.getUserById(myUserId);
+  user.profilePic = path.url;
+  await user.save();
+  res.status(200).send('profile pic updated successfully');
+});
+
 const inviteUser = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const { email } = req.body;
@@ -68,6 +80,7 @@ const getMyInvites = catchAsync(async (req, res) => {
   const { _id } = req.user;
 
   const invites = await userService.getInvitesByUserId(_id);
+  console.log('🚀 ~ file: user.controller.js ~ line 83 ~ getMyInvites ~ invites', invites);
   const result = invites.map((invite) => {
     return {
       status: invite.status,
@@ -124,9 +137,17 @@ const acceptAllInvites = catchAsync(async (req, res) => {
 
 const getMyConnections = catchAsync(async (req, res) => {
   const { _id } = req.user;
-
   const invites = await userService.getConnectionsByUserId(_id);
-  res.send(invites);
+  let result = invites.map((invite) => {
+    if (String(_id) === String(invite?.from?._id)) {
+      invite._doc.sentByMe = true;
+    } else {
+      invite._doc.sentByMe = false;
+    }
+    return invite;
+  });
+  console.log('invites: ', result);
+  res.send(result);
 });
 
 const getMyConnectionsCount = catchAsync(async (req, res) => {
@@ -150,4 +171,5 @@ module.exports = {
   acceptAllInvites,
   getMyConnections,
   getMyConnectionsCount,
+  updateUserProfilePic,
 };

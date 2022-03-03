@@ -177,14 +177,28 @@ const rejectAllInvitations = async (currentUserId) => {
 
 const getConnectionsByUserId = async (currentUserId) => {
   return Invite.find({
-    to: currentUserId,
+    $or: [
+      {
+        to: currentUserId,
+      },
+      {
+        from: currentUserId,
+      },
+    ],
     status: invitesStatus.ACCEPTED,
   }).populate('to from');
 };
 
 const getConnectionsCountByUserId = async (currentUserId) => {
   return Invite.count({
-    to: currentUserId,
+    $or: [
+      {
+        to: currentUserId,
+      },
+      {
+        from: currentUserId,
+      },
+    ],
     status: invitesStatus.ACCEPTED,
   });
 };

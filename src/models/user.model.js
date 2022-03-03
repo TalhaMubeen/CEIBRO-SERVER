@@ -8,13 +8,17 @@ const userSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
     },
     surName: {
       type: String,
-      required: true,
+      // required: true,
       trim: true,
+    },
+    profilePic: {
+      type: String,
+      required: false,
     },
     email: {
       type: String,

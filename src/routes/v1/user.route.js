@@ -3,7 +3,7 @@ const auth = require('../../middlewares/auth');
 const validate = require('../../middlewares/validate');
 const userValidation = require('../../validations/user.validation');
 const userController = require('../../controllers/user.controller');
-
+const { multerUpload } = require('../../config/aws.config');
 const router = express.Router();
 
 router
@@ -11,7 +11,9 @@ router
   .get(auth('manageProfile'), userController.getMyProfile)
   .patch(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
 
-// router.route('/profile-pic').patch(auth('manageProfile'), userController.updateProfilePic);
+router
+  .route('/profile/pic')
+  .patch(auth('manageProfile'), multerUpload.single('profilePic'), userController.updateUserProfilePic);
 
 router
   .route('/')
@@ -332,6 +334,39 @@ module.exports = router;
  *               companyLocation: fake name
  *               workEmail: test@company.com
  *               currentlyRepresenting: true
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/profile/pic:
+ *   patch:
+ *     summary: Update my profile pic
+ *     description: update profile
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                profilePic:
+ *                  type: string
+ *                  format: binary
  *     responses:
  *       "200":
  *         description: OK
