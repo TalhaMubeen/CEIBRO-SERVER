@@ -44,6 +44,7 @@ router
 router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatRoomMedia);
 
 router.route('/member/:roomId/:memberId').post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
+router.route('/member/available/:roomId').get(auth('getChatRooms'), chatController.getAvailableChatMembers);
 
 router.route('/room/:roomId').delete(auth('getChatRooms'), chatController.deleteChatRoomForUser);
 
@@ -502,6 +503,7 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
+
 /**
  * @swagger
  * /chat/member/{roomId}/{memberId}:
@@ -529,6 +531,38 @@ module.exports = router;
  *         schema:
  *           type: boolean
  *         description: is temporary member (true/false)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+
+/**
+ * @swagger
+ * /chat/member/available/{roomId}:
+ *   get:
+ *     summary: get available new members for chat
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
  *     responses:
  *       "200":
  *         description: OK

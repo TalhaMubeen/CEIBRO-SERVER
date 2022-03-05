@@ -99,7 +99,7 @@ const getAllChats = async (filter, userId) => {
   // .populate({ path: "members", select: "name" })
   // .populate({ path: "project", select: "name" });
   const chats = await Chat.find(filter)
-    .populate({ path: 'members', select: 'name' })
+    .populate({ path: 'members', select: 'firstName surName profilePic' })
     .populate({ path: 'project', select: 'name' })
     .populate({ path: 'lastMessage', select: 'message createdAt' });
 
@@ -392,6 +392,15 @@ const getUnreadCount = async (userId) => {
   return count;
 };
 
+const getAvailableChatMembers = async (roomId) => {
+  const chat = await getChatRoomByRoomId(roomId);
+  if (!chat) {
+    throw new ApiError(400, 'Chat room not found');
+  }
+  const members = chat.members;
+  return User.find({ _id: { $nin: members }}, { firstName: 1, surName: 1, profilePic: 1 });
+}
+
 const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
   const chat = await getChatRoomByRoomId(roomId);
   if (!chat) {
@@ -445,4 +454,5 @@ module.exports = {
   removeChatForUser,
   getMessageIdsByFilter,
   getMessageByIds,
+  getAvailableChatMembers
 };

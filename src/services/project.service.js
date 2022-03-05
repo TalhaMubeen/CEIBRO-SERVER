@@ -34,7 +34,7 @@ const queryProjects = async (filter, options) => {
 const getProjectById = async (id) => {
   const project = await Project.findById(id).populate({
     path: 'members',
-    select: 'name',
+    select: 'firstName surName profilePic',
   });
   if (!project) {
     throw new ApiError(400, 'Invalid project');

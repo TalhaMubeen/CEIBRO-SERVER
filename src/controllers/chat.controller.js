@@ -293,6 +293,13 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
   res.status(200).send(`Member ${result ? 'added' : 'removed'}`);
 });
 
+const getAvailableChatMembers = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+
+  const result = await chatService.getAvailableChatMembers(roomId);
+  res.status(200).send(result);
+});
+
 const saveQuestioniar = catchAsync(async (req, res) => {
   const { dueDate, members, questions, chat } = req.body;
   const userId = req.user._id;
@@ -559,6 +566,7 @@ module.exports = {
   getQuestioniarAnswersByUser,
   deleteChatRoomForUser,
   forwardMessage,
-  getQuestionairByTypeMessage
+  getQuestionairByTypeMessage,
+  getAvailableChatMembers
   // uploadImage
 };

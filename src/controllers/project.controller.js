@@ -27,6 +27,7 @@ const getProjectMembers = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { _id } = req.user;
   const project = await projectService.getProjectById(projectId);
+  console.log('project is ', project)
   let members = project.members;
   members = members?.filter?.((member) => String(member.id) !== String(_id)) || [];
   res.send(members);
