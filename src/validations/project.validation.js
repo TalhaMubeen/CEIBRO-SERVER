@@ -7,6 +7,7 @@ const createProject = {
     location: Joi.string(),
     owner: Joi.any(),
     dueDate: Joi.string(),
+    projectStatus: Joi.string(),
   }),
 };
 
