@@ -203,9 +203,18 @@ const getConnectionsCountByUserId = async (currentUserId) => {
   });
 };
 
+const getAvailableUsers = async (currentUserId) => {
+  return User.find({
+    _id: {
+      $ne: currentUserId,
+    },
+  });
+};
+
 module.exports = {
   createUser,
   queryUsers,
+  getAvailableUsers,
   getUserById,
   getUserByEmail,
   updateUserById,

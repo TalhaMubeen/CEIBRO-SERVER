@@ -9,6 +9,7 @@ const en = require('javascript-time-ago/locale/en.json');
 TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');
 const { bucketFolders } = require('../services/aws.service');
+const { mapUsers } = require('../helpers/user.helper');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -21,6 +22,11 @@ const getUsers = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);
+});
+
+const getAvailableUsers = catchAsync(async (req, res) => {
+  const result = await userService.getAvailableUsers(req.user._id);
+  res.send(mapUsers(result));
 });
 
 const getUser = catchAsync(async (req, res) => {
@@ -163,6 +169,7 @@ const getMyConnectionsCount = catchAsync(async (req, res) => {
 module.exports = {
   createUser,
   getUsers,
+  getAvailableUsers,
   getUser,
   updateUser,
   deleteUser,

@@ -5,6 +5,7 @@ const { getFileTypeByName } = require('../helpers/chat.helper');
 const folders = {
   USER_FOLDER: 'users',
   CHAT_FOLDER: 'chat_media',
+  PROJECT_FOLDER: 'projects'
 };
 
 const s3bucket = new AWS.S3(awsConfig);

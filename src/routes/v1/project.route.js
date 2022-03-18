@@ -1,13 +1,102 @@
 const express = require('express');
+
+const validate = require('../../middlewares/validate');
+const validation = require('../../validations/project.validation');
+
 const { projectController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
+const { multerUpload } = require('../../config/aws.config');
 const router = express.Router();
+
+router
+  .route('/')
+  .post(
+    auth('manageProject'),
+    multerUpload.single('projectPhoto'),
+    validate(validation.createProject),
+    projectController.createProject
+  )
+  .get(auth('manageProject'), projectController.getProjects);
 
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
 
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
 module.exports = router;
+
+/**
+ * @swagger
+ * /project:
+ *   post:
+ *     summary: create a project
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               addTime:
+ *                 type: boolean
+ *               quantity:
+ *                 type: boolean
+ *               comment:
+ *                 type: boolean
+ *               photo:
+ *                 type: boolean
+ *             example:
+ *               title: test project
+ *               dueDate: 12-12-2022
+ *               description: description
+ *               location: location
+ *               owner: 2324234234,
+ *               publishStatus: draft | published
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 tokens:
+ *                   $ref: '#/components/schemas/AuthTokens'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateEmail'
+ *   get:
+ *     summary: get Projects with filters
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ * 
+
+*/
 
 /**
  * @swagger

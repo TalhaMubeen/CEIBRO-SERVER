@@ -7,7 +7,11 @@ const ApiError = require('../utils/ApiError');
  * @param {Object} projectBody
  * @returns {Promise<Project>}
  */
-const createProject = async (projectBody) => Project.create(projectBody);
+
+const createProject = async (projectBody, currentUserId) => {
+  return Project.create(projectBody);
+};
+
 // {
 //   return Project.create(projectBody);
 // };
@@ -43,7 +47,11 @@ const getProjectById = async (id) => {
 };
 
 const getAllProjects = () => {
-  return Project.find({}, { name: 1 });
+  return Project.find({}, { title: 1 });
+};
+
+const getProjects = () => {
+  return Project.paginate();
 };
 
 /**
@@ -95,4 +103,5 @@ module.exports = {
   updateProjectById,
   deleteProjectById,
   getAllProjects,
+  getProjects,
 };

@@ -1,13 +1,18 @@
-// Each project has an owner() and multiple groups, each group can have a chat.
-// Owner can add users to the group and chat.
 const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
+const awsService = require('../services/aws.service');
+const { bucketFolders } = require('../services/aws.service');
 
 const createProject = catchAsync(async (req, res) => {
-  const project = await projectService.createProject(req.body);
+  if (req.file) {
+    const file = req.file;
+    const path = await awsService.uploadFile(file, bucketFolders.PROJECT_FOLDER);
+    req.body.projectPhoto = path.url;
+  }
+  const project = await projectService.createProject(req.body, req.user._id);
   res.status(httpStatus.CREATED).send(project);
 });
 
@@ -27,7 +32,6 @@ const getProjectMembers = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { _id } = req.user;
   const project = await projectService.getProjectById(projectId);
-  console.log('project is ', project)
   let members = project.members;
   members = members?.filter?.((member) => String(member.id) !== String(_id)) || [];
   res.send(members);
@@ -59,4 +63,5 @@ module.exports = {
   deleteProject,
   getProjectMembers,
   getAllProjects,
+  getProjects,
 };
