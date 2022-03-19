@@ -16,7 +16,7 @@ router
     validate(validation.createProject),
     projectController.createProject
   )
-  .get(auth('manageProject'), projectController.getProjects);
+  .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
 
@@ -81,6 +81,37 @@ module.exports = router;
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: title
+ *         schema:
+ *           type: string
+ *         description: project title
+ *       - in: query
+ *         name: dueDate
+ *         schema:
+ *           type: date
+ *         description: project due date
+ *       - in: query
+ *         name: publishStatus
+ *         schema:
+ *           type: string
+ *           enum: [all, draft, ongoing, approved, done, draft]
+ *         description: project status
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *         default: 10
+ *         description: Maximum number of projects
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           default: 1
+ *         description: Page number
  *     responses:
  *       "200":
  *         description: OK

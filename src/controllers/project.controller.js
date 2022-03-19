@@ -17,9 +17,16 @@ const createProject = catchAsync(async (req, res) => {
 });
 
 const getProjects = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name']);
+  const filter = pick(req.query, ['title', 'publishStatus']);
+  const search = pick(req.query, ['dueDate'])
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  if(search.dueDate) {
+    filter.dueDate = {
+      $lte  : search.dueDate
+    }
+  }
   options.populate = "owner"
+  console.log('filters are', filter, req.query)
   const result = await projectService.queryProjects(filter, options);
   res.send(result);
 });
