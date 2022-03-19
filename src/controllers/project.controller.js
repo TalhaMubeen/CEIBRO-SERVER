@@ -19,6 +19,7 @@ const createProject = catchAsync(async (req, res) => {
 const getProjects = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['name']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  options.populate = "owner"
   const result = await projectService.queryProjects(filter, options);
   res.send(result);
 });
