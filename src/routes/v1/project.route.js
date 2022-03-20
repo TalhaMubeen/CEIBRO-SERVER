@@ -19,6 +19,7 @@ router
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
+router.route('/detail/:projectId').get(auth('manageProject'), projectController.getProject);
 
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
@@ -126,8 +127,38 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  * 
+ */
 
-*/
+/**
+ * @swagger
+ * /project/detail/{projectId}:
+ *   get:
+ *     summary: get project by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
 
 /**
  * @swagger

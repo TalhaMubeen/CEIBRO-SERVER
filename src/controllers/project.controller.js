@@ -25,6 +25,9 @@ const getProjects = catchAsync(async (req, res) => {
       $lte  : search.dueDate
     }
   }
+  if(filter.publishStatus === 'all') {
+    delete filter.publishStatus
+  } 
   options.populate = "owner"
   console.log('filters are', filter, req.query)
   const result = await projectService.queryProjects(filter, options);
