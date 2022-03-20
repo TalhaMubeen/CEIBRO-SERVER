@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
 const awsService = require('../services/aws.service');
 const { bucketFolders } = require('../services/aws.service');
+const { createProjectRole } = require('../services/project.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -66,6 +67,13 @@ const deleteProject = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const createRole = catchAsync(async (req, res) => {
+  const { projectId } = req.params
+  const { name, admin, roles, member, timeProfile } = req.body;
+  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId)
+  res.status(200).send(role);
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -75,4 +83,6 @@ module.exports = {
   getProjectMembers,
   getAllProjects,
   getProjects,
+
+  createRole
 };

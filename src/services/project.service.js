@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { Project } = require('../models');
+const Role = require('../models/role.model');
 const ApiError = require('../utils/ApiError');
 
 /**
@@ -98,6 +99,34 @@ const deleteProjectById = async (projectId) => {
   return project;
 };
 
+const getRoleByProjectAndName = (name, projectId) => {
+  return Role.findOne({
+    name,
+    project: projectId
+  })
+}
+
+const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId) => {
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+
+  const role = await getRoleByProjectAndName(name, projectId);
+  if (role) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Role already exist');
+  }
+
+  const newRole = new Role({
+    name,
+    admin,
+    roles,
+    member,
+    timeProfile
+  })
+  return newRole.save()
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -107,4 +136,5 @@ module.exports = {
   deleteProjectById,
   getAllProjects,
   getProjects,
+  createProjectRole
 };

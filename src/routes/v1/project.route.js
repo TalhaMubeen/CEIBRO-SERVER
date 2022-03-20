@@ -21,7 +21,24 @@ router
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
 router.route('/detail/:projectId').get(auth('manageProject'), projectController.getProject);
 
-router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
+router.route('/all')
+  .get(
+    auth('manageProject'), 
+    projectController.getAllProjects
+  )
+
+router.route('/role/:projectId')
+  // .get(
+  //   auth('manageProject'), 
+  //   projectController.getAllProjects
+  // )
+  .post(
+    auth('manageProject'),
+    validate(validation.creatProjectRole),
+    projectController.createRole
+  )
+
+
 
 module.exports = router;
 
@@ -129,7 +146,7 @@ module.exports = router;
  * 
  */
 
-/**
+/*
  * @swagger
  * /project/detail/{projectId}:
  *   get:
@@ -143,7 +160,13 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: project id.
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.id.
  *     responses:
  *       "200":
  *         description: OK
@@ -199,6 +222,37 @@ module.exports = router;
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /project/role/{projectId}:
+ *   post:
+ *     summary: create project Role
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
  *     responses:
  *       "200":
  *         description: OK
