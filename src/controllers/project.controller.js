@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
 const awsService = require('../services/aws.service');
 const { bucketFolders } = require('../services/aws.service');
-const { createProjectRole } = require('../services/project.service');
+const { createProjectRole, editProjectRole } = require('../services/project.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -19,18 +19,25 @@ const createProject = catchAsync(async (req, res) => {
 
 const getProjects = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['title', 'publishStatus']);
-  const search = pick(req.query, ['dueDate'])
+  const search = pick(req.query, ['dueDate']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  if(search.dueDate) {
+  if (search.dueDate) {
     filter.dueDate = {
-      $lte  : search.dueDate
-    }
+      $lte: search.dueDate,
+    };
   }
-  if(filter.publishStatus === 'all') {
-    delete filter.publishStatus
-  } 
-  options.populate = "owner"
-  console.log('filters are', filter, req.query)
+
+  if (filter.publishStatus) {
+    filter.publishStatus = filter.publishStatus.toLowerCase()
+  }
+
+  if (filter.publishStatus === 'all') {
+    delete filter.publishStatus;
+  }
+
+
+  options.populate = 'owner';
+  console.log('filters are', filter, req.query);
   const result = await projectService.queryProjects(filter, options);
   res.send(result);
 });
@@ -68,10 +75,18 @@ const deleteProject = catchAsync(async (req, res) => {
 });
 
 const createRole = catchAsync(async (req, res) => {
-  const { projectId } = req.params
+  const { projectId } = req.params;
   const { name, admin, roles, member, timeProfile } = req.body;
-  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId)
+  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId);
   res.status(200).send(role);
+});
+
+const editRole = catchAsync(async (req, res) => {
+  const { roleId } = req.params;
+  const { name, admin, roles, member, timeProfile } = req.body;
+
+  const newRole = await editProjectRole(roleId, name, admin, roles, member, timeProfile);
+  res.status(200).send(newRole);
 });
 
 module.exports = {
@@ -83,6 +98,6 @@ module.exports = {
   getProjectMembers,
   getAllProjects,
   getProjects,
-
-  createRole
+  editRole,
+  createRole,
 };

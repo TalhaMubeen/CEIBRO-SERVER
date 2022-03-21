@@ -37,17 +37,28 @@ const queryProjects = async (filter, options) => {
  * @returns {Promise<Project>}
  */
 const getProjectById = async (id) => {
-  const project = await Project.findById(id).populate([{
-    path: 'members',
-    select: 'firstName surName profilePic',
-  }, {
-    path: 'owner',
-    select: 'firstName surName'
-  }]);
+  const project = await Project.findById(id).populate([
+    {
+      path: 'members',
+      select: 'firstName surName profilePic',
+    },
+    {
+      path: 'owner',
+      select: 'firstName surName',
+    },
+  ]);
   if (!project) {
     throw new ApiError(400, 'Invalid project');
   }
   return project;
+};
+
+const getRoleById = async (id) => {
+  const role = await Role.findById(id);
+  if (!role) {
+    throw new ApiError(400, 'Invalid role');
+  }
+  return role;
 };
 
 const getAllProjects = () => {
@@ -102,9 +113,9 @@ const deleteProjectById = async (projectId) => {
 const getRoleByProjectAndName = (name, projectId) => {
   return Role.findOne({
     name,
-    project: projectId
-  })
-}
+    project: projectId,
+  });
+};
 
 const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId) => {
   const project = await getProjectById(projectId);
@@ -122,9 +133,29 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     admin,
     roles,
     member,
-    timeProfile
-  })
-  return newRole.save()
+    timeProfile,
+  });
+  return newRole.save();
+};
+
+const editProjectRole = async (roleId, name, admin, roles = [], member, timeProfile) => {
+  const role = await getRoleById(roleId);
+  if (!role) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Role not found');
+  }
+  return Role.updateOne(
+    { id: roleId },
+    {
+      name,
+      admin,
+      roles,
+      member,
+      timeProfile,
+    },
+    {
+      new: true,
+    }
+  );
 };
 
 module.exports = {
@@ -136,5 +167,7 @@ module.exports = {
   deleteProjectById,
   getAllProjects,
   getProjects,
-  createProjectRole
+  createProjectRole,
+  editProjectRole,
+  getRoleById,
 };

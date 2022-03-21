@@ -21,24 +21,19 @@ router
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
 router.route('/detail/:projectId').get(auth('manageProject'), projectController.getProject);
 
-router.route('/all')
-  .get(
-    auth('manageProject'), 
-    projectController.getAllProjects
-  )
+router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
-router.route('/role/:projectId')
+router
+  .route('/role/detail/:projectId')
+  .put(auth('manageProject'), validate(validation.editRole), projectController.createRole);
+
+router
+  .route('/role/:projectId')
   // .get(
-  //   auth('manageProject'), 
+  //   auth('manageProject'),
   //   projectController.getAllProjects
   // )
-  .post(
-    auth('manageProject'),
-    validate(validation.creatProjectRole),
-    projectController.createRole
-  )
-
-
+  .post(auth('manageProject'), validate(validation.updateProjectRole), projectController.editRole);
 
 module.exports = router;
 
@@ -143,7 +138,6 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- * 
  */
 
 /*
@@ -181,7 +175,6 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
-
 
 /**
  * @swagger
@@ -253,6 +246,88 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - admin
+ *             properties:
+ *               name:
+ *                 type: string
+ *               admin:
+ *                 type: boolean
+ *               roles:
+ *                 type: array
+ *               member:
+ *                 type: boolean
+ *               timeProfile:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               admin: false
+ *               roles: ['create', 'edit', 'delete', 'self-made']
+ *               member: false
+ *               timeProfile: false
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/role/detail/{roleId}:
+ *   put:
+ *     summary: update project Role
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - admin
+ *             properties:
+ *               name:
+ *                 type: string
+ *               admin:
+ *                 type: boolean
+ *               roles:
+ *                 type: array
+ *               member:
+ *                 type: boolean
+ *               timeProfile:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               admin: false
+ *               roles: ['create', 'edit', 'delete', 'self-made']
+ *               member: false
+ *               timeProfile: false
  *     responses:
  *       "200":
  *         description: OK
