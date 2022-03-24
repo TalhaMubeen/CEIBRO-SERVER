@@ -29,6 +29,14 @@ const roleSchema = mongoose.Schema(
     project: {
       type: mongoose.SchemaTypes.ObjectId, 
       ref: 'Project'
+    },
+    submit: {
+      type: Boolean,
+      default: false
+    },
+    approved: {
+      type: Boolean,
+      default: false
     }
   },
   {

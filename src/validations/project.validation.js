@@ -29,7 +29,7 @@ const createProjectRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     admin: Joi.boolean().required(),
-    role: Joi.array().items(Joi.string().valid(...rolesAccess)),
+    roles: Joi.array().items(Joi.string().valid(...rolesAccess)),
     member: Joi.boolean(),
     timeProfile: Joi.boolean(),
   }),
@@ -42,7 +42,7 @@ const updateProjectRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     admin: Joi.boolean().required(),
-    role: Joi.array().items(Joi.string().valid(...rolesAccess)),
+    roles: Joi.array().items(Joi.string().valid(...rolesAccess)),
     member: Joi.boolean(),
     timeProfile: Joi.boolean(),
   }),

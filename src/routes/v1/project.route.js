@@ -24,8 +24,8 @@ router.route('/detail/:projectId').get(auth('manageProject'), projectController.
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
 router
-  .route('/role/detail/:projectId')
-  .put(auth('manageProject'), validate(validation.editRole), projectController.createRole);
+  .route('/role/detail/:roleId')
+  .put(auth('manageProject'), validate(validation.editRole), projectController.editRole);
 
 router
   .route('/role/:projectId')
@@ -33,7 +33,7 @@ router
   //   auth('manageProject'),
   //   projectController.getAllProjects
   // )
-  .post(auth('manageProject'), validate(validation.updateProjectRole), projectController.editRole);
+  .post(auth('manageProject'), validate(validation.updateProjectRole), projectController.createRole);
 
 module.exports = router;
 
@@ -301,7 +301,7 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
- *         description: project id.
+ *         description: role id.
  *     requestBody:
  *       required: true
  *       content:

@@ -134,6 +134,8 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     roles,
     member,
     timeProfile,
+    approved: false,
+    submit: false
   });
   return newRole.save();
 };
@@ -143,7 +145,7 @@ const editProjectRole = async (roleId, name, admin, roles = [], member, timeProf
   if (!role) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Role not found');
   }
-  return Role.updateOne(
+  return Role.findOneAndUpdate(
     { id: roleId },
     {
       name,
