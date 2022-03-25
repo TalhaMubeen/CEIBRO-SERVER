@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { Project } = require('../models');
+const Group = require('../models/group.model');
 const Role = require('../models/role.model');
 const ApiError = require('../utils/ApiError');
 
@@ -117,6 +118,13 @@ const getRoleByProjectAndName = (name, projectId) => {
   });
 };
 
+const getGroupByProjectAndName = (name, projectId) => {
+  return Group.findOne({
+    name,
+    project: projectId,
+  });
+};
+
 const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId) => {
   const project = await getProjectById(projectId);
   if (!project) {
@@ -134,6 +142,7 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     roles,
     member,
     timeProfile,
+    project: projectId,
   });
   return newRole.save();
 };
@@ -160,9 +169,33 @@ const editProjectRole = async (roleId, name, admin, roles = [], member, timeProf
 
 const getProjectRoles = (projectId) => {
   return Role.find({
-    projectId
-  })
-}
+    projectId,
+  });
+};
+
+const createProjectGroup = async (name, projectId) => {
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+
+  const group = await getGroupByProjectAndName(name, projectId);
+  if (group) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Group already exist');
+  }
+
+  const newGroup = new Group({
+    name,
+    project: projectId,
+  });
+  return newGroup.save();
+};
+
+const getProjectGroups = (projectId) => {
+  return Group.find({
+    projectId,
+  });
+};
 
 module.exports = {
   createProject,
@@ -176,5 +209,7 @@ module.exports = {
   createProjectRole,
   editProjectRole,
   getRoleById,
-  getProjectRoles
+  getProjectRoles,
+  createProjectGroup,
+  getProjectGroups,
 };

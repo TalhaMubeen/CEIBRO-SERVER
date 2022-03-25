@@ -25,15 +25,17 @@ router.route('/all').get(auth('manageProject'), projectController.getAllProjects
 
 router
   .route('/role/detail/:roleId')
-  .put(auth('manageProject'), validate(validation.editRole), projectController.editRole);
+  .put(auth('manageProject'), validate(validation.updateProjectRole), projectController.editRole);
 
 router
   .route('/role/:projectId')
-  .get(
-    auth('manageProject'),
-    projectController.getProjectRoles
-  )
-  .post(auth('manageProject'), validate(validation.updateProjectRole), projectController.createRole);
+  .get(auth('manageProject'), projectController.getProjectRoles)
+  .post(auth('manageProject'), validate(validation.createProjectRole), projectController.createRole);
+
+router
+  .route('/group/:projectId')
+  .get(auth('manageProject'), projectController.getProjectGroups)
+  .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
 
 module.exports = router;
 
@@ -367,4 +369,72 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+/**
+ * @swagger
+ * /project/group/{projectId}:
+ *   get:
+ *     summary: get All project group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create project group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */

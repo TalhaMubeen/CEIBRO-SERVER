@@ -100,6 +100,23 @@ const editRole = catchAsync(async (req, res) => {
   res.status(200).send(newRole);
 });
 
+const createGroup = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { name } = req.body;
+  const role = await createProjectGroup(name, projectId);
+  res.status(200).send(role);
+});
+
+const getProjectGroups = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const groups = await projectService.getProjectGroups();
+  res.status(200).send(groups);
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -112,4 +129,6 @@ module.exports = {
   editRole,
   createRole,
   getProjectRoles,
+  createGroup,
+  getProjectGroups,
 };
