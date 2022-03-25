@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
 const awsService = require('../services/aws.service');
 const { bucketFolders } = require('../services/aws.service');
-const { createProjectRole, editProjectRole, getProjectById } = require('../services/project.service');
+const { createProjectRole, editProjectRole, getProjectById, createProjectGroup } = require('../services/project.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
