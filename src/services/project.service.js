@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
 const { Project } = require('../models');
+const Folder = require('../models/folder.model');
 const Group = require('../models/group.model');
 const Role = require('../models/role.model');
 const ApiError = require('../utils/ApiError');
@@ -125,6 +126,12 @@ const getGroupByProjectAndName = (name, projectId) => {
   });
 };
 
+const getFolderByProjectAndName = (name, projectId) => {
+  return Folder.findOne({
+    name,
+    project: projectId,
+  });
+};
 const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId) => {
   const project = await getProjectById(projectId);
   if (!project) {
@@ -133,7 +140,7 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
 
   const role = await getRoleByProjectAndName(name, projectId);
   if (role) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Role already exist');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Role already exist');
   }
 
   const newRole = new Role({
@@ -169,7 +176,7 @@ const editProjectRole = async (roleId, name, admin, roles = [], member, timeProf
 
 const getProjectRoles = (projectId) => {
   return Role.find({
-    projectId,
+    project: projectId,
   });
 };
 
@@ -181,7 +188,7 @@ const createProjectGroup = async (name, projectId) => {
 
   const group = await getGroupByProjectAndName(name, projectId);
   if (group) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Group already exist');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Group already exist');
   }
 
   const newGroup = new Group({
@@ -193,7 +200,31 @@ const createProjectGroup = async (name, projectId) => {
 
 const getProjectGroups = (projectId) => {
   return Group.find({
-    projectId,
+    project: projectId,
+  });
+};
+
+const createProjectFolder = async (name, projectId) => {
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+
+  const folder = await getFolderByProjectAndName(name, projectId);
+  if (folder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Group already exist');
+  }
+
+  const newFolder = new Folder({
+    name,
+    project: projectId,
+  });
+  return newFolder.save();
+};
+
+const getProjectFolders = (projectId) => {
+  return Folder.find({
+    project: projectId,
   });
 };
 
@@ -212,4 +243,6 @@ module.exports = {
   getProjectRoles,
   createProjectGroup,
   getProjectGroups,
+  createProjectFolder,
+  getProjectFolders,
 };

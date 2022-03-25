@@ -57,10 +57,20 @@ const createProjectGroup = {
   }),
 };
 
+const createProjectFolder = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   createProject,
   getProjectsList,
   createProjectRole,
   createProjectGroup,
+  createProjectFolder,
   updateProjectRole,
 };

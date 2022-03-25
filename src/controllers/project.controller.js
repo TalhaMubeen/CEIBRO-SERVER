@@ -5,7 +5,13 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
 const awsService = require('../services/aws.service');
 const { bucketFolders } = require('../services/aws.service');
-const { createProjectRole, editProjectRole, getProjectById, createProjectGroup } = require('../services/project.service');
+const {
+  createProjectRole,
+  editProjectRole,
+  getProjectById,
+  createProjectGroup,
+  createProjectFolder,
+} = require('../services/project.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -86,7 +92,7 @@ const getProjectRoles = catchAsync(async (req, res) => {
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  const roles = await projectService.getProjectRoles();
+  const roles = await projectService.getProjectRoles(projectId);
   res.status(200).send(roles);
 });
 
@@ -103,8 +109,8 @@ const editRole = catchAsync(async (req, res) => {
 const createGroup = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { name } = req.body;
-  const role = await createProjectGroup(name, projectId);
-  res.status(200).send(role);
+  const group = await createProjectGroup(name, projectId);
+  res.status(200).send(group);
 });
 
 const getProjectGroups = catchAsync(async (req, res) => {
@@ -113,8 +119,25 @@ const getProjectGroups = catchAsync(async (req, res) => {
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  const groups = await projectService.getProjectGroups();
+  const groups = await projectService.getProjectGroups(projectId);
   res.status(200).send(groups);
+});
+
+const createFolder = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { name } = req.body;
+  const folder = await createProjectFolder(name, projectId);
+  res.status(200).send(folder);
+});
+
+const getProjectFolders = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const folders = await projectService.getProjectFolders(projectId);
+  res.status(200).send(folders);
 });
 
 module.exports = {
@@ -131,4 +154,6 @@ module.exports = {
   getProjectRoles,
   createGroup,
   getProjectGroups,
+  createFolder,
+  getProjectFolders,
 };

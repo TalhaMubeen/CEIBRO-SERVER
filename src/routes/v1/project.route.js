@@ -37,6 +37,11 @@ router
   .get(auth('manageProject'), projectController.getProjectGroups)
   .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
 
+router
+  .route('/folder/:projectId')
+  .get(auth('manageProject'), projectController.getProjectFolders)
+  .post(auth('manageProject'), validate(validation.createProjectFolder), projectController.createFolder);
+
 module.exports = router;
 
 /**
@@ -424,6 +429,74 @@ module.exports = router;
  *                 type: string
  *             example:
  *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/folder/{projectId}:
+ *   get:
+ *     summary: get All project folders
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create project group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: project folder
  *     responses:
  *       "200":
  *         description: OK
