@@ -160,6 +160,12 @@ const editProjectRole = async (roleId, name, admin, roles = [], member, timeProf
   );
 };
 
+const getProjectRoles = (projectId) => {
+  return Role.find({
+    projectId
+  })
+}
+
 module.exports = {
   createProject,
   queryProjects,
@@ -172,4 +178,5 @@ module.exports = {
   createProjectRole,
   editProjectRole,
   getRoleById,
+  getProjectRoles
 };

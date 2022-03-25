@@ -5,7 +5,7 @@ const catchAsync = require('../utils/catchAsync');
 const { projectService } = require('../services');
 const awsService = require('../services/aws.service');
 const { bucketFolders } = require('../services/aws.service');
-const { createProjectRole, editProjectRole } = require('../services/project.service');
+const { createProjectRole, editProjectRole, getProjectById } = require('../services/project.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -28,13 +28,12 @@ const getProjects = catchAsync(async (req, res) => {
   }
 
   if (filter.publishStatus) {
-    filter.publishStatus = filter.publishStatus.toLowerCase()
+    filter.publishStatus = filter.publishStatus.toLowerCase();
   }
 
   if (filter.publishStatus === 'all') {
     delete filter.publishStatus;
   }
-
 
   options.populate = 'owner';
   console.log('filters are', filter, req.query);
@@ -81,13 +80,23 @@ const createRole = catchAsync(async (req, res) => {
   res.status(200).send(role);
 });
 
+const getProjectRoles = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const roles = await projectService.getProjectRoles();
+  res.status(200).send(roles);
+});
+
 const editRole = catchAsync(async (req, res) => {
   const { roleId } = req.params;
-  console.log("🚀 ~ file: project.controller.js ~ line 86 ~ editRole ~ roleId", roleId)
+  console.log('🚀 ~ file: project.controller.js ~ line 86 ~ editRole ~ roleId', roleId);
   const { name, admin, roles, member, timeProfile } = req.body;
 
   const newRole = await editProjectRole(roleId, name, admin, roles, member, timeProfile);
-  console.log("🚀 ~ file: project.controller.js ~ line 90 ~ editRole ~ newRole", newRole)
+  console.log('🚀 ~ file: project.controller.js ~ line 90 ~ editRole ~ newRole', newRole);
   res.status(200).send(newRole);
 });
 
@@ -102,4 +111,5 @@ module.exports = {
   getProjects,
   editRole,
   createRole,
+  getProjectRoles,
 };
