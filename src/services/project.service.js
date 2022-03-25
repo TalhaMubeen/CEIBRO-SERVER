@@ -134,8 +134,6 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     roles,
     member,
     timeProfile,
-    approved: false,
-    submit: false
   });
   return newRole.save();
 };

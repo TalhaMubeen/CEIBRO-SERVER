@@ -295,8 +295,8 @@ module.exports = router;
  *               name: project manager
  *               admin: false
  *               roles: ['create', 'edit', 'delete', 'self-made']
- *               member: false
- *               timeProfile: false
+ *               member: ['create', 'edit', 'delete', 'self-made']
+ *               timeProfile: ['create', 'edit', 'delete', 'self-made']
  *     responses:
  *       "200":
  *         description: OK
@@ -351,8 +351,8 @@ module.exports = router;
  *               name: project manager
  *               admin: false
  *               roles: ['create', 'edit', 'delete', 'self-made']
- *               member: false
- *               timeProfile: false
+ *               member: ['create', 'edit', 'delete', 'self-made']
+ *               timeProfile: ['create', 'edit', 'delete', 'self-made']
  *     responses:
  *       "200":
  *         description: OK

@@ -19,25 +19,22 @@ const roleSchema = mongoose.Schema(
       type: Boolean,
       default: false
     },
-    member: {
-      type: Boolean,
-      default: false
-    },
-    timeProfile: {
-      type: Boolean
-    },
+    member: [
+      {
+        type: String,
+        enum: rolesAccess
+      }
+    ],
+    timeProfile: [
+      {
+        type: String,
+        enum: rolesAccess
+      }
+    ],
     project: {
       type: mongoose.SchemaTypes.ObjectId, 
       ref: 'Project'
     },
-    submit: {
-      type: Boolean,
-      default: false
-    },
-    approved: {
-      type: Boolean,
-      default: false
-    }
   },
   {
     timestamps: true,
