@@ -2,6 +2,7 @@ const httpStatus = require('http-status');
 const { Project } = require('../models');
 const Folder = require('../models/folder.model');
 const Group = require('../models/group.model');
+const ProjectFile = require('../models/ProjectFile.model');
 const Role = require('../models/role.model');
 const ApiError = require('../utils/ApiError');
 
@@ -228,6 +229,27 @@ const getProjectFolders = (projectId) => {
   });
 };
 
+const getFolderById = (folderId) => {
+  return Folder.find({
+    _id: folderId,
+  });
+};
+
+const getFilesByFolderId = (folderId) => {
+  return ProjectFile.find({
+    folder: folderId,
+  }).populate([
+    {
+      path: 'access',
+      select: 'firstName surName',
+    },
+    {
+      path: 'uploadedBy',
+      select: 'firstName surName',
+    },
+  ]);
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -245,4 +267,6 @@ module.exports = {
   getProjectGroups,
   createProjectFolder,
   getProjectFolders,
+  getFolderById,
+  getFilesByFolderId,
 };

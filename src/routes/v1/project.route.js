@@ -42,6 +42,11 @@ router
   .get(auth('manageProject'), projectController.getProjectFolders)
   .post(auth('manageProject'), validate(validation.createProjectFolder), projectController.createFolder);
 
+router
+  .route('/file/:folderId')
+  .get(auth('manageProject'), projectController.getFolderAllFiles)
+  .post(auth('manageProject'), multerUpload.single('file'), projectController.uploadFileToFolder);
+
 module.exports = router;
 
 /**
@@ -473,7 +478,7 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *   post:
- *     summary: create project group
+ *     summary: create project folder
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
@@ -497,6 +502,70 @@ module.exports = router;
  *                 type: string
  *             example:
  *               name: project folder
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/file/{folderId}:
+ *   get:
+ *     summary: get All project folders
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: folderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: Upload file to a folder
+ *     description: upload project photo
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: folderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                file:
+ *                  type: string
+ *                  format: binary
  *     responses:
  *       "200":
  *         description: OK

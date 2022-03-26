@@ -11,7 +11,10 @@ const {
   getProjectById,
   createProjectGroup,
   createProjectFolder,
+  getFolderById,
+  getFilesByFolderId,
 } = require('../services/project.service');
+const ProjectFile = require('../models/ProjectFile.model');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -140,6 +143,39 @@ const getProjectFolders = catchAsync(async (req, res) => {
   res.status(200).send(folders);
 });
 
+const uploadFileToFolder = catchAsync(async (req, res) => {
+  const { folderId } = req.params;
+  if (!req.file) {
+    throw new ApiError();
+  }
+  const folder = await getFolderById(folderId);
+  if (!folder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
+  }
+  const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
+  const file = new ProjectFile({
+    name: path?.fileName,
+    fileType: path?.fileType,
+    url: path?.url,
+    uploadedBy: req.user._id,
+    access: [req.user._id],
+    project: folder.project,
+    folder: folderId,
+  });
+  await file.save();
+  res.status(200).send(file);
+});
+
+const getFolderAllFiles = catchAsync(async (req, res) => {
+  const { folderId } = req.params;
+  const folder = await getFolderById(folderId);
+  if (!folder) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
+  }
+  const files = await getFilesByFolderId(folderId);
+  res.status(200).send(files);
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -156,4 +192,6 @@ module.exports = {
   getProjectGroups,
   createFolder,
   getProjectFolders,
+  uploadFileToFolder,
+  getFolderAllFiles,
 };
