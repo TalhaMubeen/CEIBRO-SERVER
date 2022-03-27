@@ -134,19 +134,30 @@ const getProjectGroups = catchAsync(async (req, res) => {
 
 const createFolder = catchAsync(async (req, res) => {
   const { projectId } = req.params;
-  const { name } = req.body;
-  const folder = await createProjectFolder(name, projectId);
-  res.status(200).send(folder);
+  const { name, groupId } = req.body;
+  const folder = await createProjectFolder(name, groupId, projectId);
+  res.status(200).json({
+    data: folder,
+  });
 });
 
-const getProjectFolders = catchAsync(async (req, getProjectMemberByEmailRoleAndGroupres) => {
+const getProjectFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
   const folders = await projectService.getProjectFolders(projectId);
-  res.status(200).send(folders);
+  const data = folders.map((folder) => {
+    console.log('🚀 ~ file: project.controller.js ~ line 152 ~ data ~ folder', folder);
+    return {
+      name: folder.name,
+      id: folder._id,
+      group: folder.group,
+      createdAt: folder.createdAt,
+    };
+  });
+  res.status(200).send(data);
 });
 
 const uploadFileToFolder = catchAsync(async (req, res) => {

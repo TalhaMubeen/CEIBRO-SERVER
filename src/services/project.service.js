@@ -216,19 +216,22 @@ const getProjectGroups = (projectId) => {
   });
 };
 
-const createProjectFolder = async (name, projectId) => {
+const createProjectFolder = async (name, groupId, projectId) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
   }
 
+  await isGroupExist(groupId);
+
   const folder = await getFolderByProjectAndName(name, projectId);
   if (folder) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Group already exist');
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Folder already exist');
   }
 
   const newFolder = new Folder({
     name,
+    group: groupId,
     project: projectId,
   });
   return newFolder.save();
@@ -237,7 +240,7 @@ const createProjectFolder = async (name, projectId) => {
 const getProjectFolders = (projectId) => {
   return Folder.find({
     project: projectId,
-  });
+  }).populate('group');
 };
 
 const getFolderById = (folderId) => {

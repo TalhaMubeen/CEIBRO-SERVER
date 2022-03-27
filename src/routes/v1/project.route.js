@@ -503,11 +503,15 @@ module.exports = router;
  *             type: object
  *             required:
  *               - name
+ *               - groupId
  *             properties:
  *               name:
  *                 type: string
+ *               groupId:
+ *                 type: string
  *             example:
  *               name: project folder
+ *               groupId: 234234234
  *     responses:
  *       "200":
  *         description: OK

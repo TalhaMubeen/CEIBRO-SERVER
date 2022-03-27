@@ -63,6 +63,7 @@ const createProjectFolder = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
+    groupId: Joi.string().required(),
   }),
 };
 
