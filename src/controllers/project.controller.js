@@ -13,8 +13,14 @@ const {
   createProjectFolder,
   getFolderById,
   getFilesByFolderId,
+  isGroupExist,
+  getProjectMemberByRoleAndGroup,
+  getProjectMemberByEmailRoleAndGroup,
+  getRoleById,
+  getProjectMembersById,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
+const { isUserExist, getUserByEmail } = require('../services/user.service');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -133,7 +139,7 @@ const createFolder = catchAsync(async (req, res) => {
   res.status(200).send(folder);
 });
 
-const getProjectFolders = catchAsync(async (req, res) => {
+const getProjectFolders = catchAsync(async (req, getProjectMemberByEmailRoleAndGroupres) => {
   const { projectId } = req.params;
   const project = await getProjectById(projectId);
   if (!project) {
@@ -176,6 +182,93 @@ const getFolderAllFiles = catchAsync(async (req, res) => {
   res.status(200).send(files);
 });
 
+const getProjectAllMembers = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const members = await getProjectMembersById(projectId);
+  res.status(200).send(members);
+});
+
+const addMemberToProject = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { groupId, subContractor, roleId, email } = req.body;
+
+  await getRoleById(roleId);
+  await isGroupExist(groupId);
+  await isGroupExist(subContractor);
+  const member = await getUserByEmail(email);
+
+  const project = await getProjectById(projectId);
+
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+
+  if (member) {
+    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, subContractor, projectId);
+    if (alreadyMember) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
+    }
+    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, subContractor, projectId);
+    res.status(200).send(newMember);
+  } else {
+    const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, subContractor, projectId);
+    if (alreadyMember) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
+    }
+    const newMember = await projectService.sendProjectInviteByEmail(
+      email,
+      groupId,
+      roleId,
+      subContractor,
+      projectId,
+      req.user._id
+    );
+    res.status(200).send('Invitation sent to user');
+  }
+});
+
+const updateMemberRoleAndGroup = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { groupId, roleId, memberId } = req.body;
+
+  await getRoleById(roleId);
+  await isGroupExist(groupId);
+  const member = await getProjectMemberById(memberId);
+
+  const project = await getProjectById(projectId);
+
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+
+  if (member) {
+    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, subContractor, projectId);
+    if (alreadyMember) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
+    }
+    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, subContractor, projectId);
+    res.status(200).send(newMember);
+  } else {
+    const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, subContractor, projectId);
+    if (alreadyMember) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
+    }
+    const newMember = await projectService.sendProjectInviteByEmail(
+      email,
+      groupId,
+      roleId,
+      subContractor,
+      projectId,
+      req.user._id
+    );
+    res.status(200).send('Invitation sent to user');
+  }
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -194,4 +287,7 @@ module.exports = {
   getProjectFolders,
   uploadFileToFolder,
   getFolderAllFiles,
+  addMemberToProject,
+  getProjectAllMembers,
+  updateMemberRoleAndGroup,
 };

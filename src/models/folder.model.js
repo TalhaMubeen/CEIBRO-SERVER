@@ -12,6 +12,10 @@ const folderSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
     },
+    group: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Group',
+    },
   },
   {
     timestamps: true,

@@ -66,6 +66,29 @@ const createProjectFolder = {
   }),
 };
 
+const addMemberToProject = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    roleId: Joi.string().required(),
+    groupId: Joi.string().required(),
+    subContractor: Joi.string().required(),
+    email: Joi.string().email().required(),
+  }),
+};
+
+const updateUserRoleAndGroup = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    memberId: Joi.string().required(),
+    roleId: Joi.string().required(),
+    groupId: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   createProject,
   getProjectsList,
@@ -73,4 +96,6 @@ module.exports = {
   createProjectGroup,
   createProjectFolder,
   updateProjectRole,
+  addMemberToProject,
+  updateUserRoleAndGroup,
 };

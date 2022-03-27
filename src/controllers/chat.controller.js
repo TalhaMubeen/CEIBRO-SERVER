@@ -77,15 +77,15 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
   const { lastMessageId = null, down = 'false', search } = req.query;
-  
+
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
 
   let idsFilter = {
-    chat: roomId
-  }
+    chat: roomId,
+  };
 
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
@@ -95,27 +95,27 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     };
   }
 
-  const messageIds = await getMessageIdsByFilter(idsFilter)
-  
+  const messageIds = await getMessageIdsByFilter(idsFilter);
+
   const options = {
     page: parseInt(req.query.page) || 0,
     limit: parseInt(req.query.limit) || 10,
     upPagination: down != 'true',
   };
-  
+
   // zero index if start of paginatio || last message index if not start of pagination
   let index = messageIds.length > 0 ? messageIds.length : -1;
-  
-  // if already some pagination is sent then last message id will be  required for next slice of messages 
-  if(lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
-    const oldIndex = messageIds.findIndex(id => String(lastMessageId) === String(id));
+
+  // if already some pagination is sent then last message id will be  required for next slice of messages
+  if (lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
+    const oldIndex = messageIds.findIndex((id) => String(lastMessageId) === String(id));
     console.log('oldIndex: ', oldIndex);
-    if(oldIndex > -1) {
+    if (oldIndex > -1) {
       // if last message index found in messages array
-      index = oldIndex
+      index = oldIndex;
     }
   }
-  
+
   // Example1 down pagination{
   //   index: 0,
   //   limit: 3,
@@ -130,18 +130,15 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   //   downIndex: 5
   // }
 
-  const startingIndex = options?.upPagination ? index - options.limit: index + 1;
-  const downIndex = options?.upPagination? index : index + 1 + options.limit;  
+  const startingIndex = options?.upPagination ? index - options.limit : index + 1;
+  const downIndex = options?.upPagination ? index : index + 1 + options.limit;
   const myMessageIds = messageIds.slice(startingIndex, downIndex);
   let conversations = await getMessageByIds(myMessageIds);
   conversations = conversations?.map((conversation) => {
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
   });
-  res.status(httpStatus.CREATED).send(conversations);  
-
-
-
+  res.status(httpStatus.CREATED).send(conversations);
 
   // let conversation = await chatService.getConversationByRoomId(roomId, options, currentLoggedUser);
   // console.log('conversations are', conversation)
@@ -241,27 +238,32 @@ const replyMessage = catchAsync(async (req, res) => {
 
 const forwardMessage = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
-  const { chatIds, messageId,  } = req.body;
-  const message = await chatService.getMessageById(messageId)
-  if(!message) {
-    throw new ApiError('Message not found')
+  const { chatIds, messageId } = req.body;
+  const message = await chatService.getMessageById(messageId);
+  if (!message) {
+    throw new ApiError('Message not found');
   }
-  await Promise.all(chatIds.map(async chatId => {
-    const newMessage = await chatService.sendMessage(message.message, chatId, currentLoggedUser, message.type === 'voice' ? [{url: message.voiceUrl}]: message.files, message.type);
-    
-    const myChat = await chatService.getChatById(newMessage.chat);
-    global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, {
-      from: currentLoggedUser,
-      message: formatMessage(newMessage),
-      chat: String(myChat._id),
-      mutedFor: myChat.mutedBy,
-    });
-  }))
+  await Promise.all(
+    chatIds.map(async (chatId) => {
+      const newMessage = await chatService.sendMessage(
+        message.message,
+        chatId,
+        currentLoggedUser,
+        message.type === 'voice' ? [{ url: message.voiceUrl }] : message.files,
+        message.type
+      );
 
+      const myChat = await chatService.getChatById(newMessage.chat);
+      global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, {
+        from: currentLoggedUser,
+        message: formatMessage(newMessage),
+        chat: String(myChat._id),
+        mutedFor: myChat.mutedBy,
+      });
+    })
+  );
 
-  
-
-  res.status(200).send("forwarded");
+  res.status(200).send('forwarded');
 });
 
 const getChatRoomMedia = catchAsync(async (req, res) => {
@@ -305,8 +307,8 @@ const saveQuestioniar = catchAsync(async (req, res) => {
   const userId = req.user._id;
 
   const myChat = await chatService.getChatById(chat);
-  if(!myChat) {
-    throw new ApiError(400, 'Invalid chat id')
+  if (!myChat) {
+    throw new ApiError(400, 'Invalid chat id');
   }
 
   const savedQuestions = await Promise.all(
@@ -337,24 +339,27 @@ const saveQuestioniar = catchAsync(async (req, res) => {
 
   const myMessage = await chatService.getMessageById(message._id);
 
-
-  const users = await User.find({ 
-    _id: members
+  const users = await User.find({
+    _id: members,
   });
 
-  users?.map(user => {
+  users?.map((user) => {
     console.log('my user i s', user, user?.socketId);
-    if(user?.socketId) {
-      global.io?.sockets?.to(user.socketId)?.emit(ChatTypes.RECEIVE_MESSAGE.value, { from: userId, message: formatMessage(myMessage), chat: String(chat), mutedFor: myChat.mutedBy });
+    if (user?.socketId) {
+      global.io?.sockets?.to(user.socketId)?.emit(ChatTypes.RECEIVE_MESSAGE.value, {
+        from: userId,
+        message: formatMessage(myMessage),
+        chat: String(chat),
+        mutedFor: myChat.mutedBy,
+      });
     }
-  })
-  
+  });
 
   res.status(200).send(message);
 });
 
 const getQuestioniarById = catchAsync(async (req, res) => {
-  const { questioniarId,  } = req.params;
+  const { questioniarId } = req.params;
   const { _id } = req.user;
   const { userId } = req.query;
 
@@ -368,143 +373,138 @@ const getQuestioniarById = catchAsync(async (req, res) => {
 
   const isAnswer = questioniar?.answeredBy?.includes(String(_id));
   questioniar._doc.answeredByMe = isAnswer;
-  if(isAnswer) {
+  if (isAnswer) {
     const questionIds = await questioniar?.questions?.map((question) => {
       return question._id;
-    })
+    });
 
     const answerUser = userId || _id;
-    
-    const answers = await Answer.find({ 
+
+    const answers = await Answer.find({
       question: {
         $in: questionIds,
       },
-      user: answerUser
-    })
+      user: answerUser,
+    });
 
-    questioniar.questions = questioniar?.questions.map(question => {
-      const myAnswer =  answers.find(answer => (String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)))
+    questioniar.questions = questioniar?.questions.map((question) => {
+      const myAnswer = answers.find(
+        (answer) => String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)
+      );
       question._doc.answer = myAnswer.answer;
-      if(question._doc.type === 'checkbox') {
-        question._doc.answer = myAnswer.answer.split(",")  
+      if (question._doc.type === 'checkbox') {
+        question._doc.answer = myAnswer.answer.split(',');
       }
       return question;
-    })
+    });
     questioniar._doc.answeredByMe = true;
   }
-
 
   res.status(200).send(questioniar);
 });
 
-
 const getQuestioniarAnswersByUser = catchAsync(async (req, res) => {
-
   const { questioniarId, userId } = req.params;
   const { _id } = req.user;
 
-  
   const questioniar = await Message.findOne({
     _id: questioniarId,
   }).populate('questions');
-  
-  if(!questioniar) {
-    throw new ApiError(404, 'Questioniar not found')
+
+  if (!questioniar) {
+    throw new ApiError(404, 'Questioniar not found');
   }
 
-  if(String(questioniar.sender) !== String(_id)) {
-    throw new ApiError(400, 'Not authorized')
+  if (String(questioniar.sender) !== String(_id)) {
+    throw new ApiError(400, 'Not authorized');
   }
 
   const isAnswer = questioniar?.answeredBy?.includes(String(userId));
-  console.log('is answered is ', isAnswer)
-  if(isAnswer) {
+  if (isAnswer) {
     const questionIds = await questioniar?.questions?.map((question) => {
       return question._id;
-    })
+    });
 
     const answerUser = userId;
-    
-    const answers = await Answer.find({ 
+
+    const answers = await Answer.find({
       question: {
         $in: questionIds,
       },
-      user: answerUser
-    })
+      user: answerUser,
+    });
 
-    questioniar.questions = questioniar?.questions.map(question => {
-      const myAnswer =  answers.find(answer => (String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)))
-      console.log('my answer is ', myAnswer)
+    questioniar.questions = questioniar?.questions.map((question) => {
+      const myAnswer = answers.find(
+        (answer) => String(answer.user) === String(answerUser) && String(answer.question) === String(question._id)
+      );
+      console.log('my answer is ', myAnswer);
       question._doc.answer = myAnswer.answer;
-      if(question._doc.type === 'checkbox') {
-        question._doc.answer = myAnswer.answer.split(",")  
+      if (question._doc.type === 'checkbox') {
+        question._doc.answer = myAnswer.answer.split(',');
       }
       return question;
-    })
+    });
     questioniar._doc.answeredByMe = true;
   } else {
-    questioniar._doc.answeredByMe = false; 
+    questioniar._doc.answeredByMe = false;
   }
-  console.log('questioniar is ', questioniar)
+  console.log('questioniar is ', questioniar);
 
-  return res.status(200).send(questioniar)
-
+  return res.status(200).send(questioniar);
 });
-
-
 
 const saveQuestioniarAnswers = catchAsync(async (req, res) => {
   const { questioniarId } = req.params;
-  const {questions} = req.body;
+  const { questions } = req.body;
   const { _id } = req.user;
 
-
   const myQuestioniar = await Message.findOne({
-    _id: questioniarId
+    _id: questioniarId,
   });
 
-  if(!myQuestioniar) {
-    throw new ApiError(400, "Invalid Questioniar id")
+  if (!myQuestioniar) {
+    throw new ApiError(400, 'Invalid Questioniar id');
   }
 
-  const dbQuestins = await Promise.all(questions.map(async question => {
-    const myQuestion = await Question.findOne({
-      _id: question.id
-    });
-    if(!myQuestion) {
-      throw new ApiError(400, "Invalid Question id")
-    }
-    const ans = question.answer.toString();
-    console.log('actual answer is ', ans)
-    const answer = new Answer({
-      question: question.id,
-      answer: ans,
-      user: _id
-    });
-    return answer.save();
-  }))
+  const dbQuestins = await Promise.all(
+    questions.map(async (question) => {
+      const myQuestion = await Question.findOne({
+        _id: question.id,
+      });
+      if (!myQuestion) {
+        throw new ApiError(400, 'Invalid Question id');
+      }
+      const ans = question.answer.toString();
+      console.log('actual answer is ', ans);
+      const answer = new Answer({
+        question: question.id,
+        answer: ans,
+        user: _id,
+      });
+      return answer.save();
+    })
+  );
 
-  await Message.updateOne({ _id: questioniarId }, { $addToSet: { answeredBy: _id }})
-  res.status(200).send("Answer saved");
-
+  await Message.updateOne({ _id: questioniarId }, { $addToSet: { answeredBy: _id } });
+  res.status(200).send('Answer saved');
 });
-
 
 const deleteChatRoomForUser = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const { _id } = req.user;
-  
+
   const myChat = await chatService.getChatById(roomId);
-  if(!myChat) {
-    throw new ApiError(400, 'Invalid chat id')
+  if (!myChat) {
+    throw new ApiError(400, 'Invalid chat id');
   }
 
-  if(myChat.members.findIndex(userId => String(userId) === String(_id)) < 0) {
-    throw new ApiError(400, 'User does not belongs to this chat room')  
+  if (myChat.members.findIndex((userId) => String(userId) === String(_id)) < 0) {
+    throw new ApiError(400, 'User does not belongs to this chat room');
   }
 
   await chatService.removeChatForUser(roomId, _id);
-  res.status(200).send("Room deleted")
+  res.status(200).send('Room deleted');
 });
 
 const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
@@ -513,17 +513,13 @@ const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
   const { _id } = req.user;
 
   const typeQuestion = await Message.find({
-    type: 'questioniar', 
-    chat: roomId
+    type: 'questioniar',
+    chat: roomId,
   });
 
-
-  console.log(typeQuestion)
-  res.status(200).send(typeQuestion)
+  console.log(typeQuestion);
+  res.status(200).send(typeQuestion);
 });
-
-
-
 
 // const uploadImage = catchAsync(async (req, res) => {
 //   const currentLoggedUser = req.user._id;
@@ -567,6 +563,6 @@ module.exports = {
   deleteChatRoomForUser,
   forwardMessage,
   getQuestionairByTypeMessage,
-  getAvailableChatMembers
+  getAvailableChatMembers,
   // uploadImage
 };

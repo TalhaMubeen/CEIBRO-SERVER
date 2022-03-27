@@ -97,7 +97,6 @@ const getInvitation = async (from, to) => {
 const inviteUserByEmail = async (email, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const user = await getUserByEmail(email);
-  console.log("🚀 ~ file: user.service.js ~ line 100 ~ inviteUserByEmail ~ user", user)
 
   if (!user) {
     // if email not exists in users then sent him an email invite
@@ -212,6 +211,14 @@ const getAvailableUsers = async (currentUserId) => {
   });
 };
 
+const isUserExist = async (userId) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ApiError(400, 'Invalid user');
+  }
+  return user;
+};
+
 module.exports = {
   createUser,
   queryUsers,
@@ -229,4 +236,5 @@ module.exports = {
   acceptAllInvitations,
   getConnectionsByUserId,
   getConnectionsCountByUserId,
+  isUserExist,
 };

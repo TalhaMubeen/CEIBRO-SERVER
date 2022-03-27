@@ -5,6 +5,7 @@ const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
 const { EmailInvite, Invite } = require('../models');
+const ProjectMember = require('../models/ProjectMember.model');
 
 /**
  * Login with username and password
@@ -103,8 +104,23 @@ const verifyEmail = async (verifyEmailToken) => {
       });
       return myInvite.save();
     });
+
+    const memebrst = await ProjectMember.find({
+      isInvited: true,
+      invitedEmail: user.email,
+    });
+    const updateMember = await ProjectMember.updateMany(
+      {
+        isInvited: true,
+        invitedEmail: user.email,
+      },
+      {
+        isInvited: false,
+        user: user._id,
+      }
+    );
   } catch (error) {
-    console.log("🚀 ~ file: auth.service.js ~ line 107 ~ verifyEmail ~ error", error)
+    console.log('🚀 ~ file: auth.service.js ~ line 107 ~ verifyEmail ~ error', error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };

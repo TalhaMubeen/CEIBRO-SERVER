@@ -47,6 +47,12 @@ router
   .get(auth('manageProject'), projectController.getFolderAllFiles)
   .post(auth('manageProject'), multerUpload.single('file'), projectController.uploadFileToFolder);
 
+router
+  .route('/member/:projectId')
+  .get(auth('manageProject'), projectController.getProjectAllMembers)
+  .post(auth('manageProject'), validate(validation.addMemberToProject), projectController.addMemberToProject)
+  .put(auth('manageProject'), validate(validation.updateUserRoleAndGroup), projectController.updateMemberRoleAndGroup);
+
 module.exports = router;
 
 /**
@@ -566,6 +572,132 @@ module.exports = router;
  *                file:
  *                  type: string
  *                  format: binary
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/member/{projectId}:
+ *   get:
+ *     summary: get All project members
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create project member
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - memberId
+ *               - roleId
+ *               - groupId
+ *               - subContractor
+ *             properties:
+ *               email:
+ *                 type: string
+ *               roleId:
+ *                 type: string
+ *               groupId:
+ *                 type: string
+ *               subContractor:
+ *                 type: string
+ *             example:
+ *               email: test@gmail.com
+ *               roleId: 234232423
+ *               groupId: 2342423443
+ *               subContractor: 23333333
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   patch:
+ *     summary: update member role and group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - memberId
+ *               - roleId
+ *               - groupId
+ *             properties:
+ *               roleId:
+ *                 type: string
+ *               groupId:
+ *                 type: string
+ *               memberId:
+ *                 type: string
+ *             example:
+ *               memberId: 234233222
+ *               roleId: 234232423
+ *               groupId: 2342423443
  *     responses:
  *       "200":
  *         description: OK

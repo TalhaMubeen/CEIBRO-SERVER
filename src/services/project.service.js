@@ -3,8 +3,11 @@ const { Project } = require('../models');
 const Folder = require('../models/folder.model');
 const Group = require('../models/group.model');
 const ProjectFile = require('../models/ProjectFile.model');
+const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
 const ApiError = require('../utils/ApiError');
+const { sendInvitationEmail } = require('./email.service');
+const { getUserById } = require('./user.service');
 
 /**
  * Create a project
@@ -62,6 +65,14 @@ const getRoleById = async (id) => {
     throw new ApiError(400, 'Invalid role');
   }
   return role;
+};
+
+const isGroupExist = async (groupId) => {
+  const group = await Group.findById(groupId);
+  if (!group) {
+    throw new ApiError(400, 'Invalid group');
+  }
+  return group;
 };
 
 const getAllProjects = () => {
@@ -250,6 +261,60 @@ const getFilesByFolderId = (folderId) => {
   ]);
 };
 
+const getProjectMemberByRoleAndGroup = async (memberId, groupId, roleId, subContractorId, projectId) => {
+  return ProjectMember.findOne({
+    project: projectId,
+    user: memberId,
+    group: groupId,
+    role: roleId,
+    subContractor: subContractorId,
+  });
+};
+
+const getProjectMemberByEmailRoleAndGroup = async (email, groupId, roleId, subContractorId, projectId) => {
+  return ProjectMember.findOne({
+    project: projectId,
+    invitedEmail: email,
+    group: groupId,
+    role: roleId,
+    subContractor: subContractorId,
+  });
+};
+
+const sendProjectInviteByEmail = async (email, groupId, roleId, subContractorId, projectId, currentUserId) => {
+  const currentUser = await getUserById(currentUserId);
+  const name = currentUser.firstName + ' ' + currentUser.surName;
+  const projectMember = await ProjectMember({
+    isInvited: true,
+    invitedEmail: email,
+    group: groupId,
+    role: roleId,
+    subContractor: subContractorId,
+    project: projectId,
+  });
+  await projectMember.save();
+  await sendInvitationEmail(email, name, currentUser.email);
+  return true;
+};
+
+const getProjectMembersById = async (projectId) => {
+  return ProjectMember.find({
+    project: projectId,
+  }).populate('role group subContractor user');
+};
+
+const addMemberToProject = async (memberId, groupId, roleId, subContractorId, projectId) => {
+  const projectMember = await ProjectMember({
+    user: memberId,
+    group: groupId,
+    role: roleId,
+    subContractor: subContractorId,
+    project: projectId,
+  });
+
+  return projectMember.save();
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -269,4 +334,10 @@ module.exports = {
   getProjectFolders,
   getFolderById,
   getFilesByFolderId,
+  isGroupExist,
+  addMemberToProject,
+  getProjectMemberByRoleAndGroup,
+  getProjectMemberByEmailRoleAndGroup,
+  getProjectMembersById,
+  sendProjectInviteByEmail,
 };
