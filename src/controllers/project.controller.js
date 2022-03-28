@@ -191,7 +191,20 @@ const getFolderAllFiles = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
   }
   const files = await getFilesByFolderId(folderId);
-  res.status(200).send(files);
+  const data = files?.map((file) => {
+    console.log('files are', file);
+    return {
+      id: file._id,
+      access: file.access,
+      name: file.name,
+      fileType: file.fileType,
+      url: file.url,
+      uploadedBy: file.uploadedBy,
+      folder: file.folder,
+      createdAt: file.createdAt,
+    };
+  });
+  res.status(200).send(data);
 });
 
 const getProjectAllMembers = catchAsync(async (req, res) => {
