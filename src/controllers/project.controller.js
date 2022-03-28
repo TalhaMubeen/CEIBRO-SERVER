@@ -18,6 +18,8 @@ const {
   getProjectMemberByEmailRoleAndGroup,
   getRoleById,
   getProjectMembersById,
+  getProjectMemberById,
+  updateMemberGroupAndRole,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -149,7 +151,6 @@ const getProjectFolders = catchAsync(async (req, res) => {
   }
   const folders = await projectService.getProjectFolders(projectId);
   const data = folders.map((folder) => {
-    console.log('🚀 ~ file: project.controller.js ~ line 152 ~ data ~ folder', folder);
     return {
       name: folder.name,
       id: folder._id,
@@ -250,34 +251,17 @@ const updateMemberRoleAndGroup = catchAsync(async (req, res) => {
   await isGroupExist(groupId);
   const member = await getProjectMemberById(memberId);
 
-  const project = await getProjectById(projectId);
+  if (!member) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
+  }
 
+  const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
 
-  if (member) {
-    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, subContractor, projectId);
-    if (alreadyMember) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
-    }
-    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, subContractor, projectId);
-    res.status(200).send(newMember);
-  } else {
-    const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, subContractor, projectId);
-    if (alreadyMember) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
-    }
-    const newMember = await projectService.sendProjectInviteByEmail(
-      email,
-      groupId,
-      roleId,
-      subContractor,
-      projectId,
-      req.user._id
-    );
-    res.status(200).send('Invitation sent to user');
-  }
+  await updateMemberGroupAndRole(groupId, roleId, memberId);
+  res.status(200).send('updated successfully');
 });
 
 module.exports = {

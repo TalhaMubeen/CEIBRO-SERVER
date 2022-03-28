@@ -306,6 +306,12 @@ const getProjectMembersById = async (projectId) => {
   }).populate('role group subContractor user');
 };
 
+const getProjectMemberById = async (memberId) => {
+  return ProjectMember.findOne({
+    _id: memberId,
+  });
+};
+
 const addMemberToProject = async (memberId, groupId, roleId, subContractorId, projectId) => {
   const projectMember = await ProjectMember({
     user: memberId,
@@ -316,6 +322,18 @@ const addMemberToProject = async (memberId, groupId, roleId, subContractorId, pr
   });
 
   return projectMember.save();
+};
+
+const updateMemberGroupAndRole = (groupId, roleId, memberId) => {
+  return ProjectMember.updateOne(
+    {
+      _id: memberId,
+    },
+    {
+      role: roleId,
+      group: groupId,
+    }
+  );
 };
 
 module.exports = {
@@ -343,4 +361,6 @@ module.exports = {
   getProjectMemberByEmailRoleAndGroup,
   getProjectMembersById,
   sendProjectInviteByEmail,
+  getProjectMemberById,
+  updateMemberGroupAndRole,
 };

@@ -51,7 +51,7 @@ router
   .route('/member/:projectId')
   .get(auth('manageProject'), projectController.getProjectAllMembers)
   .post(auth('manageProject'), validate(validation.addMemberToProject), projectController.addMemberToProject)
-  .put(auth('manageProject'), validate(validation.updateUserRoleAndGroup), projectController.updateMemberRoleAndGroup);
+  .patch(auth('manageProject'), validate(validation.updateUserRoleAndGroup), projectController.updateMemberRoleAndGroup);
 
 module.exports = router;
 
