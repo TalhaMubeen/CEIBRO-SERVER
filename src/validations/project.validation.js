@@ -12,6 +12,17 @@ const createProject = {
   }),
 };
 
+const updateProject = {
+  body: Joi.object().keys({
+    title: Joi.string().required(),
+    description: Joi.string(),
+    location: Joi.string(),
+    owner: Joi.any(),
+    dueDate: Joi.string(),
+    projectStatus: Joi.string(),
+  }),
+};
+
 const getProjectsList = {
   query: Joi.object().keys({
     dueDate: Joi.date(),
@@ -92,6 +103,7 @@ const updateUserRoleAndGroup = {
 
 module.exports = {
   createProject,
+  updateProject,
   getProjectsList,
   createProjectRole,
   createProjectGroup,

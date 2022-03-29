@@ -19,7 +19,10 @@ router
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
-router.route('/detail/:projectId').get(auth('manageProject'), projectController.getProject);
+router
+  .route('/detail/:projectId')
+  .get(auth('manageProject'), projectController.getProject)
+  .put(auth('manageProject'), validate(validation.updateProject), projectController.updateProject);
 
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
@@ -158,11 +161,11 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  */
 
-/*
+/**
  * @swagger
  * /project/detail/{projectId}:
- *   get:
- *     summary: get project by id
+ *   put:
+ *     summary: update project by id
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
@@ -172,13 +175,63 @@ module.exports = router;
  *         required: true
  *         schema:
  *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               location:
+ *                 type: string
+ *               addTime:
+ *                 type: boolean
+ *               quantity:
+ *                 type: boolean
+ *               comment:
+ *                 type: boolean
+ *               photo:
+ *                 type: boolean
+ *             example:
+ *               title: test project
+ *               dueDate: 12-12-2022
+ *               description: description
+ *               location: location
+ *               owner: 2324234234,
+ *               publishStatus: draft | published
+ *     responses:
+ *       "201":
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *                 tokens:
+ *                   $ref: '#/components/schemas/AuthTokens'
+ *       "400":
+ *         $ref: '#/components/responses/DuplicateEmail'
+ *   get:
+ *     summary: get project
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: projectId
  *         required: true
  *         schema:
  *           type: string
- *         description: project id.id.
+ *         description: project id.
  *     responses:
  *       "200":
  *         description: OK
