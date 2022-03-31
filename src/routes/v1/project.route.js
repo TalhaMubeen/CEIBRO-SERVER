@@ -28,6 +28,7 @@ router.route('/all').get(auth('manageProject'), projectController.getAllProjects
 
 router
   .route('/role/detail/:roleId')
+  .get(auth('manageProject'), projectController.getRoleDetail)
   .put(auth('manageProject'), validate(validation.updateProjectRole), projectController.editRole);
 
 router
@@ -386,6 +387,31 @@ module.exports = router;
 /**
  * @swagger
  * /project/role/detail/{roleId}:
+ *   get:
+ *     summary: get project role by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: role id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   put:
  *     summary: update project Role
  *     tags: [Project]

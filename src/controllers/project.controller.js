@@ -109,12 +109,16 @@ const getProjectRoles = catchAsync(async (req, res) => {
 
 const editRole = catchAsync(async (req, res) => {
   const { roleId } = req.params;
-  console.log('🚀 ~ file: project.controller.js ~ line 86 ~ editRole ~ roleId', roleId);
   const { name, admin, roles, member, timeProfile } = req.body;
 
   const newRole = await editProjectRole(roleId, name, admin, roles, member, timeProfile);
-  console.log('🚀 ~ file: project.controller.js ~ line 90 ~ editRole ~ newRole', newRole);
   res.status(200).send(newRole);
+});
+
+const getRoleDetail = catchAsync(async (req, res) => {
+  const { roleId } = req.params;
+  const role = await getRoleById(roleId);
+  res.status(200).send(role);
 });
 
 const createGroup = catchAsync(async (req, res) => {
@@ -298,4 +302,5 @@ module.exports = {
   addMemberToProject,
   getProjectAllMembers,
   updateMemberRoleAndGroup,
+  getRoleDetail
 };
