@@ -48,7 +48,7 @@ const createProjectRole = {
 
 const updateProjectRole = {
   params: Joi.object().keys({
-    projectId: Joi.string(),
+    roleId: Joi.string(),
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
