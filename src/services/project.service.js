@@ -172,7 +172,7 @@ const editProjectRole = async (roleId, name, admin, roles = [], member, timeProf
     throw new ApiError(httpStatus.NOT_FOUND, 'Role not found');
   }
   return Role.findOneAndUpdate(
-    { id: roleId },
+    { _id: roleId },
     {
       name,
       admin,
