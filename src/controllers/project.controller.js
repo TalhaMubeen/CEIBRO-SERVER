@@ -20,6 +20,7 @@ const {
   getProjectMembersById,
   getProjectMemberById,
   updateMemberGroupAndRole,
+  editProjectGroup,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -119,6 +120,19 @@ const getRoleDetail = catchAsync(async (req, res) => {
   const { roleId } = req.params;
   const role = await getRoleById(roleId);
   res.status(200).send(role);
+});
+
+const getGroupDetail = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  const group = await isGroupExist(groupId);
+  res.status(200).send(group);
+});
+
+const editGroup = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  const { name } = req.body;
+  const newGroup = await editProjectGroup(groupId, name);
+  res.status(200).send(newGroup);
 });
 
 const createGroup = catchAsync(async (req, res) => {
@@ -302,5 +316,7 @@ module.exports = {
   addMemberToProject,
   getProjectAllMembers,
   updateMemberRoleAndGroup,
-  getRoleDetail
+  getRoleDetail,
+  getGroupDetail,
+  editGroup,
 };

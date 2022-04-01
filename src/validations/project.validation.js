@@ -59,6 +59,15 @@ const updateProjectRole = {
   }),
 };
 
+const updateProjectGroup = {
+  params: Joi.object().keys({
+    groupId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+  }),
+};
+
 const createProjectGroup = {
   params: Joi.object().keys({
     projectId: Joi.string(),
@@ -109,6 +118,7 @@ module.exports = {
   createProjectGroup,
   createProjectFolder,
   updateProjectRole,
+  updateProjectGroup,
   addMemberToProject,
   updateUserRoleAndGroup,
 };

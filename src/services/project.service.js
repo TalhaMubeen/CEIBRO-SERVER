@@ -336,6 +336,19 @@ const updateMemberGroupAndRole = (groupId, roleId, memberId) => {
   );
 };
 
+const editProjectGroup = async (groupId, name) => {
+  await isGroupExist(groupId);
+  return Group.findOneAndUpdate(
+    { _id: groupId },
+    {
+      name,
+    },
+    {
+      new: true,
+    }
+  );
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -363,4 +376,5 @@ module.exports = {
   sendProjectInviteByEmail,
   getProjectMemberById,
   updateMemberGroupAndRole,
+  editProjectGroup,
 };
