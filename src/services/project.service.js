@@ -76,6 +76,14 @@ const isGroupExist = async (groupId) => {
   return group;
 };
 
+const isTimeProfileExist = async (profileId) => {
+  const timeProfile = await TimeProfile.findById(profileId);
+  if (!timeProfile) {
+    throw new ApiError(400, 'Invalid time profile id');
+  }
+  return timeProfile;
+};
+
 const getAllProjects = () => {
   return Project.find({}, { title: 1 });
 };
@@ -381,6 +389,19 @@ const editProjectGroup = async (groupId, name) => {
   );
 };
 
+const editProjectTimeProfile = async (profileId, name) => {
+  await isTimeProfileExist(profileId);
+  return TimeProfile.findOneAndUpdate(
+    { _id: profileId },
+    {
+      name,
+    },
+    {
+      new: true,
+    }
+  );
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -411,4 +432,6 @@ module.exports = {
   editProjectGroup,
   createProjectTimeProfile,
   getProjectTimeProfiles,
+  isTimeProfileExist,
+  editProjectTimeProfile,
 };

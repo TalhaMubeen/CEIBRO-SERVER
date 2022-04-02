@@ -47,6 +47,11 @@ router
   .post(auth('manageProject'), validate(validation.createTimeProfile), projectController.createTimeProfile);
 
 router
+  .route('/timeProfile/detail/:profileId')
+  .get(auth('manageProject'), projectController.getTimeProfileDetail)
+  .put(auth('manageProject'), validate(validation.updateTimeProfile), projectController.editTimeProfile);
+
+router
   .route('/group/detail/:groupId')
   .get(auth('manageProject'), projectController.getGroupDetail)
   .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup);
@@ -665,6 +670,74 @@ module.exports = router;
  *                 type: string
  *             example:
  *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/timeProfile/detail/{profileId}:
+ *   get:
+ *     summary: get project timeProfile by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: profileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   put:
+ *     summary: update project time profile
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: profileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: modified name
  *     responses:
  *       "200":
  *         description: OK

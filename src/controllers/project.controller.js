@@ -22,6 +22,8 @@ const {
   updateMemberGroupAndRole,
   editProjectGroup,
   createProjectTimeProfile,
+  isTimeProfileExist,
+  editProjectTimeProfile,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -168,6 +170,19 @@ const getProjectTimeProfiles = catchAsync(async (req, res) => {
   }
   const timeProfiles = await projectService.getProjectTimeProfiles(projectId);
   res.status(200).send(timeProfiles);
+});
+
+const getTimeProfileDetail = catchAsync(async (req, res) => {
+  const { profileId } = req.params;
+  const timeProfile = await isTimeProfileExist(profileId);
+  res.status(200).send(timeProfile);
+});
+
+const editTimeProfile = catchAsync(async (req, res) => {
+  const { profileId } = req.params;
+  const { name } = req.body;
+  const newTimeProfile = await editProjectTimeProfile(profileId, name);
+  res.status(200).send(newTimeProfile);
 });
 
 const createFolder = catchAsync(async (req, res) => {
@@ -339,4 +354,6 @@ module.exports = {
   editGroup,
   createTimeProfile,
   getProjectTimeProfiles,
+  getTimeProfileDetail,
+  editTimeProfile,
 };
