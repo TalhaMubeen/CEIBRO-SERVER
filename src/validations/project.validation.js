@@ -77,6 +77,15 @@ const createProjectGroup = {
   }),
 };
 
+const createTimeProfile = {
+  params: Joi.object().keys({
+    projectId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+  }),
+};
+
 const createProjectFolder = {
   params: Joi.object().keys({
     projectId: Joi.string(),
@@ -116,6 +125,7 @@ module.exports = {
   getProjectsList,
   createProjectRole,
   createProjectGroup,
+  createTimeProfile,
   createProjectFolder,
   updateProjectRole,
   updateProjectGroup,

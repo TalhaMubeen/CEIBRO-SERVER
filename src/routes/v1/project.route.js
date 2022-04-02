@@ -42,6 +42,11 @@ router
   .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
 
 router
+  .route('/timeProfile/:projectId')
+  .get(auth('manageProject'), projectController.getProjectTimeProfiles)
+  .post(auth('manageProject'), validate(validation.createTimeProfile), projectController.createTimeProfile);
+
+router
   .route('/group/detail/:groupId')
   .get(auth('manageProject'), projectController.getGroupDetail)
   .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup);
@@ -544,6 +549,74 @@ module.exports = router;
  * /project/group/{projectId}:
  *   get:
  *     summary: get All project group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create project group
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/timeProfile/{projectId}:
+ *   get:
+ *     summary: get All project time profile
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []

@@ -5,6 +5,7 @@ const Group = require('../models/group.model');
 const ProjectFile = require('../models/ProjectFile.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
+const TimeProfile = require('../models/timeProfile.model');
 const ApiError = require('../utils/ApiError');
 const { sendInvitationEmail } = require('./email.service');
 const { getUserById } = require('./user.service');
@@ -138,6 +139,13 @@ const getGroupByProjectAndName = (name, projectId) => {
   });
 };
 
+const getTimeProfileByProjectAndName = (name, projectId) => {
+  return TimeProfile.findOne({
+    name,
+    project: projectId,
+  });
+};
+
 const getFolderByProjectAndName = (name, projectId) => {
   return Folder.findOne({
     name,
@@ -212,6 +220,30 @@ const createProjectGroup = async (name, projectId) => {
 
 const getProjectGroups = (projectId) => {
   return Group.find({
+    project: projectId,
+  });
+};
+
+const createProjectTimeProfile = async (name, projectId) => {
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
+  }
+
+  const timeProfile = await getTimeProfileByProjectAndName(name, projectId);
+  if (timeProfile) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Time Profile already exist');
+  }
+
+  const newProfile = new TimeProfile({
+    name,
+    project: projectId,
+  });
+  return newProfile.save();
+};
+
+const getProjectTimeProfiles = (projectId) => {
+  return TimeProfile.find({
     project: projectId,
   });
 };
@@ -377,4 +409,6 @@ module.exports = {
   getProjectMemberById,
   updateMemberGroupAndRole,
   editProjectGroup,
+  createProjectTimeProfile,
+  getProjectTimeProfiles,
 };

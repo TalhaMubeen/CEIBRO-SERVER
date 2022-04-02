@@ -21,6 +21,7 @@ const {
   getProjectMemberById,
   updateMemberGroupAndRole,
   editProjectGroup,
+  createProjectTimeProfile,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -150,6 +151,23 @@ const getProjectGroups = catchAsync(async (req, res) => {
   }
   const groups = await projectService.getProjectGroups(projectId);
   res.status(200).send(groups);
+});
+
+const createTimeProfile = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { name } = req.body;
+  const timeProfile = await createProjectTimeProfile(name, projectId);
+  res.status(200).send(timeProfile);
+});
+
+const getProjectTimeProfiles = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const timeProfiles = await projectService.getProjectTimeProfiles(projectId);
+  res.status(200).send(timeProfiles);
 });
 
 const createFolder = catchAsync(async (req, res) => {
@@ -319,4 +337,6 @@ module.exports = {
   getRoleDetail,
   getGroupDetail,
   editGroup,
+  createTimeProfile,
+  getProjectTimeProfiles,
 };
