@@ -119,6 +119,40 @@ const updateUserRoleAndGroup = {
   }),
 };
 
+const createProjectWork = {
+  params: Joi.object().keys({
+    profileId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    roles: Joi.array().items(Joi.string()).required(),
+    time: Joi.boolean().required(),
+    timeRequired: Joi.boolean().required(),
+    quantity: Joi.boolean().required(),
+    quantityRequired: Joi.boolean().required(),
+    comment: Joi.boolean().required(),
+    commentRequired: Joi.boolean().required(),
+    photo: Joi.boolean().required(),
+    photoRequired: Joi.boolean().required(),
+  }),
+};
+
+const updateProjectWork = {
+  params: Joi.object().keys({
+    profileId: Joi.string(),
+  }),
+  body: Joi.object().keys({
+    roles: Joi.array().items(Joi.string()).required(),
+    time: Joi.boolean().required(),
+    timeRequired: Joi.boolean().required(),
+    quantity: Joi.boolean().required(),
+    quantityRequired: Joi.boolean().required(),
+    comment: Joi.boolean().required(),
+    commentRequired: Joi.boolean().required(),
+    photo: Joi.boolean().required(),
+    photoRequired: Joi.boolean().required(),
+  }),
+};
+
 module.exports = {
   createProject,
   updateProject,
@@ -131,4 +165,6 @@ module.exports = {
   updateProjectGroup,
   addMemberToProject,
   updateUserRoleAndGroup,
+  createProjectWork,
+  updateProjectWork,
 };

@@ -72,6 +72,16 @@ router
   .post(auth('manageProject'), validate(validation.addMemberToProject), projectController.addMemberToProject)
   .patch(auth('manageProject'), validate(validation.updateUserRoleAndGroup), projectController.updateMemberRoleAndGroup);
 
+router
+  .route('/work/:profileId')
+  .get(auth('manageProject'), projectController.getProfileWorks)
+  .post(auth('manageProject'), validate(validation.createProjectWork), projectController.createWork);
+
+router
+  .route('/work/detail/:workId')
+  .get(auth('manageProject'), projectController.getWorkDetail)
+  .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork);
+
 module.exports = router;
 
 /**
@@ -835,7 +845,7 @@ module.exports = router;
  * @swagger
  * /project/file/{folderId}:
  *   get:
- *     summary: get All project folders
+ *     summary: get All folders files
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
@@ -846,6 +856,11 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: project id.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: file search
  *     responses:
  *       "200":
  *         description: OK
@@ -1019,4 +1034,195 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/work/{profileId}:
+ *   get:
+ *     summary: get all profile works
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: profileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: profile id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create profile work
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: profileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: profile id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               roles:
+ *                 type: array
+ *               time:
+ *                 type: boolean
+ *               timeRequired:
+ *                 type: boolean
+ *               comment:
+ *                 type: boolean
+ *               commentRequired:
+ *                 type: boolean
+ *               photo:
+ *                 type: boolean
+ *               photoRequired:
+ *                 type: boolean
+ *               quantity:
+ *                 type: boolean
+ *               quantityRequired:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               roles: []
+ *               time: false,
+ *               timeRequired: false,
+ *               comment: false,
+ *               commentRequired: false,
+ *               photo: false,
+ *               photoRequired: false,
+ *               quantity: false,
+ *               quantityRequired: false
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/work/detail/{workId}:
+ *   get:
+ *     summary: get work detail by workId
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: work id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   put:
+ *     summary: update work
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: work id.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               roles:
+ *                 type: array
+ *               time:
+ *                 type: boolean
+ *               timeRequired:
+ *                 type: boolean
+ *               comment:
+ *                 type: boolean
+ *               commentRequired:
+ *                 type: boolean
+ *               photo:
+ *                 type: boolean
+ *               photoRequired:
+ *                 type: boolean
+ *               quantity:
+ *                 type: boolean
+ *               quantityRequired:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               roles: []
+ *               time: false,
+ *               timeRequired: false,
+ *               comment: false,
+ *               commentRequired: false,
+ *               photo: false,
+ *               photoRequired: false,
+ *               quantity: false,
+ *               quantityRequired: false
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
  */

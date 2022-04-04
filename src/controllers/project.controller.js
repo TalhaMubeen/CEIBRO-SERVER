@@ -198,8 +198,8 @@ const createFolder = catchAsync(async (req, res) => {
 const getProjectFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { search } = req.query;
-  let filter = {}
-  if(search) {
+  let filter = {};
+  if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
     filter = {
       ...filter,
@@ -247,13 +247,21 @@ const uploadFileToFolder = catchAsync(async (req, res) => {
 
 const getFolderAllFiles = catchAsync(async (req, res) => {
   const { folderId } = req.params;
+  const { search } = req.query;
   const folder = await getFolderById(folderId);
   if (!folder) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
   }
-  const files = await getFilesByFolderId(folderId);
+  let filter = {};
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), 'gi');
+    filter = {
+      ...filter,
+      name: regex,
+    };
+  }
+  const files = await getFilesByFolderId(folderId, filter);
   const data = files?.map((file) => {
-    console.log('files are', file);
     return {
       id: file._id,
       access: file.access,
@@ -338,6 +346,61 @@ const updateMemberRoleAndGroup = catchAsync(async (req, res) => {
   res.status(200).send('updated successfully');
 });
 
+const createWork = catchAsync(async (req, res) => {
+  const { profileId } = req.params;
+  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
+    req.body;
+  const work = await projectService.createProfileWork(
+    profileId,
+    name,
+    roles,
+    time,
+    timeRequired,
+    quantity,
+    quantityRequired,
+    comment,
+    commentRequired,
+    photo,
+    photoRequired
+  );
+  res.status(200).send(work);
+});
+
+const getProfileWorks = catchAsync(async (req, res) => {
+  const { profileId } = req.params;
+  await isTimeProfileExist(profileId);
+
+  const works = await projectService.getProfileWorks(profileId);
+  res.status(200).send(works);
+});
+
+const editProfileWork = catchAsync(async (req, res) => {
+  const { workId } = req.params;
+  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
+    req.body;
+
+  const newWork = await projectService.editProfileWork(
+    workId,
+    name,
+    roles,
+    time,
+    timeRequired,
+    quantity,
+    quantityRequired,
+    comment,
+    commentRequired,
+    photo,
+    photoRequired
+  );
+  res.status(200).send(newWork);
+});
+
+const getWorkDetail = catchAsync(async (req, res) => {
+  const { workId } = req.params;
+  const work = await projectService.isWorkExist(workId);
+  res.status(200).send(work);
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -366,4 +429,8 @@ module.exports = {
   getProjectTimeProfiles,
   getTimeProfileDetail,
   editTimeProfile,
+  createWork,
+  editProfileWork,
+  getWorkDetail,
+  getProfileWorks,
 };

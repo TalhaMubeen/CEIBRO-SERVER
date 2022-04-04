@@ -84,6 +84,14 @@ const isTimeProfileExist = async (profileId) => {
   return timeProfile;
 };
 
+const isWorkExist = async (workId) => {
+  const work = await Work.findById(workId);
+  if (!work) {
+    throw new ApiError(400, 'Invalid work id');
+  }
+  return work;
+};
+
 const getAllProjects = () => {
   return Project.find({}, { title: 1 });
 };
@@ -140,6 +148,13 @@ const getRoleByProjectAndName = (name, projectId) => {
   });
 };
 
+const getWorkByProfileAndName = (name, projectId) => {
+  return Work.findOne({
+    name,
+    profile: profileId,
+  });
+};
+
 const getGroupByProjectAndName = (name, projectId) => {
   return Group.findOne({
     name,
@@ -180,6 +195,94 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     project: projectId,
   });
   return newRole.save();
+};
+
+const createProfileWork = async (
+  profileId,
+  name,
+  roles,
+  time,
+  timeRequired,
+  quantity,
+  quantityRequired,
+  comment,
+  commentRequired,
+  photo,
+  photoRequired
+) => {
+  await isTimeProfileExist(profileId);
+  const work = await getWorkByProfileAndName(name, profileId);
+  if (work) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Work already exist');
+  }
+
+  await Promise.all(roles?.map(getRoleById));
+
+  const newWork = new Work({
+    profile: profileId,
+    name,
+    roles,
+    time,
+    timeRequired,
+    photo,
+    photoRequired,
+    comment,
+    commentRequired,
+    quantity,
+    quantityRequired,
+  });
+  return newWork.save();
+};
+
+const editProfileWork = async (
+  workId,
+  name,
+  roles,
+  time,
+  timeRequired,
+  quantity,
+  quantityRequired,
+  comment,
+  commentRequired,
+  photo,
+  photoRequired
+) => {
+  await isWorkExist(workId);
+
+  await Promise.all(roles?.map(getRoleById));
+  const otherWork = Work.findOne({
+    name: name,
+    _id: {
+      $ne: workId,
+    },
+  });
+  if (otherWork) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Work with this name already exist');
+  }
+  return Work.findOneAndUpdate(
+    { _id: workId },
+    {
+      name,
+      roles,
+      time,
+      timeRequired,
+      photo,
+      photoRequired,
+      comment,
+      commentRequired,
+      quantity,
+      quantityRequired,
+    },
+    {
+      new: true,
+    }
+  );
+};
+
+const getProfileWorks = (profileId) => {
+  return TimeProfile.find({
+    profile: profileId,
+  });
 };
 
 const editProjectRole = async (roleId, name, admin, roles = [], member, timeProfile) => {
@@ -224,6 +327,7 @@ const createProjectGroup = async (name, projectId) => {
     project: projectId,
   });
   return newGroup.save();
+  createProfileWork;
 };
 
 const getProjectGroups = (projectId) => {
@@ -290,9 +394,10 @@ const getFolderById = (folderId) => {
   });
 };
 
-const getFilesByFolderId = (folderId) => {
+const getFilesByFolderId = (folderId, filter = {}) => {
   return ProjectFile.find({
     folder: folderId,
+    ...filter,
   }).populate([
     {
       path: 'access',
@@ -435,4 +540,8 @@ module.exports = {
   getProjectTimeProfiles,
   isTimeProfileExist,
   editProjectTimeProfile,
+  createProfileWork,
+  editProfileWork,
+  getProfileWorks,
+  isWorkExist,
 };
