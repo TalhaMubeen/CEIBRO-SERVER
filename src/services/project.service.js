@@ -277,8 +277,9 @@ const createProjectFolder = async (name, groupId, projectId) => {
   return newFolder.save();
 };
 
-const getProjectFolders = (projectId) => {
+const getProjectFolders = (projectId, filters) => {
   return Folder.find({
+    ...filters,
     project: projectId,
   }).populate('group');
 };

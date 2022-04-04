@@ -27,6 +27,7 @@ const {
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
+const { escapeRegex } = require('../helpers/query.helper');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -196,11 +197,20 @@ const createFolder = catchAsync(async (req, res) => {
 
 const getProjectFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
+  const { search } = req.query;
+  let filter = {}
+  if(search) {
+    const regex = new RegExp(escapeRegex(search), 'gi');
+    filter = {
+      ...filter,
+      name: regex,
+    };
+  }
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  const folders = await projectService.getProjectFolders(projectId);
+  const folders = await projectService.getProjectFolders(projectId, filter);
   const data = folders.map((folder) => {
     return {
       name: folder.name,

@@ -768,6 +768,12 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: project id.
+ *       - in: query
+ *         name: search
+ *         required: false
+ *         schema:
+ *           type: string
+ *         description: search project folders
  *     responses:
  *       "200":
  *         description: OK
