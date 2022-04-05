@@ -8,54 +8,56 @@ const workSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    roles: {
+    profile: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'TimeProfile',
     },
-    roles: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'Role',
-    }],
+    roles: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Role',
+      },
+    ],
     time: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     timeRequired: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     quantity: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     quantityRequired: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     comment: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     commentRequired: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     photo: {
-        type: Boolean,
-        required: false,
-        default: false
+      type: Boolean,
+      required: false,
+      default: false,
     },
     photoRequired: {
-        type: Boolean,
-        required: false,
-        default: false
-    }
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   {
     timestamps: true,

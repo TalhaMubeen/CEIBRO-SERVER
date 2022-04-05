@@ -6,6 +6,7 @@ const ProjectFile = require('../models/ProjectFile.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
 const TimeProfile = require('../models/timeProfile.model');
+const Work = require('../models/work.model');
 const ApiError = require('../utils/ApiError');
 const { sendInvitationEmail } = require('./email.service');
 const { getUserById } = require('./user.service');
@@ -148,7 +149,7 @@ const getRoleByProjectAndName = (name, projectId) => {
   });
 };
 
-const getWorkByProfileAndName = (name, projectId) => {
+const getWorkByProfileAndName = (name, profileId) => {
   return Work.findOne({
     name,
     profile: profileId,
@@ -280,7 +281,7 @@ const editProfileWork = async (
 };
 
 const getProfileWorks = (profileId) => {
-  return TimeProfile.find({
+  return Work.find({
     profile: profileId,
   });
 };
