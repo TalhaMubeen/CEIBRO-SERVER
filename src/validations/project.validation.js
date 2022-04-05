@@ -125,6 +125,7 @@ const createProjectWork = {
     profileId: Joi.string(),
   }),
   body: Joi.object().keys({
+    name: Joi.string().required(),
     roles: Joi.array().items(Joi.string()).required(),
     time: Joi.boolean().required(),
     timeRequired: Joi.boolean().required(),
@@ -142,6 +143,7 @@ const updateProjectWork = {
     profileId: Joi.string(),
   }),
   body: Joi.object().keys({
+    name: Joi.string().required(),
     roles: Joi.array().items(Joi.string()).required(),
     time: Joi.boolean().required(),
     timeRequired: Joi.boolean().required(),
