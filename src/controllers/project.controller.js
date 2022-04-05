@@ -115,7 +115,7 @@ const updateProject = catchAsync(async (req, res) => {
 
 const deleteProject = catchAsync(async (req, res) => {
   await projectService.deleteProjectById(req.params.projectId);
-  res.status(httpStatus.NO_CONTENT).send();
+  res.status(200).send();
 });
 
 const createRole = catchAsync(async (req, res) => {

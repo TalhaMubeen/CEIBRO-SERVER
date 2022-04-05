@@ -29,7 +29,8 @@ router
     multerUpload.single('projectPhoto'),
     validate(validation.updateProject),
     projectController.updateProject
-  );
+  )
+  .delete(auth('manageProject'), projectController.deleteProject);
 
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
@@ -282,6 +283,31 @@ module.exports = router;
  *       "400":
  *         $ref: '#/components/responses/DuplicateEmail'
  *   get:
+ *     summary: get project
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   delete:
  *     summary: get project
  *     tags: [Project]
  *     security:
