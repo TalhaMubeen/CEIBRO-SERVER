@@ -20,7 +20,7 @@ router
 
 router.route('/count/status').get(auth('manageProject'), projectController.getProjectsStatusWithCount);
 
-// router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
+router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
 router
   .route('/detail/:projectId')
   .get(auth('manageProject'), projectController.getProject)

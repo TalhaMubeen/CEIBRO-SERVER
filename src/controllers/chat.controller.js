@@ -20,7 +20,7 @@ const createChat = catchAsync(async (req, res) => {
 
   if (chat.project) {
     const project = await projectService.getProjectById(chat.project);
-    const chatCount = await Chat.count({ project: projectId });
+    const chatCount = await Chat.count({ project: chat.project });
     project.chatCount = chatCount;
     project.save();
   }
