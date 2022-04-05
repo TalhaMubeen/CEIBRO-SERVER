@@ -24,7 +24,12 @@ router.route('/count/status').get(auth('manageProject'), projectController.getPr
 router
   .route('/detail/:projectId')
   .get(auth('manageProject'), projectController.getProject)
-  .put(auth('manageProject'), validate(validation.updateProject), projectController.updateProject);
+  .put(
+    auth('manageProject'),
+    multerUpload.single('projectPhoto'),
+    validate(validation.updateProject),
+    projectController.updateProject
+  );
 
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
