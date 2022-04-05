@@ -28,6 +28,7 @@ const getProjectsList = {
     dueDate: Joi.date(),
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
+    assignedTo: Joi.string(),
     title: Joi.string(),
     publishStatus: Joi.string(),
   }),

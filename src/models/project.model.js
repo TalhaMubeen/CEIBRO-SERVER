@@ -38,6 +38,28 @@ const projectSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    usersCount: {
+      type: String,
+      required: false,
+    },
+    docsCount: {
+      type: String,
+      required: false,
+    },
+    tasksCount: {
+      type: String,
+      required: false,
+    },
+    chatCount: {
+      type: String,
+      enum: Object.values(projectPublishStatus),
+      default: projectPublishStatus.DRAFT_PROJECT,
+    },
+    publishStatus: {
+      type: String,
+      enum: Object.values(projectPublishStatus),
+      default: projectPublishStatus.DRAFT_PROJECT,
+    },
     publishStatus: {
       type: String,
       enum: Object.values(projectPublishStatus),

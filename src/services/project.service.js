@@ -508,6 +508,12 @@ const editProjectTimeProfile = async (profileId, name) => {
   );
 };
 
+const getProjectCountByStatus = async (status) => {
+  return Project.count({
+    publishStatus: status,
+  });
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -544,4 +550,5 @@ module.exports = {
   editProfileWork,
   getProfileWorks,
   isWorkExist,
+  getProjectCountByStatus,
 };

@@ -18,7 +18,9 @@ router
   )
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
-router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
+router.route('/count/status').get(auth('manageProject'), projectController.getProjectsStatusWithCount);
+
+// router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectMembers);
 router
   .route('/detail/:projectId')
   .get(auth('manageProject'), projectController.getProject)
@@ -148,6 +150,11 @@ module.exports = router;
  *           type: string
  *         description: project title
  *       - in: query
+ *         name: assignedTo
+ *         schema:
+ *           type: string
+ *         description: get Projects assigned to a person by userId
+ *       - in: query
  *         name: dueDate
  *         schema:
  *           type: date
@@ -172,6 +179,29 @@ module.exports = router;
  *           minimum: 1
  *           default: 1
  *         description: Page number
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/count/status:
+ *   get:
+ *     summary: get Projects status with count
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
  *       "200":
  *         description: OK

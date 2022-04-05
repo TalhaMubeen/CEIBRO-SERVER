@@ -2,13 +2,13 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { chatService, userService, awsService } = require('../services');
+const { chatService, userService, awsService, projectService } = require('../services');
 const { escapeRegex } = require('../helpers/query.helper');
 const { formatMessage } = require('../helpers/chat.helper');
 const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
 const io = require('./webSocket.controller');
 const AWS = require('aws-sdk');
-const { Message, User } = require('../models');
+const { Message, User, Chat } = require('../models');
 const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
@@ -17,6 +17,14 @@ const { getMessageIdsByRoomId, getMessageByIds, getMessageIdsByFilter } = requir
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const chat = await chatService.createChat(req.body, _id);
+
+  if (chat.project) {
+    const project = await projectService.getProjectById(chat.project);
+    const chatCount = await Chat.count({ project: projectId });
+    project.chatCount = chatCount;
+    project.save();
+  }
+
   res.status(httpStatus.CREATED).send(chat);
 });
 
@@ -232,7 +240,6 @@ const replyMessage = catchAsync(async (req, res) => {
     chat: String(myChat._id),
     mutedFor: myChat.mutedBy,
   });
-
   res.status(200).send(newMessage);
 });
 

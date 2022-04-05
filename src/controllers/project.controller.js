@@ -28,6 +28,9 @@ const {
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
 const { escapeRegex } = require('../helpers/query.helper');
+const { projectPublishStatus } = require('../config/project.config');
+const Project = require('../models/project.model');
+const ProjectMember = require('../models/ProjectMember.model');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -41,12 +44,24 @@ const createProject = catchAsync(async (req, res) => {
 
 const getProjects = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['title', 'publishStatus']);
-  const search = pick(req.query, ['dueDate']);
+  const search = pick(req.query, ['dueDate', 'assignedTo']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   if (search.dueDate) {
     filter.dueDate = {
       $lte: search.dueDate,
     };
+  }
+
+  if (search.assignedTo) {
+    const members = await ProjectMember.find({
+      user: search.assignedTo,
+    });
+    if (members) {
+      const myProjectIds = members?.map((member) => String(member.project));
+      filter._id = {
+        $in: myProjectIds,
+      };
+    }
   }
 
   if (filter.publishStatus) {
@@ -242,6 +257,10 @@ const uploadFileToFolder = catchAsync(async (req, res) => {
     folder: folderId,
   });
   await file.save();
+  const project = await projectService.getProjectById(folder.project);
+  const filesCount = await ProjectFile.count({ project: folder.project });
+  project.docsCount = filesCount;
+  project.save();
   res.status(200).send(file);
 });
 
@@ -307,6 +326,9 @@ const addMemberToProject = catchAsync(async (req, res) => {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
     }
     const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, subContractor, projectId);
+    const membersCount = await ProjectMember.count({ project: projectId });
+    project.usersCount = membersCount;
+    project.save();
     res.status(200).send(newMember);
   } else {
     const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, subContractor, projectId);
@@ -321,6 +343,10 @@ const addMemberToProject = catchAsync(async (req, res) => {
       projectId,
       req.user._id
     );
+
+    const membersCount = await ProjectMember.count({ project: projectId });
+    project.usersCount = membersCount;
+    project.save();
     res.status(200).send('Invitation sent to user');
   }
 });
@@ -401,9 +427,29 @@ const getWorkDetail = catchAsync(async (req, res) => {
   res.status(200).send(work);
 });
 
+const getProjectsStatusWithCount = catchAsync(async (req, res) => {
+  const statuses = Object.values(projectPublishStatus);
+  let data = await Promise.all(
+    statuses.map(async (status) => {
+      const count = await projectService.getProjectCountByStatus(status);
+      return {
+        name: status,
+        count,
+      };
+    })
+  );
+  const projectsCount = await Project.count();
+  data.unshift({
+    name: 'all',
+    count: projectsCount,
+  });
+  res.status(200).send(data);
+});
+
 module.exports = {
   createProject,
   getProjects,
+  getProjectsStatusWithCount,
   getProject,
   updateProject,
   deleteProject,
