@@ -52,6 +52,14 @@ const getProjects = catchAsync(async (req, res) => {
     };
   }
 
+  if (search.dueDate) {
+    const regex = new RegExp(escapeRegex(filter.title), 'gi');
+    filter = {
+      ...filter,
+      title: regex,
+    };
+  }
+
   if (search.assignedTo) {
     const members = await ProjectMember.find({
       user: search.assignedTo,

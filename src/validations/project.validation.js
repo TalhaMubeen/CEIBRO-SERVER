@@ -19,7 +19,7 @@ const updateProject = {
     location: Joi.string(),
     owner: Joi.any(),
     dueDate: Joi.string(),
-    projectStatus: Joi.string(),
+    publishStatus: Joi.string(),
   }),
 };
 
