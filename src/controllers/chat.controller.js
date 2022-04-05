@@ -12,7 +12,7 @@ const { Message, User, Chat } = require('../models');
 const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
-const { getMessageIdsByRoomId, getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
+const { getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
