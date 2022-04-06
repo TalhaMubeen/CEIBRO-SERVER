@@ -88,7 +88,8 @@ router
 router
   .route('/work/detail/:workId')
   .get(auth('manageProject'), projectController.getWorkDetail)
-  .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork);
+  .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork)
+  .delete(auth('manageProject'), projectController.deleteProjectWork);
 
 module.exports = router;
 
@@ -1197,6 +1198,31 @@ module.exports = router;
  * /project/work/detail/{workId}:
  *   get:
  *     summary: get work detail by workId
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: workId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: work id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   delete:
+ *     summary: delete work by workId
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []

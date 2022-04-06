@@ -24,6 +24,7 @@ const {
   createProjectTimeProfile,
   isTimeProfileExist,
   editProjectTimeProfile,
+  isWorkExist,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -454,6 +455,13 @@ const getProjectsStatusWithCount = catchAsync(async (req, res) => {
   res.status(200).send(data);
 });
 
+const deleteWorkProfile = catchAsync(async (req, res) => {
+  const { workId } = req.params;
+  const work = await isWorkExist(workId);
+  await work.remove();
+  res.status(200).send('work deleted successfully');
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -487,4 +495,5 @@ module.exports = {
   editProfileWork,
   getWorkDetail,
   getProfileWorks,
+  deleteWorkProfile,
 };
