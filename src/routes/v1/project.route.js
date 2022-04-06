@@ -89,7 +89,7 @@ router
   .route('/work/detail/:workId')
   .get(auth('manageProject'), projectController.getWorkDetail)
   .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork)
-  .delete(auth('manageProject'), projectController.deleteProjectWork);
+  .delete(auth('manageProject'), projectController.deleteWorkProfile);
 
 module.exports = router;
 
