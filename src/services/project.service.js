@@ -86,7 +86,7 @@ const isTimeProfileExist = async (profileId) => {
 };
 
 const isWorkExist = async (workId) => {
-  const work = await Work.findById(workId);
+  const work = await Work.findById(workId).populate('roles');
   if (!work) {
     throw new ApiError(400, 'Invalid work id');
   }

@@ -433,6 +433,9 @@ const editProfileWork = catchAsync(async (req, res) => {
 const getWorkDetail = catchAsync(async (req, res) => {
   const { workId } = req.params;
   const work = await projectService.isWorkExist(workId);
+  if (work.roles) {
+    work.roles = work.roles.map((role) => ({ label: role.name, value: role.id }));
+  }
   res.status(200).send(work);
 });
 
