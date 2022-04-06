@@ -435,7 +435,7 @@ const getWorkDetail = catchAsync(async (req, res) => {
   const work = await projectService.isWorkExist(workId);
   if (work.roles) {
     console.group('doing');
-    work.qasim = work.roles.map((role) => ({ label: role.name, value: role.id }));
+    work._doc.roles = work.roles.map((role) => ({ label: role.name, value: role.id }));
   }
   console.log('asasdfasd', work);
   res.status(200).send(work);
