@@ -9,9 +9,28 @@ const projectPublishStatus = {
   APPROVED_PROJECT: 'approved',
 };
 
-const rolesAccess = ['create', 'edit', 'delete', 'self-made'];
+const avaialablePermissions = {
+  create_permission: 'create',
+  edit_permission: 'edit',
+  delete_permission: 'delete',
+  self_made_permission: 'self-made',
+};
+
+const roleEntities = {
+  ROLE_ENTITY: 'roles',
+  MEMBER_ENTITY: 'member',
+  TIMEPROFILE_ENTITY: 'timeProfile',
+};
+
+const rolesAccess = Object.values(avaialablePermissions);
+const memberAccess = Object.values(avaialablePermissions);
+const timeProfileAccess = Object.values(avaialablePermissions);
 
 module.exports = {
   projectPublishStatus,
   rolesAccess,
+  memberAccess,
+  timeProfileAccess,
+  avaialablePermissions,
+  roleEntities,
 };

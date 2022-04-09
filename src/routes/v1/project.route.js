@@ -6,6 +6,7 @@ const validation = require('../../validations/project.validation');
 const { projectController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
 const { multerUpload } = require('../../config/aws.config');
+const { validateCreateRole } = require('../../middlewares/check-role-permission');
 const router = express.Router();
 
 router
@@ -42,7 +43,9 @@ router
 router
   .route('/role/:projectId')
   .get(auth('manageProject'), projectController.getProjectRoles)
-  .post(auth('manageProject'), validate(validation.createProjectRole), projectController.createRole);
+  .post(auth('manageProject'), validate(validation.createProjectRole), validateCreateRole, projectController.createRole);
+
+router.route('/permissions/:projectId').get(auth('manageProject'), projectController.getMyPermissions);
 
 router
   .route('/group/:projectId')
@@ -456,6 +459,36 @@ module.exports = router;
  *               roles: ['create', 'edit', 'delete', 'self-made']
  *               member: ['create', 'edit', 'delete', 'self-made']
  *               timeProfile: ['create', 'edit', 'delete', 'self-made']
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/permissions/{projectId}:
+ *   get:
+ *     summary: get users all project permissions
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
  *     responses:
  *       "200":
  *         description: OK

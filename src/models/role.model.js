@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { rolesAccess } = require('../config/project.config');
+const { rolesAccess, memberAccess, timeProfileAccess } = require('../config/project.config');
 const { toJSON, paginate } = require('./plugins');
 
 const roleSchema = mongoose.Schema(
@@ -22,13 +22,13 @@ const roleSchema = mongoose.Schema(
     member: [
       {
         type: String,
-        enum: rolesAccess
+        enum: memberAccess
       }
     ],
     timeProfile: [
       {
         type: String,
-        enum: rolesAccess
+        enum: timeProfileAccess
       }
     ],
     project: {

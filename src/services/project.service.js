@@ -515,6 +515,48 @@ const getProjectCountByStatus = async (status) => {
   });
 };
 
+const getRolesByProjectId = (projectId) => {
+  return Role.find({
+    project: projectId,
+  });
+};
+
+const isMemberExistInProject = (userId, projectId) => {
+  return ProjectMember.find({
+    user: userId,
+    project: projectId,
+  });
+};
+
+const getProjectPermissions = async (userId, projectId) => {
+  const members = await isMemberExistInProject(userId, projectId);
+  const roleIds = members.map((member) => member.role);
+  const roles = await Role.find({
+    _id: roleIds,
+  });
+
+  let rolePermissions = [];
+  let memberPermissions = [];
+  let timeProfilePermissions = [];
+  let admin = false;
+  roles.forEach((role) => {
+    if (role.admin && !admin) {
+      admin = true;
+    }
+
+    if (role.roles && Array.isArray(role.roles)) rolePermissions = [...rolePermissions, ...role.roles];
+
+    if (role.timeProfile && Array.isArray(role.timeProfile))
+      timeProfilePermissions = [...timeProfilePermissions, ...role.timeProfile];
+
+    if (role.member && Array.isArray(role.member)) memberPermissions = [...memberPermissions, ...role.member];
+  });
+  memberPermissions = [...new Set(memberPermissions)];
+  rolePermissions = [...new Set(rolePermissions)];
+  timeProfilePermissions = [...new Set(timeProfilePermissions)];
+  return { member: memberPermissions, timeProfile: timeProfilePermissions, roles: rolePermissions, admin };
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -552,4 +594,6 @@ module.exports = {
   getProfileWorks,
   isWorkExist,
   getProjectCountByStatus,
+  getProjectPermissions,
+  isMemberExistInProject,
 };

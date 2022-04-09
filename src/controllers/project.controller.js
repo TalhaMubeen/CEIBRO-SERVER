@@ -29,9 +29,11 @@ const {
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
 const { escapeRegex } = require('../helpers/query.helper');
-const { projectPublishStatus } = require('../config/project.config');
+const { projectPublishStatus, avaialablePermissions, roleEntities } = require('../config/project.config');
 const Project = require('../models/project.model');
 const ProjectMember = require('../models/ProjectMember.model');
+const Role = require('../models/role.model');
+const { checkUserPermission } = require('../middlewares/check-role-permission');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -467,6 +469,13 @@ const deleteWorkProfile = catchAsync(async (req, res) => {
   res.status(200).send('work deleted successfully');
 });
 
+const getMyPermissions = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  await projectService.getProjectById(projectId);
+  const permissions = await projectService.getProjectPermissions(req.user._id, projectId);
+  res.status(200).send(permissions);
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -501,4 +510,5 @@ module.exports = {
   getWorkDetail,
   getProfileWorks,
   deleteWorkProfile,
+  getMyPermissions,
 };
