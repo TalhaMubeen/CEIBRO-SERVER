@@ -558,7 +558,11 @@ const getProjectPermissions = async (userId, projectId) => {
   // checking if user exist in owners
   console.log('projec tis ', projectId);
   const project = await getProjectById(projectId);
-  if (project?.owner?.indexOf((owner) => String(Owner._id) === userId)) {
+  console.log(
+    'qasim be ',
+    project?.owner?.findIndex((owner) => String(owner._id) === String(userId))
+  );
+  if (project?.owner?.findIndex((owner) => String(owner._id) === String(userId)) > -1) {
     admin = true;
   }
   return { member: memberPermissions, timeProfile: timeProfilePermissions, roles: rolePermissions, admin };

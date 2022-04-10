@@ -1,7 +1,7 @@
 const httpStatus = require('http-status');
 const { rolesAccess, avaialablePermissions } = require('../config/project.config');
 const { projectService } = require('../services');
-const { getRoleById } = require('../services/project.service');
+const { getRoleById, isMemberExistInProject, getProjectMemberById } = require('../services/project.service');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 
@@ -30,9 +30,10 @@ const validateUpdateRole = catchAsync(async (req, res, next) => {
 });
 
 const validateDeleteRole = catchAsync(async (req, res, next) => {
-  const { projectId } = req.params;
+  const { roleId } = req.params;
+  const role = await getRoleById(roleId);
   const { _id } = req.user;
-  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  const permissions = await projectService.getProjectPermissions(_id, role?.project);
   if (permissions.admin || permissions?.roles?.includes?.(avaialablePermissions.delete_permission)) {
     next();
   } else {
@@ -52,9 +53,14 @@ const validateCreateMember = catchAsync(async (req, res, next) => {
 });
 
 const validateUpdateMember = catchAsync(async (req, res, next) => {
-  const { projectId } = req.params;
+  const { memberId } = req.body;
   const { _id } = req.user;
-  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  const member = await getProjectMemberById(memberId);
+  if (!member) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
+  }
+  const role = await getRoleById(member.role);
+  const permissions = await projectService.getProjectPermissions(_id, role.project);
   if (permissions.admin || permissions?.member?.includes?.(avaialablePermissions.edit_permission)) {
     next();
   } else {
@@ -63,9 +69,14 @@ const validateUpdateMember = catchAsync(async (req, res, next) => {
 });
 
 const validateDeleteMember = catchAsync(async (req, res, next) => {
-  const { projectId } = req.params;
+  const { memberId } = req.body;
   const { _id } = req.user;
-  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  const member = await getProjectMemberById(memberId);
+  if (!member) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
+  }
+  const role = await getRoleById(member.role);
+  const permissions = await projectService.getProjectPermissions(_id, role.project);
   if (permissions.admin || permissions?.member?.includes?.(avaialablePermissions.delete_permission)) {
     next();
   } else {
