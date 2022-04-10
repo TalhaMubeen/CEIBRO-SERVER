@@ -41,6 +41,12 @@ const createProject = catchAsync(async (req, res) => {
     const path = await awsService.uploadFile(file, bucketFolders.PROJECT_FOLDER);
     req.body.projectPhoto = path.url;
   }
+  let body = Object.create(req.body);
+  console.log(body.owner);
+
+  if (typeof req.body?.owner === 'string') {
+    body.owner = JSON.parse(req.body.owner);
+  }
   const project = await projectService.createProject(req.body, req.user._id);
   res.status(httpStatus.CREATED).send(project);
 });
@@ -446,7 +452,7 @@ const getWorkDetail = catchAsync(async (req, res) => {
 const getProjectsStatusWithCount = catchAsync(async (req, res) => {
   const statuses = Object.values(projectPublishStatus);
   let data = await Promise.all(
-    statuses.map(async (status) => {
+    ['ongoing', 'approved', 'done', 'draft'].map(async (status) => {
       const count = await projectService.getProjectCountByStatus(status);
       return {
         name: status,

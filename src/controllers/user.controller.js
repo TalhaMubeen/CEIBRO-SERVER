@@ -25,13 +25,12 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getAvailableUsers = catchAsync(async (req, res) => {
-  const result = await userService.getAvailableUsers(req.user._id);
+  const result = await userService.getAvailableUsers();
   res.send(mapUsers(result));
 });
 
 const getUser = catchAsync(async (req, res) => {
   const user = await userService.getUserById(req.params.userId);
-  console.log('🚀 ~ file: user.controller.js ~ line 24 ~ getUser ~ user', user);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }

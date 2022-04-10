@@ -17,11 +17,13 @@ const projectSchema = mongoose.Schema(
         required: false,
       },
     ],
-    owner: {
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'User',
-      required: false,
-    },
+    owner: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+        required: false,
+      },
+    ],
     dueDate: {
       type: Date,
       required: false,

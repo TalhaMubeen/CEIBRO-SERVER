@@ -204,11 +204,15 @@ const getConnectionsCountByUserId = async (currentUserId) => {
 };
 
 const getAvailableUsers = async (currentUserId) => {
-  return User.find({
-    _id: {
-      $ne: currentUserId,
-    },
-  });
+  let condition = {};
+  if (currentUserId) {
+    condition = {
+      _id: {
+        $ne: currentUserId,
+      },
+    };
+  }
+  return User.find(condition);
 };
 
 const isUserExist = async (userId) => {

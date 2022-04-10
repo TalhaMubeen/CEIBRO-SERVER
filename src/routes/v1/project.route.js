@@ -161,7 +161,7 @@ module.exports = router;
  *               dueDate: 12-12-2022
  *               description: description
  *               location: location
- *               owner: 2324234234,
+ *               owner: [2324234234]
  *               publishStatus: draft | published
  *     responses:
  *       "201":
@@ -299,7 +299,7 @@ module.exports = router;
  *               dueDate: 12-12-2022
  *               description: description
  *               location: location
- *               owner: 2324234234,
+ *               owner: [2324234234]
  *               publishStatus: draft | published
  *     responses:
  *       "201":
