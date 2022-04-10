@@ -45,7 +45,12 @@ const createProject = catchAsync(async (req, res) => {
   console.log(body.owner);
 
   if (typeof req.body?.owner === 'string') {
-    body.owner = JSON.parse(req.body.owner);
+    try {
+      body.owner = JSON.parse(req.body.owner);
+    } catch (e) {
+      body.owner = [req.body.owner];
+    }
+  } else {
   }
   const project = await projectService.createProject(req.body, req.user._id);
   res.status(httpStatus.CREATED).send(project);
