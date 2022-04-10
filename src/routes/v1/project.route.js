@@ -6,7 +6,15 @@ const validation = require('../../validations/project.validation');
 const { projectController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
 const { multerUpload } = require('../../config/aws.config');
-const { validateCreateRole } = require('../../middlewares/check-role-permission');
+const {
+  validateCreateRole,
+  validateUpdateRole,
+  validateCreateMember,
+  validateDeleteMember,
+  validateUpdateMember,
+  validateCreateTimeProfile,
+  validateUpdateTimeProfile,
+} = require('../../middlewares/check-role-permission');
 const router = express.Router();
 
 router
@@ -19,9 +27,6 @@ router
   )
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
-router.route('/count/status').get(auth('manageProject'), projectController.getProjectsStatusWithCount);
-
-router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
 router
   .route('/detail/:projectId')
   .get(auth('manageProject'), projectController.getProject)
@@ -33,12 +38,14 @@ router
   )
   .delete(auth('manageProject'), projectController.deleteProject);
 
+router.route('/count/status').get(auth('manageProject'), projectController.getProjectsStatusWithCount);
+
 router.route('/all').get(auth('manageProject'), projectController.getAllProjects);
 
 router
   .route('/role/detail/:roleId')
   .get(auth('manageProject'), projectController.getRoleDetail)
-  .put(auth('manageProject'), validate(validation.updateProjectRole), projectController.editRole);
+  .put(auth('manageProject'), validate(validation.updateProjectRole), validateUpdateRole, projectController.editRole);
 
 router
   .route('/role/:projectId')
@@ -48,24 +55,34 @@ router
 router.route('/permissions/:projectId').get(auth('manageProject'), projectController.getMyPermissions);
 
 router
-  .route('/group/:projectId')
-  .get(auth('manageProject'), projectController.getProjectGroups)
-  .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
-
-router
   .route('/timeProfile/:projectId')
   .get(auth('manageProject'), projectController.getProjectTimeProfiles)
-  .post(auth('manageProject'), validate(validation.createTimeProfile), projectController.createTimeProfile);
+  .post(
+    auth('manageProject'),
+    validate(validation.createTimeProfile),
+    validateCreateTimeProfile,
+    projectController.createTimeProfile
+  );
 
 router
   .route('/timeProfile/detail/:profileId')
   .get(auth('manageProject'), projectController.getTimeProfileDetail)
-  .put(auth('manageProject'), validate(validation.updateTimeProfile), projectController.editTimeProfile);
+  .put(
+    auth('manageProject'),
+    validate(validation.updateTimeProfile),
+    validateUpdateTimeProfile,
+    projectController.editTimeProfile
+  );
 
 router
   .route('/group/detail/:groupId')
   .get(auth('manageProject'), projectController.getGroupDetail)
   .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup);
+
+router
+  .route('/group/:projectId')
+  .get(auth('manageProject'), projectController.getProjectGroups)
+  .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
 
 router
   .route('/folder/:projectId')
@@ -80,8 +97,20 @@ router
 router
   .route('/member/:projectId')
   .get(auth('manageProject'), projectController.getProjectAllMembers)
-  .post(auth('manageProject'), validate(validation.addMemberToProject), projectController.addMemberToProject)
-  .patch(auth('manageProject'), validate(validation.updateUserRoleAndGroup), projectController.updateMemberRoleAndGroup);
+  .post(
+    auth('manageProject'),
+    validate(validation.addMemberToProject),
+    validateCreateMember,
+    projectController.addMemberToProject
+  )
+  .patch(
+    auth('manageProject'),
+    validate(validation.updateUserRoleAndGroup),
+    validateUpdateMember,
+    projectController.updateMemberRoleAndGroup
+  );
+
+router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
 
 router
   .route('/work/:profileId')

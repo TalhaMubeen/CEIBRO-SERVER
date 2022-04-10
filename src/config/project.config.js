@@ -1,7 +1,7 @@
 const projectPublishStatus = {
   DRAFT_PROJECT: 'draft',
   DONE_PROJECT: 'done',
-  ON_GOING_PROJECT: 'On going',
+  ON_GOING_PROJECT: 'ongoing',
   REJECTED_PROJECT: 'rejected',
   PUBLISHED_PROJECT: 'published',
   COMPLETED_PORJECT: 'completed',
