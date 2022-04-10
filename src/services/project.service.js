@@ -529,6 +529,7 @@ const isMemberExistInProject = (userId, projectId) => {
 };
 
 const getProjectPermissions = async (userId, projectId) => {
+  console.log('projectId: ', projectId);
   const members = await isMemberExistInProject(userId, projectId);
   const roleIds = members.map((member) => member.role);
   const roles = await Role.find({
@@ -555,6 +556,7 @@ const getProjectPermissions = async (userId, projectId) => {
   timeProfilePermissions = [...new Set(timeProfilePermissions)];
 
   // checking if user exist in owners
+  console.log('projec tis ', projectId);
   const project = await getProjectById(projectId);
   if (project?.owner?.indexOf((owner) => String(Owner._id) === userId)) {
     admin = true;
