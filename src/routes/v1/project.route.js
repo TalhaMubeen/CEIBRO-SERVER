@@ -127,6 +127,12 @@ router
   .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork)
   .delete(auth('manageProject'), projectController.deleteWorkProfile);
 
+
+router
+  .route('/profile/pic')
+  .patch(auth('manageProfile'), multerUpload.single('profilePic'), projectController.updateProfilePic);
+
+
 module.exports = router;
 
 /**

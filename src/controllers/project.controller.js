@@ -499,6 +499,16 @@ const getMyPermissions = catchAsync(async (req, res) => {
   res.status(200).send(permissions);
 });
 
+const updateProfilePic = catchAsync(async (req, res) => {
+  const file = req.file;
+  const { projectId } = req.params;
+  const path = await awsService.uploadFile(file, bucketFolders.USER_FOLDER);
+  const project = await projectService.getProjectById(projectId);
+  project.projectPhoto = path.url;
+  await project.save();
+  res.status(200).send('project pic updated successfully');
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -535,4 +545,5 @@ module.exports = {
   getProfileWorks,
   deleteWorkProfile,
   getMyPermissions,
+  updateProfilePic
 };
