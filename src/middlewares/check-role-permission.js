@@ -69,9 +69,11 @@ const validateUpdateMember = catchAsync(async (req, res, next) => {
 });
 
 const validateDeleteMember = catchAsync(async (req, res, next) => {
-  const { memberId } = req.body;
+  const { memberId } = req.params;
   const { _id } = req.user;
+  console.log('project is ', memberId);
   const member = await getProjectMemberById(memberId);
+  console.log('member: ', member);
   if (!member) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
   }
@@ -96,9 +98,11 @@ const validateCreateTimeProfile = catchAsync(async (req, res, next) => {
 });
 
 const validateUpdateTimeProfile = catchAsync(async (req, res, next) => {
-  const { projectId } = req.params;
+  const { profileId } = req.params;
+  const profile = await projectService.isTimeProfileExist(profileId);
+
   const { _id } = req.user;
-  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  const permissions = await projectService.getProjectPermissions(_id, profile.project);
   if (permissions.admin || permissions?.timeProfile?.includes?.(avaialablePermissions.edit_permission)) {
     next();
   } else {
@@ -107,9 +111,11 @@ const validateUpdateTimeProfile = catchAsync(async (req, res, next) => {
 });
 
 const validateDeleteTimeProfile = catchAsync(async (req, res, next) => {
-  const { projectId } = req.params;
+  const { profileId } = req.params;
+  const profile = await projectService.isTimeProfileExist(profileId);
+
   const { _id } = req.user;
-  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  const permissions = await projectService.getProjectPermissions(_id, profile.project);
   if (permissions.admin || permissions?.timeProfile?.includes?.(avaialablePermissions.delete_permission)) {
     next();
   } else {

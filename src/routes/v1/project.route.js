@@ -110,6 +110,10 @@ router
     projectController.updateMemberRoleAndGroup
   );
 
+router
+  .route('/member/detail/:memberId')
+  .delete(auth('manageProject'), validateDeleteMember, projectController.deleteProjectMember);
+
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
 
 router
@@ -1145,6 +1149,36 @@ module.exports = router;
  *               memberId: 234233222
  *               roleId: 234232423
  *               groupId: 2342423443
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/member/detail/{memberId}:
+ *   delete:
+ *     summary: delete member
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: memberId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: member id.
  *     responses:
  *       "200":
  *         description: OK

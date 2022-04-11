@@ -394,6 +394,18 @@ const updateMemberRoleAndGroup = catchAsync(async (req, res) => {
   res.status(200).send('updated successfully');
 });
 
+const deleteProjectMember = catchAsync(async (req, res) => {
+  const { memberId } = req.params;
+  const member = await getProjectMemberById(memberId);
+  if (!member) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
+  }
+  if (member) {
+    await member.remove();
+  }
+  res.status(200).send('member deleted successfully');
+});
+
 const createWork = catchAsync(async (req, res) => {
   const { profileId } = req.params;
   const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
@@ -509,6 +521,7 @@ module.exports = {
   addMemberToProject,
   getProjectAllMembers,
   updateMemberRoleAndGroup,
+  deleteProjectMember,
   getRoleDetail,
   getGroupDetail,
   editGroup,
