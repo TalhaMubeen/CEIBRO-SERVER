@@ -28,7 +28,7 @@ router
   .post(
     auth('getChatRooms'),
     multerUpload.array('products'),
-    validate(chatValidation.sendMessage),
+    // validate(chatValidation.sendMessage),
     chatController.replyMessage
   );
 
