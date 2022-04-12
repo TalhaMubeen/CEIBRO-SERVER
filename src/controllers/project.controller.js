@@ -57,7 +57,7 @@ const createProject = catchAsync(async (req, res) => {
 });
 
 const getProjects = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['title', 'publishStatus']);
+  let filter = pick(req.query, ['title', 'publishStatus']);
   const search = pick(req.query, ['dueDate', 'assignedTo']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   if (search.dueDate) {
@@ -66,8 +66,9 @@ const getProjects = catchAsync(async (req, res) => {
     };
   }
 
-  if (search.dueDate) {
+  if (filter.title) {
     const regex = new RegExp(escapeRegex(filter.title), 'gi');
+    console.log('regex: ', regex);
     filter = {
       ...filter,
       title: regex,
@@ -75,15 +76,10 @@ const getProjects = catchAsync(async (req, res) => {
   }
 
   if (search.assignedTo) {
-    const members = await ProjectMember.find({
-      user: search.assignedTo,
-    });
-    if (members) {
-      const myProjectIds = members?.map((member) => String(member.project));
-      filter._id = {
-        $in: myProjectIds,
-      };
-    }
+    let userProjectIds = await projectService.getUserProjectIds(search.assignedTo);
+    filter._id = {
+      $in: userProjectIds,
+    };
   }
 
   if (filter.publishStatus) {
@@ -93,6 +89,16 @@ const getProjects = catchAsync(async (req, res) => {
   if (filter.publishStatus === 'all') {
     delete filter.publishStatus;
   }
+
+  let myProjectIds = await projectService.getUserProjectIds(req.user._id);
+  filter = {
+    $and: [
+      filter,
+      {
+        _id: myProjectIds,
+      },
+    ],
+  };
 
   options.populate = 'owner';
   console.log('filters are', filter, req.query);
@@ -468,16 +474,19 @@ const getWorkDetail = catchAsync(async (req, res) => {
 
 const getProjectsStatusWithCount = catchAsync(async (req, res) => {
   const statuses = Object.values(projectPublishStatus);
+  const projectIds = await projectService.getUserProjectIds(req.user._id);
+
   let data = await Promise.all(
     ['ongoing', 'approved', 'done', 'draft'].map(async (status) => {
-      const count = await projectService.getProjectCountByStatus(status);
+      const count = await projectService.getProjectCountByStatus(status, projectIds);
       return {
         name: status,
         count,
       };
     })
   );
-  const projectsCount = await Project.count();
+
+  const projectsCount = await Project.count({ _id: projectIds });
   data.unshift({
     name: 'all',
     count: projectsCount,
@@ -545,5 +554,5 @@ module.exports = {
   getProfileWorks,
   deleteWorkProfile,
   getMyPermissions,
-  updateProfilePic
+  updateProfilePic,
 };

@@ -509,9 +509,10 @@ const editProjectTimeProfile = async (profileId, name) => {
   );
 };
 
-const getProjectCountByStatus = async (status) => {
+const getProjectCountByStatus = async (status, projectIds) => {
   return Project.count({
     publishStatus: status,
+    _id: projectIds,
   });
 };
 
@@ -568,6 +569,14 @@ const getProjectPermissions = async (userId, projectId) => {
   return { member: memberPermissions, timeProfile: timeProfilePermissions, roles: rolePermissions, admin };
 };
 
+const getUserProjectIds = async (userId) => {
+  const myMembers = await ProjectMember.find({ user: userId });
+  let myProjectIds = myMembers.map((member) => member.project);
+  const myOwnerProjects = await Project.find({ owner: userId });
+  myProjectIds = [...myProjectIds, ...myOwnerProjects.map((project) => project._id)];
+  return myProjectIds;
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -607,4 +616,5 @@ module.exports = {
   getProjectCountByStatus,
   getProjectPermissions,
   isMemberExistInProject,
+  getUserProjectIds,
 };
