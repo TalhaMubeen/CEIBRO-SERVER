@@ -219,7 +219,7 @@ const muteChat = catchAsync(async (req, res) => {
 });
 
 const replyMessage = catchAsync(async (req, res) => {
-  console.log('files are', req.files)
+  console.log('files are', req.files, req.body)
   const currentLoggedUser = req.user._id;
   const { message, chat, messageId, type } = req.body;
   let files = [];
