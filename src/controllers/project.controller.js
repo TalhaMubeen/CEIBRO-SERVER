@@ -145,6 +145,20 @@ const createRole = catchAsync(async (req, res) => {
   res.status(200).send(role);
 });
 
+const deleteRole = catchAsync(async (req, res) => {
+  const { roleId } = req.params;
+  const role = await projectService.getRoleById(roleId);
+  await role.remove();
+  res.status(200).send('Role deleted successfully');
+});
+
+const deleteGroup = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  const group = await projectService.isGroupExist(groupId);
+  await group.remove();
+  res.status(200).send('Group deleted successfully');
+});
+
 const getProjectRoles = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const project = await getProjectById(projectId);
@@ -554,5 +568,7 @@ module.exports = {
   getProfileWorks,
   deleteWorkProfile,
   getMyPermissions,
+  deleteRole,
   updateProfilePic,
+  deleteGroup,
 };

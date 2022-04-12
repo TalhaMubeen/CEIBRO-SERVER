@@ -9,6 +9,7 @@ const { multerUpload } = require('../../config/aws.config');
 const {
   validateCreateRole,
   validateUpdateRole,
+  validateDeleteRole,
   validateCreateMember,
   validateDeleteMember,
   validateUpdateMember,
@@ -45,7 +46,8 @@ router.route('/all').get(auth('manageProject'), projectController.getAllProjects
 router
   .route('/role/detail/:roleId')
   .get(auth('manageProject'), projectController.getRoleDetail)
-  .put(auth('manageProject'), validate(validation.updateProjectRole), validateUpdateRole, projectController.editRole);
+  .put(auth('manageProject'), validate(validation.updateProjectRole), validateUpdateRole, projectController.editRole)
+  .delete(auth('manageProject'), validateDeleteRole, projectController.deleteRole);
 
 router
   .route('/role/:projectId')
@@ -77,7 +79,8 @@ router
 router
   .route('/group/detail/:groupId')
   .get(auth('manageProject'), projectController.getGroupDetail)
-  .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup);
+  .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup)
+  .delete(auth('manageProject'), projectController.deleteGroup);
 
 router
   .route('/group/:projectId')
@@ -127,11 +130,9 @@ router
   .put(auth('manageProject'), validate(validation.updateProjectWork), projectController.editProfileWork)
   .delete(auth('manageProject'), projectController.deleteWorkProfile);
 
-
 router
-  .route('/profile/pic')
+  .route('/profile/pic/:projectId')
   .patch(auth('manageProfile'), multerUpload.single('profilePic'), projectController.updateProfilePic);
-
 
 module.exports = router;
 
@@ -571,6 +572,31 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
+ *   delete:
+ *     summary: delete project role by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: role id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  *   put:
  *     summary: update project Role
  *     tags: [Project]
@@ -630,6 +656,31 @@ module.exports = router;
  * /project/group/detail/{groupId}:
  *   get:
  *     summary: get project group by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: group id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   delete:
+ *     summary: delete project group by id
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []
