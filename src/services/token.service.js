@@ -6,6 +6,9 @@ const userService = require('./user.service');
 const { Token } = require('../models');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes } = require('../config/tokens');
+const Otp = require('../models/otp.model');
+const otpGenerator = require('otp-generator');
+const User = require('../models/user.model');
 
 /**
  * Generate token
@@ -25,6 +28,10 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
   return jwt.sign(payload, secret);
 };
 
+const generateOtp = () => {
+  return otpGenerator.generate(6, { digits: true });
+}
+
 /**
  * Save a token
  * @param {string} token
@@ -34,7 +41,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
  * @param {boolean} [blacklisted]
  * @returns {Promise<Token>}
  */
-const saveToken = async (token, userId, expires, type, blacklisted = false) => {
+ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
   const tokenDoc = await Token.create({
     token,
     user: userId,
@@ -43,6 +50,25 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
     blacklisted,
   });
   return tokenDoc;
+};
+
+/**
+ * Save a token
+ * @param {string} otp
+ * @param {ObjectId} userId
+ * @param {Moment} expires
+ * @param {string} type
+ * @returns {Promise<Token>}
+ */
+
+const saveOtp = async (otp, userId, expires, type) => {
+  const otpDoc = await Otp.create({
+    otp,
+    user: userId,
+    expires: expires.toDate(),
+    type,
+  });
+  return otpDoc;
 };
 
 /**
@@ -106,11 +132,27 @@ const generateResetPasswordToken = async (email) => {
  * @param {User} user
  * @returns {Promise<string>}
  */
-const generateVerifyEmailToken = async (userId) => {
+ const generateVerifyEmailToken = async (userId) => {
   const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
   const verifyEmailToken = generateToken(userId, expires, tokenTypes.VERIFY_EMAIL);
   await saveToken(verifyEmailToken, userId, expires, tokenTypes.VERIFY_EMAIL);
   return verifyEmailToken;
+};
+
+/**
+ * Generate verify email token
+ * @param {User} user
+ * @returns {Promise<string>}
+ */
+const generateVerifyEmailOtp = async (userId) => {
+  const expires = moment().add(config.jwt.verifyEmailExpirationMinutes, 'minutes');
+  const verifyEmailOtp = generateOtp();
+  await User.findOneAndRemove({
+    user: userId,
+    type: tokenTypes.VERIFY_EMAIL
+  })
+  await saveOtp(verifyEmailOtp, userId, expires, tokenTypes.VERIFY_EMAIL);
+  return verifyEmailOtp;
 };
 
 module.exports = {
@@ -120,4 +162,5 @@ module.exports = {
   generateAuthTokens,
   generateResetPasswordToken,
   generateVerifyEmailToken,
+  generateVerifyEmailOtp
 };

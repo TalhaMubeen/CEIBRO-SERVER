@@ -168,7 +168,7 @@ const getInviationEmailTemplate = (url, fromName, fromEmail) => {
       `;
   };
 
-const getVerifyEmailTemplate = (verificationEmailUrl) => {
+const getVerifyEmailTemplate = (verificationEmailOtp) => {
   return `
         <!doctype html>
         <html lang="en-US">
@@ -216,10 +216,8 @@ const getVerifyEmailTemplate = (verificationEmailUrl) => {
                                                 <span
                                                     style="display:inline-block; vertical-align:middle; margin:29px 0 26px; border-bottom:1px solid #cecece; width:100px;"></span>
                                                 <p style="color:#455056; font-size:15px;line-height:24px; margin:0;">
-                                                Tap the button below to confirm your email address. If you didn't create an account you can safely delete this email
+                                                Your Otp is ${verificationEmailOtp}
                                                 </p>
-                                                <a href="${verificationEmailUrl}"
-                                                    style="background:#F1B740;text-decoration:none !important; font-weight:500; margin-top:35px; color:#fff;text-transform:uppercase; font-size:14px;padding:10px 24px;display:inline-block;border-radius:50px;">Verify</a>
                                             </td>
                                         </tr>
                                         <tr>

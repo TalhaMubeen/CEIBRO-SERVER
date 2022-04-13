@@ -289,7 +289,7 @@ module.exports = router;
  *     tags: [Auth]
  *     parameters:
  *       - in: query
- *         name: token
+ *         name: otp
  *         required: true
  *         schema:
  *           type: string

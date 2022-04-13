@@ -6,9 +6,8 @@ const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
-  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
-
+  const verifyEmailOtp = await tokenService.generateVerifyEmailOtp(user._id);
+  await emailService.sendVerificationEmail(user.email, verifyEmailOtp);
   res.status(httpStatus.CREATED).send('Verification email sent');
 });
 
@@ -50,13 +49,13 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already verified');
   }
 
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
-  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
+  const otp = await tokenService.generateVerifyEmailOtp(user._id);
+  await emailService.sendVerificationEmail(user.email, otp);
   res.send('Verification email sent');
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.token);
+  await authService.verifyEmail(req.query.otp);
   res.send('Email verified');
 });
 

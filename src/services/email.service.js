@@ -63,11 +63,10 @@ const sendInvitationEmail = async (to, fromName, fromEmail) => {
  * @param {string} token
  * @returns {Promise}
  */
-const sendVerificationEmail = async (to, token) => {
+const sendVerificationEmail = async (to, otp) => {
   const subject = 'Email Verification';
-  const verificationEmailUrl = `${process.env.FRONTEND_URL}/login?token=${token}`;
   const text = ``;
-  const html = getVerifyEmailTemplate(verificationEmailUrl);
+  const html = getVerifyEmailTemplate(otp);
   await sendEmail(to, subject, text, html);
 };
 

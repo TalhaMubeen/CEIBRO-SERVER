@@ -3,9 +3,10 @@ const tokenService = require('./token.service');
 const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
-const { tokenTypes } = require('../config/tokens');
+const { tokenTypes, otpTypes } = require('../config/tokens');
 const { EmailInvite, Invite } = require('../models');
 const ProjectMember = require('../models/ProjectMember.model');
+const Otp = require('../models/otp.model');
 
 /**
  * Login with username and password
@@ -86,39 +87,43 @@ const resetPassword = async (resetPasswordToken, newPassword) => {
  * @param {string} verifyEmailToken
  * @returns {Promise}
  */
-const verifyEmail = async (verifyEmailToken) => {
+const verifyEmail = async (otpToken) => {
   try {
-    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-    const user = await userService.getUserById(verifyEmailTokenDoc.user);
-    if (!user) {
-      throw new Error();
-    }
-    await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-    await userService.updateUserById(user.id, { isEmailVerified: true });
+    const otp = await Otp.findOne({ otp: otpToken, type: otpTypes.VERIFY_EMAIL });
+    if (otp) {
+      const user = await userService.getUserById(otp.user);
+      if (!user) {
+        throw new Error();
+      }
+      await Otp.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+      await userService.updateUserById(user.id, { isEmailVerified: true });
 
-    const emailInvites = await EmailInvite.find({ email: user.email });
-    emailInvites.map((emailInvite) => {
-      const myInvite = new Invite({
-        from: emailInvite._doc.from,
-        to: user._id,
+      const emailInvites = await EmailInvite.find({ email: user.email });
+      emailInvites.map((emailInvite) => {
+        const myInvite = new Invite({
+          from: emailInvite._doc.from,
+          to: user._id,
+        });
+        return myInvite.save();
       });
-      return myInvite.save();
-    });
 
-    const memebrst = await ProjectMember.find({
-      isInvited: true,
-      invitedEmail: user.email,
-    });
-    const updateMember = await ProjectMember.updateMany(
-      {
+      const memebrst = await ProjectMember.find({
         isInvited: true,
         invitedEmail: user.email,
-      },
-      {
-        isInvited: false,
-        user: user._id,
-      }
-    );
+      });
+      const updateMember = await ProjectMember.updateMany(
+        {
+          isInvited: true,
+          invitedEmail: user.email,
+        },
+        {
+          isInvited: false,
+          user: user._id,
+        }
+      );
+    } else {
+      throw new Error();
+    }
   } catch (error) {
     console.log('🚀 ~ file: auth.service.js ~ line 107 ~ verifyEmail ~ error', error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');

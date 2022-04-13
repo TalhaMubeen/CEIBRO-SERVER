@@ -100,6 +100,9 @@ const userSchema = mongoose.Schema(
     currentlyRepresenting: {
       type: Boolean,
     },
+    emailVerifyOtp: {
+      type: String,
+    }
   },
   {
     timestamps: true,
