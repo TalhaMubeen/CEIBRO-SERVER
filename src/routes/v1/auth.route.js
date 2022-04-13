@@ -216,11 +216,11 @@ module.exports = router;
  *     tags: [Auth]
  *     parameters:
  *       - in: query
- *         name: token
+ *         name: otp
  *         required: true
  *         schema:
  *           type: string
- *         description: The reset password token
+ *         description: The reset password otp
  *     requestBody:
  *       required: true
  *       content:

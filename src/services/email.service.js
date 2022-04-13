@@ -30,12 +30,11 @@ const sendEmail = async (to, subject, text, html) => {
  * @param {string} token
  * @returns {Promise}
  */
-const sendResetPasswordEmail = async (to, token) => {
+const sendResetPasswordEmail = async (to, otp) => {
   const subject = 'Reset password';
-  const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
   const text = ``;
 
-  const html = getResetPasswordTemplate(resetPasswordUrl);
+  const html = getResetPasswordTemplate(otp);
   await sendEmail(to, subject, text, html);
 };
 
