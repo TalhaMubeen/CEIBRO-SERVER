@@ -120,6 +120,18 @@ const getProjectMembers = catchAsync(async (req, res) => {
   res.send(members);
 });
 
+const getProjectAvailableMembers = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const { _id } = req.user;
+  const availableUsers = await projectService.getProjectAvailableMembers(projectId);
+  const members =
+    availableUsers?.map?.((user) => ({
+      label: user.firstName + ' ' + user.surName,
+      value: user.email,
+    })) || [];
+  res.send(members);
+});
+
 const getProject = catchAsync(async (req, res) => {
   const project = await projectService.getProjectById(req.params.projectId);
   if (!project) {
@@ -571,4 +583,5 @@ module.exports = {
   deleteRole,
   updateProfilePic,
   deleteGroup,
+  getProjectAvailableMembers,
 };

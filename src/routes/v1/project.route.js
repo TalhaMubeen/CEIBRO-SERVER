@@ -117,6 +117,8 @@ router
   .route('/member/detail/:memberId')
   .delete(auth('manageProject'), validateDeleteMember, projectController.deleteProjectMember);
 
+router.route('/members/available/:projectId').get(auth('manageProject'), projectController.getProjectAvailableMembers);
+
 router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
 
 router
@@ -383,6 +385,37 @@ module.exports = router;
  * /project/members/{projectId}:
  *   get:
  *     summary: get Project Members
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: project id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /project/members/available/{projectId}:
+ *   get:
+ *     summary: get Project available members to add
  *     tags: [Project]
  *     security:
  *       - bearerAuth: []

@@ -6,6 +6,7 @@ const ProjectFile = require('../models/ProjectFile.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
 const TimeProfile = require('../models/timeProfile.model');
+const User = require('../models/user.model');
 const Work = require('../models/work.model');
 const ApiError = require('../utils/ApiError');
 const { sendInvitationEmail } = require('./email.service');
@@ -557,12 +558,8 @@ const getProjectPermissions = async (userId, projectId) => {
   timeProfilePermissions = [...new Set(timeProfilePermissions)];
 
   // checking if user exist in owners
-  console.log('projec tis ', projectId);
   const project = await getProjectById(projectId);
-  console.log(
-    'qasim be ',
-    project?.owner?.findIndex((owner) => String(owner._id) === String(userId))
-  );
+
   if (project?.owner?.findIndex((owner) => String(owner._id) === String(userId)) > -1) {
     admin = true;
   }
@@ -575,6 +572,20 @@ const getUserProjectIds = async (userId) => {
   const myOwnerProjects = await Project.find({ owner: userId });
   myProjectIds = [...myProjectIds, ...myOwnerProjects.map((project) => project._id)];
   return myProjectIds;
+};
+
+const getProjectAvailableMembers = async (projectId) => {
+  const myMembers = await ProjectMember.find({ project: projectId });
+  let projectUserIds = myMembers.map((member) => member.user);
+  const projects = await getProjectById(projectId);
+  let owners = projects?.owner?.map?.((own) => own?._id) || [];
+  projectUserIds = [...projectUserIds, ...owners];
+
+  return User.find({
+    _id: {
+      $nin: projectUserIds,
+    },
+  });
 };
 
 module.exports = {
@@ -617,4 +628,5 @@ module.exports = {
   getProjectPermissions,
   isMemberExistInProject,
   getUserProjectIds,
+  getProjectAvailableMembers,
 };
