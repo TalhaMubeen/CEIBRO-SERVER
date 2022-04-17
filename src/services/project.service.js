@@ -391,7 +391,7 @@ const getProjectFolders = (projectId, filters) => {
 };
 
 const getFolderById = (folderId) => {
-  return Folder.find({
+  return Folder.findOne({
     _id: folderId,
   });
 };

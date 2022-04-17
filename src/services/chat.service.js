@@ -95,7 +95,7 @@ const queryChats = async (filter, options) => {
 
 const getAllChats = async (filter, userId) => {
   const chats = await Chat.find(filter)
-    .populate({ path: 'members', select: 'firstName surName profilePic' })
+    .populate({ path: 'members', select: 'firstName surName profilePic companyName' })
     .populate({ path: 'project', select: 'title' })
     .populate({ path: 'lastMessage', select: 'message createdAt' });
 

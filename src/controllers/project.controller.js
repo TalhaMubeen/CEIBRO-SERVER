@@ -311,6 +311,7 @@ const uploadFileToFolder = catchAsync(async (req, res) => {
     folder: folderId,
   });
   await file.save();
+  console.log('which was', folder);
   const project = await projectService.getProjectById(folder.project);
   const filesCount = await ProjectFile.count({ project: folder.project });
   project.docsCount = filesCount;
