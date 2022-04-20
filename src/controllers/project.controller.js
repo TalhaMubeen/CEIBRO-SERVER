@@ -128,6 +128,7 @@ const getProjectAvailableMembers = catchAsync(async (req, res) => {
     availableUsers?.map?.((user) => ({
       label: user.firstName + ' ' + user.surName,
       value: user.email,
+      id: user._id
     })) || [];
   res.send(members);
 });
@@ -152,8 +153,8 @@ const deleteProject = catchAsync(async (req, res) => {
 
 const createRole = catchAsync(async (req, res) => {
   const { projectId } = req.params;
-  const { name, admin, roles, member, timeProfile } = req.body;
-  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId);
+  const { name, admin, members, roles, member, timeProfile } = req.body;
+  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId, members);
   res.status(200).send(role);
 });
 
@@ -359,6 +360,16 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
   const members = await getProjectMembersById(projectId);
   res.status(200).send(members);
 });
+
+// const getProjectMembersWithOwners = catchAsync(async (req, res) => {
+//   const { projectId } = req.params;
+//   const project = await getProjectById(projectId);
+//   if (!project) {
+//     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+//   }
+//   const members = await getProjectMembersById(projectId);
+//   res.status(200).send(members);
+// });
 
 const addMemberToProject = catchAsync(async (req, res) => {
   const { projectId } = req.params;
@@ -585,4 +596,5 @@ module.exports = {
   updateProfilePic,
   deleteGroup,
   getProjectAvailableMembers,
+  // getProjectMembersWithOwners
 };

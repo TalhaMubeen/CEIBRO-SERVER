@@ -10,13 +10,6 @@ const projectSchema = mongoose.Schema(
       trim: true,
       unique: true,
     },
-    members: [
-      {
-        type: mongoose.SchemaTypes.ObjectId,
-        ref: 'User',
-        required: false,
-      },
-    ],
     owner: [
       {
         type: mongoose.SchemaTypes.ObjectId,
@@ -62,9 +55,13 @@ const projectSchema = mongoose.Schema(
     },
     publishStatus: {
       type: String,
-      enum: Object.values(projectPublishStatus),
       default: projectPublishStatus.DRAFT_PROJECT,
     },
+    extraStatus: [
+      {
+        type: String,
+      },
+    ],
   },
   {
     timestamps: true,

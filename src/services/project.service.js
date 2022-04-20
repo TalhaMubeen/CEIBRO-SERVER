@@ -48,10 +48,6 @@ const queryProjects = async (filter, options) => {
 const getProjectById = async (id) => {
   const project = await Project.findById(id).populate([
     {
-      path: 'members',
-      select: 'firstName surName profilePic',
-    },
-    {
       path: 'owner',
       select: 'firstName surName',
     },
@@ -177,7 +173,7 @@ const getFolderByProjectAndName = (name, projectId) => {
     project: projectId,
   });
 };
-const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId) => {
+const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId, members) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
@@ -196,7 +192,22 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
     timeProfile,
     project: projectId,
   });
-  return newRole.save();
+  await newRole.save();
+
+  if(members) {
+    const users = await User.find({
+      _id: members
+    });
+    const membersToCreate = users.map(user => ({
+      user: user._id,
+      role: newRole._id,
+      project: projectId
+    }))
+    ProjectMember.insertMany(membersToCreate).then(user => {
+      console.log('created members are', user)
+    })
+  }
+  return newRole.save()
 };
 
 const createProfileWork = async (
@@ -435,7 +446,7 @@ const getProjectMemberByEmailRoleAndGroup = async (email, groupId, roleId, subCo
 const sendProjectInviteByEmail = async (email, groupId, roleId, subContractorId, projectId, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const name = currentUser.firstName + ' ' + currentUser.surName;
-  const projectMember = await ProjectMember({
+  const projectMember = new ProjectMember({
     isInvited: true,
     invitedEmail: email,
     group: groupId,
@@ -453,6 +464,11 @@ const getProjectMembersById = async (projectId) => {
     project: projectId,
   }).populate('role group subContractor user');
 };
+
+const getProjectOwners = async (projectId) => {
+  const project = await getProjectById(projectId)
+
+}
 
 const getProjectMemberById = async (memberId) => {
   return ProjectMember.findOne({
