@@ -528,7 +528,7 @@ module.exports = router;
  *                 type: boolean
  *             example:
  *               name: project manager
- *               members: [234242423, 23423424234, 24323424243, l234243234, 23423424]
+ *               memberIds: [234242423, 23423424234, 24323424243, l234243234, 23423424]
  *               admin: false
  *               roles: ['create', 'edit', 'delete', 'self-made']
  *               member: ['create', 'edit', 'delete', 'self-made']

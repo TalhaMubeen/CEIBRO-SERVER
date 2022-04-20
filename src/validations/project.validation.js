@@ -41,7 +41,7 @@ const createProjectRole = {
   body: Joi.object().keys({
     name: Joi.string().required(),
     admin: Joi.boolean().required(),
-    members: Joi.any(),
+    memberIds: Joi.any(),
     roles: Joi.array().items(Joi.string().valid(...rolesAccess)),
     member: Joi.array().items(Joi.string().valid(...rolesAccess)),
     timeProfile: Joi.array().items(Joi.string().valid(...rolesAccess)),
