@@ -24,8 +24,8 @@ const createChat = catchAsync(async (req, res) => {
     project.chatCount = chatCount;
     project.save();
   }
-
-  res.status(httpStatus.CREATED).send(chat);
+  const newChat =  await chatService.getChatByIdWithMembers(chat._id)
+  res.status(httpStatus.CREATED).send(newChat);
 });
 
 const getChats = catchAsync(async (req, res) => {

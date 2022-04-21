@@ -185,7 +185,9 @@ const getConnectionsByUserId = async (currentUserId) => {
         from: currentUserId,
       },
     ],
-    status: invitesStatus.ACCEPTED,
+    status: {
+      $in: [invitesStatus.ACCEPTED, invitesStatus.PENDING]
+    },
   }).populate('to from');
 };
 
