@@ -38,7 +38,7 @@ const createChat = async (chatBody, initiator) => {
  * @param {ObjectId} id
  * @returns {Promise<chat>}
  */
- const getChatById = async (id) => {
+const getChatById = async (id) => {
   const chat = await Chat.findById(id);
   if (!chat) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chat not found');
@@ -47,7 +47,7 @@ const createChat = async (chatBody, initiator) => {
 };
 
 const getChatByIdWithMembers = async (id) => {
-  const chat = await Chat.findById(id).populate("members");
+  const chat = await Chat.findById(id).populate('members project');
   if (!chat) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chat not found');
   }
@@ -459,5 +459,5 @@ module.exports = {
   getMessageIdsByFilter,
   getMessageByIds,
   getAvailableChatMembers,
-  getChatByIdWithMembers
+  getChatByIdWithMembers,
 };
