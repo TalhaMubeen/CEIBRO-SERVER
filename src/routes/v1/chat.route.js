@@ -194,6 +194,37 @@ module.exports = router;
 
 /**
  * @swagger
+ * /chat/room/{roomId}:
+ *   delete:
+ *     summary: delete chat room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
  * /chat/room/unread/{roomId}:
  *   put:
  *     summary: set all room messages uread
