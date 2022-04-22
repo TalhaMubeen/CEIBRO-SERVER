@@ -105,7 +105,7 @@ const addMemberToProject = {
   body: Joi.object().keys({
     roleId: Joi.string().required(),
     groupId: Joi.string().required(),
-    subContractor: Joi.string().required(),
+    // subContractor: Joi.string().required(),
     email: Joi.string().email().required(),
   }),
 };

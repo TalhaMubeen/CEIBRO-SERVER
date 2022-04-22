@@ -107,7 +107,9 @@ const getProjects = catchAsync(async (req, res) => {
 });
 
 const getAllProjects = catchAsync(async (req, res) => {
-  const result = await projectService.getAllProjects();
+  const { _id } = req.user;
+  const projectIds = await projectService.getUserProjectIds(_id);
+  const result = await projectService.getAllProjects(projectIds);
   res.send(result);
 });
 
@@ -128,7 +130,7 @@ const getProjectAvailableMembers = catchAsync(async (req, res) => {
     availableUsers?.map?.((user) => ({
       label: user.firstName + ' ' + user.surName,
       value: user.email,
-      id: user._id
+      id: user._id,
     })) || [];
   res.send(members);
 });
@@ -357,7 +359,8 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  const members = await getProjectMembersById(projectId);
+  let members = await getProjectMembersById(projectId);
+  members = members?.filter?.((member) => String(member?.user?._id) || String(req.user._id));
   res.status(200).send(members);
 });
 
@@ -377,7 +380,7 @@ const addMemberToProject = catchAsync(async (req, res) => {
 
   await getRoleById(roleId);
   await isGroupExist(groupId);
-  await isGroupExist(subContractor);
+  // await isGroupExist(subContractor);
   const member = await getUserByEmail(email);
 
   const project = await getProjectById(projectId);
@@ -387,28 +390,21 @@ const addMemberToProject = catchAsync(async (req, res) => {
   }
 
   if (member) {
-    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, subContractor, projectId);
+    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, null, projectId);
     if (alreadyMember) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
     }
-    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, subContractor, projectId);
+    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, null, projectId);
     const membersCount = await ProjectMember.count({ project: projectId });
     project.usersCount = membersCount;
     project.save();
     res.status(200).send(newMember);
   } else {
-    const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, subContractor, projectId);
+    const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, null, projectId);
     if (alreadyMember) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
     }
-    const newMember = await projectService.sendProjectInviteByEmail(
-      email,
-      groupId,
-      roleId,
-      subContractor,
-      projectId,
-      req.user._id
-    );
+    const newMember = await projectService.sendProjectInviteByEmail(email, groupId, roleId, null, projectId, req.user._id);
 
     const membersCount = await ProjectMember.count({ project: projectId });
     project.usersCount = membersCount;

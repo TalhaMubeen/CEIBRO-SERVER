@@ -90,8 +90,8 @@ const isWorkExist = async (workId) => {
   return work;
 };
 
-const getAllProjects = () => {
-  return Project.find({}, { title: 1 });
+const getAllProjects = (projectIds) => {
+  return Project.find({ _id: projectIds }, { title: 1 });
 };
 
 const getProjects = () => {
@@ -194,20 +194,20 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
   });
   await newRole.save();
 
-  if(members) {
+  if (members) {
     const users = await User.find({
-      _id: members
+      _id: members,
     });
-    const membersToCreate = users.map(user => ({
+    const membersToCreate = users.map((user) => ({
       user: user._id,
       role: newRole._id,
-      project: projectId
-    }))
-    ProjectMember.insertMany(membersToCreate).then(user => {
-      console.log('created members are', user)
-    })
+      project: projectId,
+    }));
+    ProjectMember.insertMany(membersToCreate).then((user) => {
+      console.log('created members are', user);
+    });
   }
-  return newRole.save()
+  return newRole.save();
 };
 
 const createProfileWork = async (
@@ -429,7 +429,6 @@ const getProjectMemberByRoleAndGroup = async (memberId, groupId, roleId, subCont
     user: memberId,
     group: groupId,
     role: roleId,
-    subContractor: subContractorId,
   });
 };
 
@@ -439,7 +438,6 @@ const getProjectMemberByEmailRoleAndGroup = async (email, groupId, roleId, subCo
     invitedEmail: email,
     group: groupId,
     role: roleId,
-    subContractor: subContractorId,
   });
 };
 
@@ -462,13 +460,13 @@ const sendProjectInviteByEmail = async (email, groupId, roleId, subContractorId,
 const getProjectMembersById = async (projectId) => {
   return ProjectMember.find({
     project: projectId,
+    isInvited: false,
   }).populate('role group subContractor user');
 };
 
 const getProjectOwners = async (projectId) => {
-  const project = await getProjectById(projectId)
-
-}
+  const project = await getProjectById(projectId);
+};
 
 const getProjectMemberById = async (memberId) => {
   return ProjectMember.findOne({
@@ -601,6 +599,7 @@ const getProjectAvailableMembers = async (projectId) => {
     _id: {
       $nin: projectUserIds,
     },
+    isEmailVerified: true,
   });
 };
 
@@ -645,4 +644,5 @@ module.exports = {
   isMemberExistInProject,
   getUserProjectIds,
   getProjectAvailableMembers,
+  getProjectOwners,
 };
