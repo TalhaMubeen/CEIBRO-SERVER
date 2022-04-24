@@ -10,6 +10,7 @@ const chatSchema = mongoose.Schema(
     },
     initiator: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     members: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    removedMembers: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
 
     // group chat
     project: {
@@ -20,30 +21,32 @@ const chatSchema = mongoose.Schema(
       type: String,
     },
     lastMessage: {
-      type: mongoose.SchemaTypes.ObjectId, 
-      ref: 'Message' 
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Message',
     },
-    pinnedBy: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'User'
-    }],
-    mutedBy: [{
-      type: mongoose.SchemaTypes.ObjectId,
-      ref: 'User'
-    }]
+    pinnedBy: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      },
+    ],
+    mutedBy: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
-  },
+  }
 );
-
 
 // add plugin that converts mongoose to json
 chatSchema.plugin(toJSON);
 chatSchema.plugin(paginate);
 
-
-chatSchema.index({ name: "text" });
+chatSchema.index({ name: 'text' });
 
 /**
  * @typedef Chat

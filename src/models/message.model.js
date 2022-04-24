@@ -17,6 +17,10 @@ const messageSchema = mongoose.Schema(
       Enum: ['message', 'questioniar', 'voice'],
       default: 'message',
     },
+    title: {
+      type: String,
+      // only for questioniar
+    },
     message: {
       type: String,
       required: false,
@@ -44,7 +48,7 @@ const messageSchema = mongoose.Schema(
     },
     dueDate: {
       type: Date,
-      required: false
+      required: false,
     },
     pinnedBy: [
       {

@@ -28,6 +28,15 @@ mongoose
     server.listen(config.port || 3000, () => {
       logger.info(`Listening to port ${config.port}`);
     });
+
+    // const conn = mongoose.connection;
+
+    // global.mongooseConnection = conn;
+
+    // conn.on('error', () => console.error('connection error'));
+
+    // conn.once('open', () => logger.info('Connection to Database is successful'));
+
     webSocket.listenToChatServer(io);
 
     // server = app.listen(config.port, () => {

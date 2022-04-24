@@ -4,7 +4,7 @@ const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 const { chatService, userService, awsService, projectService } = require('../services');
 const { escapeRegex } = require('../helpers/query.helper');
-const { formatMessage } = require('../helpers/chat.helper');
+const { formatMessage, getPercentage } = require('../helpers/chat.helper');
 const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
 const io = require('./webSocket.controller');
 const AWS = require('aws-sdk');
@@ -13,6 +13,7 @@ const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
 const { getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
+const QuestionOption = require('../models/questionOption.model');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -24,7 +25,7 @@ const createChat = catchAsync(async (req, res) => {
     project.chatCount = chatCount;
     project.save();
   }
-  const newChat =  await chatService.getChatByIdWithMembers(chat._id)
+  const newChat = await chatService.getChatByIdWithMembers(chat._id);
   res.status(httpStatus.CREATED).send(newChat);
 });
 
@@ -33,9 +34,18 @@ const getChats = catchAsync(async (req, res) => {
 
   let search = pick(req.query, ['name', 'type', 'favourite']);
   let filter = {
-    members: {
-      $in: [_id],
-    },
+    $or: [
+      {
+        members: {
+          $in: [_id],
+        },
+      },
+      {
+        removedMembers: {
+          $in: [_id],
+        },
+      },
+    ],
   };
 
   if (search.name) {
@@ -117,7 +127,6 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   // if already some pagination is sent then last message id will be  required for next slice of messages
   if (lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
     const oldIndex = messageIds.findIndex((id) => String(lastMessageId) === String(id));
-    console.log('oldIndex: ', oldIndex);
     if (oldIndex > -1) {
       // if last message index found in messages array
       index = oldIndex;
@@ -141,7 +150,7 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   const startingIndex = options?.upPagination ? index - options.limit : index + 1;
   const downIndex = options?.upPagination ? index : index + 1 + options.limit;
   const myMessageIds = messageIds.slice(startingIndex, downIndex);
-  let conversations = await getMessageByIds(myMessageIds);
+  let conversations = await getMessageByIds(myMessageIds, currentLoggedUser);
   conversations = conversations?.map((conversation) => {
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
@@ -219,7 +228,6 @@ const muteChat = catchAsync(async (req, res) => {
 });
 
 const replyMessage = catchAsync(async (req, res) => {
-  console.log('files are', req.files, req.body)
   const currentLoggedUser = req.user._id;
   const { message, chat, messageId, type } = req.body;
   let files = [];
@@ -311,7 +319,7 @@ const getAvailableChatMembers = catchAsync(async (req, res) => {
 });
 
 const saveQuestioniar = catchAsync(async (req, res) => {
-  const { dueDate, members, questions, chat } = req.body;
+  const { dueDate, members, questions, chat, title } = req.body;
   const userId = req.user._id;
 
   const myChat = await chatService.getChatById(chat);
@@ -320,11 +328,25 @@ const saveQuestioniar = catchAsync(async (req, res) => {
   }
 
   const savedQuestions = await Promise.all(
-    questions.map((question) => {
+    questions.map(async (question) => {
+      let options = question.options;
+      if (question.type === 'multiple' || question.type === 'checkbox') {
+        if (Array.isArray(options)) {
+          const myOptions = options?.map((option) => ({
+            option,
+          }));
+          options = await QuestionOption.insertMany(myOptions);
+          options = await options?.map((option) => option?._id);
+        }
+      } else {
+        options = [];
+      }
+
+      console.log('options: ', options);
       const newQuestion = new Question({
         type: question.type,
         question: question.question,
-        options: question.options,
+        options: options || [],
       });
       return newQuestion.save();
     })
@@ -333,6 +355,7 @@ const saveQuestioniar = catchAsync(async (req, res) => {
   const savedQuestionIds = savedQuestions.map((question) => question._id);
 
   const message = new Message({
+    title,
     sender: userId,
     chat: chat,
     receivedBy: [userId],
@@ -373,7 +396,16 @@ const getQuestioniarById = catchAsync(async (req, res) => {
 
   const questioniar = await Message.findOne({
     _id: questioniarId,
-  }).populate('questions');
+  }).populate({
+    path: 'questions',
+    populate: {
+      path: 'options',
+      populate: {
+        path: 'selectedBy',
+        select: 'firstName surName profilePic',
+      },
+    },
+  });
 
   if (!questioniar) {
     throw new ApiError(400, 'Questioniar not found');
@@ -407,6 +439,17 @@ const getQuestioniarById = catchAsync(async (req, res) => {
     });
     questioniar._doc.answeredByMe = true;
   }
+  questioniar.questions = questioniar?.questions?.map((question) => {
+    console.log('question: ', question);
+    question._doc.options =
+      question?.options?.map?.((option) => {
+        if (option?.selectedBy?.length > 0) {
+          option._doc.percentage = getPercentage(questioniar.access?.length, option?.selectedBy?.length);
+        }
+        return option;
+      }) || question._doc.options;
+    return question;
+  });
 
   res.status(200).send(questioniar);
 });
@@ -490,7 +533,43 @@ const saveQuestioniarAnswers = catchAsync(async (req, res) => {
         answer: ans,
         user: _id,
       });
-      return answer.save();
+      await answer.save();
+      myQuestion.totalAnswered += 1;
+      await myQuestion.save();
+      if (myQuestion.type === 'multiple') {
+        const optionId = myQuestion.options[question.answer];
+        if (optionId) {
+          await QuestionOption.updateOne(
+            { _id: optionId },
+            {
+              $addToSet: {
+                selectedBy: req.user._id,
+              },
+            }
+          );
+        }
+      }
+
+      if (myQuestion.type === 'checkbox') {
+        let optionIds = question.answer?.map((answereIndex) => {
+          return myQuestion.options[answereIndex] || null;
+        });
+        optionIds = optionIds.filter((id) => id);
+        if (optionIds) {
+          await QuestionOption.updateMany(
+            {
+              _id: {
+                $in: optionIds,
+              },
+            },
+            {
+              $addToSet: {
+                selectedBy: req.user._id,
+              },
+            }
+          );
+        }
+      }
     })
   );
 
@@ -520,10 +599,13 @@ const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
   console.log('roomId: ', roomId);
   const { _id } = req.user;
 
-  const typeQuestion = await Message.find({
-    type: 'questioniar',
-    chat: roomId,
-  });
+  const typeQuestion = await Message.find(
+    {
+      type: 'questioniar',
+      chat: roomId,
+    },
+    { title: 1, dueDate: 1 }
+  );
 
   console.log(typeQuestion);
   res.status(200).send(typeQuestion);

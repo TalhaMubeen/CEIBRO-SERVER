@@ -182,8 +182,13 @@ const getMessageById = async function (messagId, options = {}) {
   return Message.findOne({ _id: messagId }).populate('sender replyOf');
 };
 
-const getMessageByIds = async function (messagIds) {
-  return Message.find({ _id: messagIds }).populate('sender replyOf');
+const getMessageByIds = async function (messagIds, currentUser) {
+  return Message.find({ _id: messagIds, access: currentUser })
+    .populate({ path: 'sender', select: 'firstName surName profilePic companyName' })
+    .populate({ path: 'readBy', select: 'firstName surName profilePic' })
+    .populate({ path: 'replyOf', select: 'message type' });
+
+  // .populate('sender replyOf readBy');
 };
 
 const setAllMessagesReadByRoomId = async function (roomId, userId) {
@@ -427,7 +432,7 @@ const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
     }
     return true;
   } else {
-    await Chat.updateOne({ _id: roomId }, { $pull: { members: userId } });
+    await Chat.updateOne({ _id: roomId }, { $pull: { members: userId }, $addToSet: { removedMembers: userId } });
     if (member.socketId) {
       global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);
     }

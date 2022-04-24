@@ -2,20 +2,25 @@ const mongoose = require('mongoose');
 // const validator = require('validator');
 const { toJSON, paginate } = require('./plugins');
 
-const chatSchema = mongoose.Schema(
+const questionSchema = mongoose.Schema(
   {
     // one-to-one chat
     question: {
       type: String,
     },
+    totalAnswered: {
+      type: Number,
+      default: 0,
+    },
     type: {
       type: String,
       enum: ['multiple', 'checkbox', 'shortAnswer'],
-      default: 'user',
+      default: 'shortAnswer',
     },
     options: [
       {
-        type: String,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'QuestionOption',
       },
     ],
   },
@@ -25,14 +30,12 @@ const chatSchema = mongoose.Schema(
 );
 
 // add plugin that converts mongoose to json
-chatSchema.plugin(toJSON);
-chatSchema.plugin(paginate);
-
-chatSchema.index({ name: 'text' });
+questionSchema.plugin(toJSON);
+questionSchema.plugin(paginate);
 
 /**
  * @typedef Chat
  */
-const Question = mongoose.model('Question', chatSchema);
+const Question = mongoose.model('Question', questionSchema);
 
 module.exports = Question;

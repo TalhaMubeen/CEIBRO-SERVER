@@ -23,14 +23,12 @@ router.route('/room/favourite/:roomId').post(auth('getChatRooms'), chatControlle
 
 router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.muteChat);
 
-router
-  .route('/message/reply')
-  .post(
-    auth('getChatRooms'),
-    multerUpload.array('products'),
-    // validate(chatValidation.sendMessage),
-    chatController.replyMessage
-  );
+router.route('/message/reply').post(
+  auth('getChatRooms'),
+  multerUpload.array('products'),
+  // validate(chatValidation.sendMessage),
+  chatController.replyMessage
+);
 
 router
   .route('/message/forward')
@@ -577,7 +575,6 @@ module.exports = router;
  *         $ref: '#/components/responses/NotFound'
  *
  */
-
 
 /**
  * @swagger
