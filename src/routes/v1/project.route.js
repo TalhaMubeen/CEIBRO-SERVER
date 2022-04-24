@@ -87,6 +87,8 @@ router
   .get(auth('manageProject'), projectController.getProjectGroups)
   .post(auth('manageProject'), validate(validation.createProjectGroup), projectController.createGroup);
 
+router.route('/group/members/:groupId').get(auth('manageProject'), projectController.getGroupsMembers);
+
 router
   .route('/folder/:projectId')
   .get(auth('manageProject'), projectController.getProjectFolders)
@@ -763,6 +765,36 @@ module.exports = router;
  *                 type: string
  *             example:
  *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/group/members/{groupId}:
+ *   get:
+ *     summary: get project group by id
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: group id.
  *     responses:
  *       "200":
  *         description: OK

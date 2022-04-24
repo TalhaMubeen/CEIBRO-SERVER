@@ -74,6 +74,15 @@ const isGroupExist = async (groupId) => {
   return group;
 };
 
+const getGroupMembers = async (groupId) => {
+  await isGroupExist(groupId);
+  const projectMembers = await ProjectMember.find({ group: groupId }).populate({
+    path: 'user',
+    select: 'firstName surName profilePic',
+  });
+  return projectMembers.map((projectMember) => projectMember.user);
+};
+
 const isTimeProfileExist = async (profileId) => {
   const timeProfile = await TimeProfile.findById(profileId);
   if (!timeProfile) {
@@ -645,4 +654,5 @@ module.exports = {
   getUserProjectIds,
   getProjectAvailableMembers,
   getProjectOwners,
+  getGroupMembers,
 };

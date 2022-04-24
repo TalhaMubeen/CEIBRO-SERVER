@@ -228,6 +228,13 @@ const getProjectGroups = catchAsync(async (req, res) => {
   res.status(200).send(groups);
 });
 
+const getGroupsMembers = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  await isGroupExist(groupId);
+  const members = await projectService.getGroupMembers(groupId);
+  res.status(200).send(members);
+});
+
 const createTimeProfile = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { name } = req.body;
@@ -592,5 +599,6 @@ module.exports = {
   updateProfilePic,
   deleteGroup,
   getProjectAvailableMembers,
+  getGroupsMembers,
   // getProjectMembersWithOwners
 };
