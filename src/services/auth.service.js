@@ -7,6 +7,7 @@ const { tokenTypes, otpTypes } = require('../config/tokens');
 const { EmailInvite, Invite } = require('../models');
 const ProjectMember = require('../models/ProjectMember.model');
 const Otp = require('../models/otp.model');
+const Group = require('../models/group.model');
 
 /**
  * Login with username and password
@@ -111,11 +112,27 @@ const verifyEmail = async (otpToken) => {
         });
         return myInvite.save();
       });
+      await EmailInvite.deleteMany({ email: user.email });
 
-      const memebrst = await ProjectMember.find({
+      const memebrs = await ProjectMember.find({
         isInvited: true,
         invitedEmail: user.email,
       });
+      const inviteGroupIds = members?.map?.((member) => member?.group);
+
+      await Group.updateMany(
+        {
+          _id: {
+            $in: inviteGroupIds,
+          },
+        },
+        {
+          $addToSet: {
+            members: user._id,
+          },
+        }
+      );
+
       const updateMember = await ProjectMember.updateMany(
         {
           isInvited: true,

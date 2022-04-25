@@ -12,6 +12,12 @@ const groupSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
     },
+    members: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,

@@ -422,6 +422,13 @@ const getFilesByFolderId = (folderId, filter = {}) => {
     ...filter,
   }).populate([
     {
+      path: 'folder',
+      select: 'name',
+      populate: {
+        path: 'group',
+      },
+    },
+    {
       path: 'access',
       select: 'firstName surName',
     },
@@ -469,7 +476,6 @@ const sendProjectInviteByEmail = async (email, groupId, roleId, subContractorId,
 const getProjectMembersById = async (projectId) => {
   return ProjectMember.find({
     project: projectId,
-    isInvited: false,
   }).populate('role group subContractor user');
 };
 
@@ -492,19 +498,55 @@ const addMemberToProject = async (memberId, groupId, roleId, subContractorId, pr
     project: projectId,
   });
 
+  await Group.updateOne(
+    {
+      _id: groupId,
+    },
+    {
+      $addToSet: {
+        members: memberId,
+      },
+    }
+  );
+
   return projectMember.save();
 };
 
-const updateMemberGroupAndRole = (groupId, roleId, memberId) => {
-  return ProjectMember.updateOne(
-    {
-      _id: memberId,
-    },
-    {
-      role: roleId,
-      group: groupId,
-    }
-  );
+const updateMemberGroupAndRole = async (groupId, roleId, memberId) => {
+  const oldMember = await ProjectMember.findOne({
+    _id: memberId,
+  });
+  return Promise.all([
+    Group.updateOne(
+      {
+        _id: oldMember?.group,
+      },
+      {
+        $pull: {
+          members: oldMember?.user,
+        },
+      }
+    ),
+    Group.updateOne(
+      {
+        _id: groupId,
+      },
+      {
+        $addToSet: {
+          members: oldMember.user,
+        },
+      }
+    ),
+    ProjectMember.updateOne(
+      {
+        _id: memberId,
+      },
+      {
+        role: roleId,
+        group: groupId,
+      }
+    ),
+  ]);
 };
 
 const editProjectGroup = async (groupId, name) => {

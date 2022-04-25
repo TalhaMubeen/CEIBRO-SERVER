@@ -10,6 +10,7 @@ TimeAgo.addDefaultLocale(en);
 const timeAgo = new TimeAgo('en-US');
 const { bucketFolders } = require('../services/aws.service');
 const { mapUsers } = require('../helpers/user.helper');
+const { EmailInvite } = require('../models');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -155,7 +156,10 @@ const getMyConnections = catchAsync(async (req, res) => {
     }
     return invite;
   });
-  console.log('invites: ', result);
+  const emailInvites = await EmailInvite.find({
+    from: _id,
+  }).populate('from');
+  result = [...result, ...emailInvites];
   res.send(result);
 });
 
