@@ -603,6 +603,7 @@ const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
     {
       type: 'questioniar',
       chat: roomId,
+      access: _id,
     },
     { title: 1, dueDate: 1 }
   );

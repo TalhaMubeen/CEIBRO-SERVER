@@ -4,6 +4,7 @@ const { User, EmailInvite } = require('../models');
 const ApiError = require('../utils/ApiError');
 const Invite = require('../models/invite.model');
 const { invitesStatus } = require('../config/user.config');
+const { BAD_REQUEST } = require('http-status');
 
 /**
  * Create a user
@@ -97,6 +98,10 @@ const getInvitation = async (from, to) => {
 const inviteUserByEmail = async (email, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const user = await getUserByEmail(email);
+  
+  if(user && String(currentUser._id) === String(user._id)) {
+    throw new ApiError(BAD_REQUEST, "User cannot invite himeself")
+  }
 
   if (!user) {
     // if email not exists in users then sent him an email invite
