@@ -13,8 +13,17 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1');
 const { errorConverter, errorHandler } = require('./middlewares/error');
 const ApiError = require('./utils/ApiError');
+const path = require('path');
 
 const app = express();
+
+// Have Node serve the files for our built React app
+app.use(express.static(path.resolve(__dirname, './public/build')));
+
+// Handle GET requests to /api route
+app.get('/api', (req, res) => {
+  res.json({ message: 'Hello from server!' });
+});
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
@@ -52,6 +61,12 @@ if (config.env === 'production') {
 
 // v1 api routes
 app.use('/v1', routes);
+
+// All other GET requests not handled before will return our React app
+app.get('/*', (req, res) => {
+  console.log(__dirname);
+  res.sendFile(__dirname + '/public/build/index.html');
+});
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
