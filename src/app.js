@@ -18,7 +18,7 @@ const path = require('path');
 const app = express();
 
 // Have Node serve the files for our built React app
-app.use(express.static(path.resolve(__dirname, './public/build')));
+// app.use(express.static(path.resolve(__dirname, './public/build')));
 
 // Handle GET requests to /api route
 app.get('/api', (req, res) => {
@@ -63,10 +63,10 @@ if (config.env === 'production') {
 app.use('/v1', routes);
 
 // All other GET requests not handled before will return our React app
-app.get('/*', (req, res) => {
-  console.log(__dirname);
-  res.sendFile(__dirname + '/public/build/index.html');
-});
+// app.get('/*', (req, res) => {
+//   console.log(__dirname);
+//   res.sendFile(__dirname + '/public/build/index.html');
+// });
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
