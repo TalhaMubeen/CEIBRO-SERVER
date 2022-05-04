@@ -25,6 +25,7 @@ const {
   isTimeProfileExist,
   editProjectTimeProfile,
   isWorkExist,
+  getProjectOwners,
 } = require('../services/project.service');
 const ProjectFile = require('../models/ProjectFile.model');
 const { isUserExist, getUserByEmail } = require('../services/user.service');
@@ -34,6 +35,7 @@ const Project = require('../models/project.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
 const { checkUserPermission } = require('../middlewares/check-role-permission');
+const { filterArray } = require('../helpers/project.helper');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -369,8 +371,19 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
   }
   let members = await getProjectMembersById(projectId, excludeMe);
   if (excludeMe === 'true') {
+    let owners = await getProjectOwners(projectId);
+    members = members?.concat(
+      owners?.map((owner) => {
+        // converting them to act like project members object;
+        return {
+          isInvited: false,
+          user: owner,
+        };
+      })
+    );
     members = members?.filter?.((member) => String(member?.user?._id) !== String(req.user._id));
   }
+  members = members;
   res.status(200).send(members);
 });
 
@@ -509,7 +522,6 @@ const getWorkDetail = catchAsync(async (req, res) => {
   const { workId } = req.params;
   const work = await projectService.isWorkExist(workId);
   if (work.roles) {
-    console.group('doing');
     work._doc.roles = work.roles.map((role) => ({ label: role.name, value: role.id }));
   }
   console.log('asasdfasd', work);

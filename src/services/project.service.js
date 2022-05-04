@@ -273,7 +273,7 @@ const editProfileWork = async (
   await isWorkExist(workId);
 
   await Promise.all(roles?.map(getRoleById));
-  const otherWork = Work.findOne({
+  const otherWork = await Work.findOne({
     name: name,
     _id: {
       $ne: workId,
@@ -305,7 +305,7 @@ const editProfileWork = async (
 const getProfileWorks = (profileId) => {
   return Work.find({
     profile: profileId,
-  });
+  }).populate('roles');
 };
 
 const editProjectRole = async (roleId, name, admin, roles = [], member, timeProfile) => {
@@ -481,7 +481,8 @@ const getProjectMembersById = async (projectId) => {
 };
 
 const getProjectOwners = async (projectId) => {
-  // const project = await getProjectById(projectId);
+  const project = await getProjectById(projectId);
+  return project.owner;
 };
 
 const getProjectMemberById = async (memberId) => {

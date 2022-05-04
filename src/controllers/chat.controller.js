@@ -313,7 +313,6 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
 
 const getAvailableChatMembers = catchAsync(async (req, res) => {
   const { roomId } = req.params;
-
   const result = await chatService.getAvailableChatMembers(roomId, req.user._id);
   res.status(200).send(result);
 });

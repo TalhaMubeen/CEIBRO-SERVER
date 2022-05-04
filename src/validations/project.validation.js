@@ -141,7 +141,7 @@ const createProjectWork = {
 
 const updateProjectWork = {
   params: Joi.object().keys({
-    profileId: Joi.string(),
+    workId: Joi.string(),
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),

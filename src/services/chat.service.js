@@ -6,6 +6,7 @@ const ApiError = require('../utils/ApiError');
 const ObjectId = require('mongoose').Types.ObjectId;
 const { REFRESH_CHAT } = require('../config/chat.constants');
 const { invitesStatus } = require('../config/user.config');
+const { filterArray } = require('../helpers/project.helper');
 
 /**
  * Create a user
@@ -415,7 +416,7 @@ const getAvailableChatMembers = async (roomId, currentUserId) => {
     project: chat.project,
     isInvited: false,
     user: {
-      $nin: members,
+      $nin: [...members, currentUserId],
     },
   }).populate([
     {
@@ -424,8 +425,11 @@ const getAvailableChatMembers = async (roomId, currentUserId) => {
     },
   ]);
 
-  return projectMembers?.map((member) => member.user);
+  let allMembers = projectMembers?.map((member) => member.user);
+  let projectOwners = await projectService.getProjectOwners(chat.project);
+  allMembers = filterArray(allMembers?.concat(projectOwners), '_id');
 
+  allMembers = allMembers?.filter((user) => String(user._id) !== String(currentUserId));
   // const invites = await Invite.find({
   //   $or: [
   //     {
@@ -455,7 +459,7 @@ const getAvailableChatMembers = async (roomId, currentUserId) => {
   //   return user;
   // });
   // users = users.filter((user) => !members?.includes(user._id));
-  return users;
+  return allMembers;
 };
 
 const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {

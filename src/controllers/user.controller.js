@@ -30,7 +30,7 @@ const getAvailableUsers = catchAsync(async (req, res) => {
   const result = await userService.getAvailableUsers(req.user._id);
   let users = result.map((invite) => {
     let user = invite.to;
-    if (String(user._id) === req.user._id) {
+    if (String(user._id) === String(req.user._id)) {
       user = invite.from;
     }
     return user;
@@ -40,7 +40,13 @@ const getAvailableUsers = catchAsync(async (req, res) => {
     users?.push?.(user);
   }
 
-  res.send(mapUsers(users));
+  let data = mapUsers(users);
+
+  let finalData = data?.filter((user, index) => {
+    return data?.findIndex((myUser) => (String(myUser.value) === String(user?.value)) === index);
+  });
+
+  res.send(finalData);
 });
 
 const getUser = catchAsync(async (req, res) => {
