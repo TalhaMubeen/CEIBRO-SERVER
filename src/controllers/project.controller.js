@@ -125,7 +125,7 @@ const getProjectMembers = catchAsync(async (req, res) => {
 const getProjectAvailableMembers = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { _id } = req.user;
-  const availableUsers = await projectService.getProjectAvailableMembers(projectId);
+  const availableUsers = await projectService.getProjectAvailableMembers(projectId, _id);
   const members =
     availableUsers?.map?.((user) => ({
       label: user.firstName + ' ' + user.surName,
@@ -362,12 +362,15 @@ const getFolderAllFiles = catchAsync(async (req, res) => {
 
 const getProjectAllMembers = catchAsync(async (req, res) => {
   const { projectId } = req.params;
+  const { excludeMe } = req.query;
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  let members = await getProjectMembersById(projectId);
-  members = members?.filter?.((member) => String(member?.user?._id) || String(req.user._id));
+  let members = await getProjectMembersById(projectId, excludeMe);
+  if (excludeMe === 'true') {
+    members = members?.filter?.((member) => String(member?.user?._id) !== String(req.user._id));
+  }
   res.status(200).send(members);
 });
 

@@ -1,5 +1,6 @@
 const httpStatus = require('http-status');
-const { Project } = require('../models');
+const { invitesStatus } = require('../config/user.config');
+const { Project, Invite } = require('../models');
 const Folder = require('../models/folder.model');
 const Group = require('../models/group.model');
 const ProjectFile = require('../models/ProjectFile.model');
@@ -480,7 +481,7 @@ const getProjectMembersById = async (projectId) => {
 };
 
 const getProjectOwners = async (projectId) => {
-  const project = await getProjectById(projectId);
+  // const project = await getProjectById(projectId);
 };
 
 const getProjectMemberById = async (memberId) => {
@@ -639,17 +640,45 @@ const getUserProjectIds = async (userId) => {
   return myProjectIds;
 };
 
-const getProjectAvailableMembers = async (projectId) => {
+const getProjectAvailableMembers = async (projectId, currentUserId) => {
   const myMembers = await ProjectMember.find({ project: projectId });
   let projectUserIds = myMembers.map((member) => member.user);
   const projects = await getProjectById(projectId);
   let owners = projects?.owner?.map?.((own) => own?._id) || [];
   projectUserIds = [...projectUserIds, ...owners];
+  const myInvites = await Invite.find({
+    $or: [
+      {
+        to: currentUserId,
+      },
+      {
+        from: currentUserId,
+      },
+    ],
+    status: invitesStatus.ACCEPTED,
+  });
+
+  let connectionIds = myInvites.map((invite) => {
+    let user = invite.to;
+    if (String(user._id) === String(currentUserId)) {
+      user = invite.from;
+    }
+    return user;
+  });
 
   return User.find({
-    _id: {
-      $nin: projectUserIds,
-    },
+    $and: [
+      {
+        _id: {
+          $nin: projectUserIds,
+        },
+      },
+      {
+        _id: {
+          $in: connectionIds,
+        },
+      },
+    ],
     isEmailVerified: true,
   });
 };

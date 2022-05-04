@@ -114,7 +114,7 @@ const verifyEmail = async (otpToken) => {
       });
       await EmailInvite.deleteMany({ email: user.email });
 
-      const memebrs = await ProjectMember.find({
+      const members = await ProjectMember.find({
         isInvited: true,
         invitedEmail: user.email,
       });

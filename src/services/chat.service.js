@@ -1,9 +1,12 @@
 const httpStatus = require('http-status');
 const { projectService, chatService, userService } = require('.');
-const { Chat, User, Message } = require('../models');
+const { Chat, User, Message, Invite } = require('../models');
+const ProjectMember = require('../models/ProjectMember.model');
 const ApiError = require('../utils/ApiError');
 const ObjectId = require('mongoose').Types.ObjectId;
 const { REFRESH_CHAT } = require('../config/chat.constants');
+const { invitesStatus } = require('../config/user.config');
+
 /**
  * Create a user
  * @param {Object} chatBody
@@ -401,13 +404,58 @@ const getUnreadCount = async (userId) => {
   return count;
 };
 
-const getAvailableChatMembers = async (roomId) => {
+const getAvailableChatMembers = async (roomId, currentUserId) => {
   const chat = await getChatRoomByRoomId(roomId);
   if (!chat) {
     throw new ApiError(400, 'Chat room not found');
   }
   const members = chat.members;
-  return User.find({ _id: { $nin: members } }, { firstName: 1, surName: 1, profilePic: 1 });
+
+  const projectMembers = await ProjectMember.find({
+    project: chat.project,
+    isInvited: false,
+    user: {
+      $nin: members,
+    },
+  }).populate([
+    {
+      path: 'user',
+      select: 'firstName surName',
+    },
+  ]);
+
+  return projectMembers?.map((member) => member.user);
+
+  // const invites = await Invite.find({
+  //   $or: [
+  //     {
+  //       to: currentUserId,
+  //     },
+  //     {
+  //       from: currentUserId,
+  //     },
+  //   ],
+  //   status: invitesStatus.ACCEPTED,
+  // }).populate([
+  //   {
+  //     path: 'to',
+  //     select: 'firstName surName',
+  //   },
+  //   {
+  //     path: 'from',
+  //     select: 'firstName surName',
+  //   },
+  // ]);
+  // console.log('invites', invites);
+  // let users = invites.map((invite) => {
+  //   let user = invite.to;
+  //   if (String(user._id) === currentUserId) {
+  //     user = invite.from;
+  //   }
+  //   return user;
+  // });
+  // users = users.filter((user) => !members?.includes(user._id));
+  return users;
 };
 
 const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {

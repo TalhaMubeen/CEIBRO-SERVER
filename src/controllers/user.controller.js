@@ -26,8 +26,21 @@ const getUsers = catchAsync(async (req, res) => {
 });
 
 const getAvailableUsers = catchAsync(async (req, res) => {
-  const result = await userService.getAvailableUsers();
-  res.send(mapUsers(result));
+  const { includeMe } = req.query;
+  const result = await userService.getAvailableUsers(req.user._id);
+  let users = result.map((invite) => {
+    let user = invite.to;
+    if (String(user._id) === req.user._id) {
+      user = invite.from;
+    }
+    return user;
+  });
+  if (includeMe === 'true') {
+    const user = await userService.getUserById(req.user._id);
+    users?.push?.(user);
+  }
+
+  res.send(mapUsers(users));
 });
 
 const getUser = catchAsync(async (req, res) => {

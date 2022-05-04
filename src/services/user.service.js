@@ -98,9 +98,9 @@ const getInvitation = async (from, to) => {
 const inviteUserByEmail = async (email, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const user = await getUserByEmail(email);
-  
-  if(user && String(currentUser._id) === String(user._id)) {
-    throw new ApiError(BAD_REQUEST, "User cannot invite himeself")
+
+  if (user && String(currentUser._id) === String(user._id)) {
+    throw new ApiError(BAD_REQUEST, 'User cannot invite himeself');
   }
 
   if (!user) {
@@ -191,7 +191,7 @@ const getConnectionsByUserId = async (currentUserId) => {
       },
     ],
     status: {
-      $in: [invitesStatus.ACCEPTED, invitesStatus.PENDING]
+      $in: [invitesStatus.ACCEPTED, invitesStatus.PENDING],
     },
   }).populate('to from');
 };
@@ -211,15 +211,26 @@ const getConnectionsCountByUserId = async (currentUserId) => {
 };
 
 const getAvailableUsers = async (currentUserId) => {
-  let condition = {};
-  if (currentUserId) {
-    condition = {
-      _id: {
-        $ne: currentUserId,
+  return Invite.find({
+    $or: [
+      {
+        to: currentUserId,
       },
-    };
-  }
-  return User.find(condition);
+      {
+        from: currentUserId,
+      },
+    ],
+    status: invitesStatus.ACCEPTED,
+  }).populate([
+    {
+      path: 'to',
+      select: 'firstName surName',
+    },
+    {
+      path: 'from',
+      select: 'firstName surName',
+    },
+  ]);
 };
 
 const isUserExist = async (userId) => {

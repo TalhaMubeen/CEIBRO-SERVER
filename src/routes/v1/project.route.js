@@ -1176,6 +1176,11 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: project id.
+ *       - in: query
+ *         name: excludeMe
+ *         schema:
+ *           type: boolean
+ *         description: exclude current user and all pending invited users
  *     responses:
  *       "200":
  *         description: OK

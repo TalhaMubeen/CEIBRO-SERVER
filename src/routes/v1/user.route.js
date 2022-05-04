@@ -184,6 +184,12 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: includeMe
+ *         schema:
+ *           type: boolean
+ *         description: include you in available users list or not
  *     responses:
  *       "200":
  *         description: OK
