@@ -593,6 +593,29 @@ const deleteChatRoomForUser = catchAsync(async (req, res) => {
   res.status(200).send('Room deleted');
 });
 
+const updateChatRoom = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+  const { name } = req.body;
+  if (!name) {
+    throw new ApiError(400, 'name is required');
+  }
+  const { _id } = req.user;
+
+  const myChat = await chatService.getChatById(roomId);
+  if (!myChat) {
+    throw new ApiError(400, 'Invalid chat id');
+  }
+
+  if (myChat.members.findIndex((userId) => String(userId) === String(_id)) < 0) {
+    throw new ApiError(400, 'User does not belongs to this chat room');
+  }
+
+  myChat.name = name;
+  await myChat.save();
+
+  res.status(200).send('Room updated');
+});
+
 const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   console.log('roomId: ', roomId);
@@ -651,6 +674,7 @@ module.exports = {
   saveQuestioniarAnswers,
   getQuestioniarAnswersByUser,
   deleteChatRoomForUser,
+  updateChatRoom,
   forwardMessage,
   getQuestionairByTypeMessage,
   getAvailableChatMembers,

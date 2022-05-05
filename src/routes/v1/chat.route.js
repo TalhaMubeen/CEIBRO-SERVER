@@ -44,7 +44,10 @@ router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatR
 router.route('/member/:roomId/:memberId').post(auth('getChatRooms'), chatController.addOrRemoveChatMembers);
 router.route('/member/available/:roomId').get(auth('getChatRooms'), chatController.getAvailableChatMembers);
 
-router.route('/room/:roomId').delete(auth('getChatRooms'), chatController.deleteChatRoomForUser);
+router
+  .route('/room/:roomId')
+  .delete(auth('getChatRooms'), chatController.deleteChatRoomForUser)
+  .put(auth('getChatRooms'), chatController.updateChatRoom);
 
 router.route('/message/questioniar').post(auth('getChatRooms'), chatController.saveQuestioniar);
 router
@@ -218,7 +221,44 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *
+ *   put:
+ *     summary: update chat room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
+ *             properties:
+ *               name:
+ *                 type: string
+ *             example:
+ *                 name: new name
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
 
 /**

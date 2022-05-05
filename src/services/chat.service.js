@@ -427,9 +427,12 @@ const getAvailableChatMembers = async (roomId, currentUserId) => {
 
   let allMembers = projectMembers?.map((member) => member.user);
   let projectOwners = await projectService.getProjectOwners(chat.project);
+
   allMembers = filterArray(allMembers?.concat(projectOwners), '_id');
 
-  allMembers = allMembers?.filter((user) => String(user._id) !== String(currentUserId));
+  allMembers = allMembers?.filter((user) => {
+    return String(user._id) !== String(currentUserId) && !members.includes(user._id);
+  });
   // const invites = await Invite.find({
   //   $or: [
   //     {
