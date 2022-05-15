@@ -177,6 +177,11 @@ module.exports = router;
  *         type: string
  *         description: search keyword for messages
  *         required: false
+ *       - in: query
+ *         name: messageId
+ *         type: string
+ *         description: messageId to which you want to jump 5 messages before and after this messageid will be received in this api response
+ *         required: false
  *     responses:
  *       "200":
  *         description: OK

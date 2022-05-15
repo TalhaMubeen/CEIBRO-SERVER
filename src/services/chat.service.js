@@ -183,7 +183,7 @@ const checkMessageAuthorization = async function (messageId, userId) {
 };
 
 const getMessageById = async function (messagId, options = {}) {
-  return Message.findOne({ _id: messagId }).populate('sender replyOf');
+  return Message.findOne({ _id: messagId }).populate('sender replyOf readBy');
 };
 
 const getMessageByIds = async function (messagIds, currentUser) {

@@ -94,7 +94,7 @@ const updateChat = catchAsync(async (req, res) => {
 const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
-  const { lastMessageId = null, down = 'false', search } = req.query;
+  const { lastMessageId = null, down = 'false', search, messageId = null } = req.query;
 
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
@@ -114,56 +114,65 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   }
 
   const messageIds = await getMessageIdsByFilter(idsFilter);
+  let selectedMessageIds = [];
 
-  const options = {
-    page: parseInt(req.query.page) || 0,
-    limit: parseInt(req.query.limit) || 10,
-    upPagination: down != 'true',
-  };
-
-  // zero index if start of paginatio || last message index if not start of pagination
-  let index = messageIds.length > 0 ? messageIds.length : -1;
-
-  // if already some pagination is sent then last message id will be  required for next slice of messages
-  if (lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
-    const oldIndex = messageIds.findIndex((id) => String(lastMessageId) === String(id));
-    if (oldIndex > -1) {
-      // if last message index found in messages array
-      index = oldIndex;
+  if(messageId){
+    // when user want directly to a message. then 5 messages before and after will also will be sent so that user can scroll up or down to see messages
+    const messageIndex = messageIds.findIndex((id) => String(messageId) === String(id));
+    if(messageIndex < 0) {
+      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid message id")
     }
+    // cut 5 messages before this message and after this message
+    const preIndex = messageIndex - 5 >= 0 ? (messageIndex - 5): 0;
+    const postIndex = messageIndex + 5; 
+    selectedMessageIds = messageIds?.slice(preIndex, postIndex)
+  
+  }
+  else {
+    const options = {
+      page: parseInt(req.query.page) || 0,
+      limit: parseInt(req.query.limit) || 10,
+      upPagination: down != 'true',
+    };
+  
+    // zero index if start of paginatio || last message index if not start of pagination
+    let index = messageIds.length > 0 ? messageIds.length : -1;
+  
+    // if already some pagination is sent then last message id will be  required for next slice of messages
+    if (lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
+      const oldIndex = messageIds.findIndex((id) => String(lastMessageId) === String(id));
+      if (oldIndex > -1) {
+        // if last message index found in messages array
+        index = oldIndex;
+      }
+    }
+  
+    // Example1 down pagination{
+    //   index: 0,
+    //   limit: 3,
+    //   startingIndex: 0,
+    //   downIndex: 4
+    // }
+  
+    // Example2 up pagination{
+    //   index: 5,
+    //   limit: 3,
+    //   startingIndex: 2,
+    //   downIndex: 5
+    // }
+  
+    const startingIndex = options?.upPagination ? index - options.limit : index + 1;
+    const downIndex = options?.upPagination ? index : index + 1 + options.limit;
+    selectedMessageIds = messageIds.slice(startingIndex, downIndex);
   }
 
-  // Example1 down pagination{
-  //   index: 0,
-  //   limit: 3,
-  //   startingIndex: 0,
-  //   downIndex: 4
-  // }
-
-  // Example2 up pagination{
-  //   index: 5,
-  //   limit: 3,
-  //   startingIndex: 2,
-  //   downIndex: 5
-  // }
-
-  const startingIndex = options?.upPagination ? index - options.limit : index + 1;
-  const downIndex = options?.upPagination ? index : index + 1 + options.limit;
-  const myMessageIds = messageIds.slice(startingIndex, downIndex);
-  let conversations = await getMessageByIds(myMessageIds, currentLoggedUser);
+  let conversations = await getMessageByIds(selectedMessageIds, currentLoggedUser);
   conversations = conversations?.map((conversation) => {
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
   });
   res.status(httpStatus.CREATED).send(conversations);
-
-  // let conversation = await chatService.getConversationByRoomId(roomId, options, currentLoggedUser);
-  // console.log('conversations are', conversation)
-  // conversation.results = conversation?.results?.map((conversation) => {
-  //   conversation = formatMessage(conversation, currentLoggedUser);
-  //   return conversation;
-  // });
-  // res.status(httpStatus.CREATED).send(conversation);
+  
 });
 
 const setRoomMessagesRead = catchAsync(async (req, res) => {
@@ -243,9 +252,11 @@ const replyMessage = catchAsync(async (req, res) => {
 
   const myChat = await chatService.getChatById(newMessage.chat);
 
+  const myMessage = await chatService.getMessageById(newMessage._id);
+
   global.io.sockets.in(String(newMessage.chat)).emit(RECEIVE_MESSAGE.value, {
     from: currentLoggedUser,
-    message: formatMessage(newMessage),
+    message: formatMessage(myMessage),
     chat: String(myChat._id),
     mutedFor: myChat.mutedBy,
   });
