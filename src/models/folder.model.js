@@ -16,6 +16,16 @@ const folderSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Group',
     },
+    access: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'User',
+      },
+    ],
+    creator: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

@@ -1,6 +1,7 @@
 const allRoles = {
-  user: ['createChatRoom', 'getChatRooms', 'getUsers', 'manageProject', 'manageProfile', 'getAvailableUsers'],
+  user: ['manageGroup', 'createChatRoom', 'getChatRooms', 'getUsers', 'manageProject', 'manageProfile', 'getAvailableUsers'],
   admin: [
+    'manageGroup',
     'getUsers',
     'manageUsers',
     'createChatRoom',

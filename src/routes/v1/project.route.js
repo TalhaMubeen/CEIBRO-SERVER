@@ -82,6 +82,8 @@ router
   .put(auth('manageProject'), validate(validation.updateProjectGroup), projectController.editGroup)
   .delete(auth('manageProject'), projectController.deleteGroup);
 
+router.route('/group/users/:groupId').get(auth('manageGroup'), projectController.getGroupUsers);
+
 router
   .route('/group/:projectId')
   .get(auth('manageProject'), projectController.getProjectGroups)
@@ -93,6 +95,10 @@ router
   .route('/folder/:projectId')
   .get(auth('manageProject'), projectController.getProjectFolders)
   .post(auth('manageProject'), validate(validation.createProjectFolder), projectController.createFolder);
+
+router
+  .route('/folder-user/:folderId/:userId')
+  .post(auth('manageProject'), validate(validation.addRemoveFolderUser), projectController.addRemoveFolderUser);
 
 router
   .route('/file/:folderId')
@@ -782,6 +788,36 @@ module.exports = router;
 
 /**
  * @swagger
+ * /project/group/users/{groupId}:
+ *   get:
+ *     summary: get project users
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: group id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
  * /project/group/members/{groupId}:
  *   get:
  *     summary: get project group by id
@@ -1077,6 +1113,41 @@ module.exports = router;
  *             example:
  *               name: project folder
  *               groupId: 234234234
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+/**
+ * @swagger
+ * /project/folder-user/{folderId}/{userId}:
+ *   post:
+ *     summary: add or remove folder user
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: folderId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: folder id.
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: user id to add or remove from folder.
  *     responses:
  *       "200":
  *         description: OK

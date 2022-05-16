@@ -98,6 +98,13 @@ const createProjectFolder = {
   }),
 };
 
+const addRemoveFolderUser = {
+  params: Joi.object().keys({
+    folderId: Joi.string(),
+    userId: Joi.string(),
+  }),
+};
+
 const addMemberToProject = {
   params: Joi.object().keys({
     projectId: Joi.string(),
@@ -165,6 +172,7 @@ module.exports = {
   createProjectGroup,
   createTimeProfile,
   createProjectFolder,
+  addRemoveFolderUser,
   updateProjectRole,
   updateProjectGroup,
   addMemberToProject,

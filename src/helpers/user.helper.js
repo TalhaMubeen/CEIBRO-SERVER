@@ -5,6 +5,11 @@ const mapUsers = (users) => {
   }));
 };
 
+const uniqueBy = (data, key) => {
+  return data.filter((row, index) => row && data.findIndex((innerRow) => innerRow?.[key] === row?.[key]) === index);
+};
+
 module.exports = {
   mapUsers,
+  uniqueBy,
 };

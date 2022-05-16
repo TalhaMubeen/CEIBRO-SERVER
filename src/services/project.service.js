@@ -11,7 +11,7 @@ const User = require('../models/user.model');
 const Work = require('../models/work.model');
 const ApiError = require('../utils/ApiError');
 const { sendInvitationEmail } = require('./email.service');
-const { getUserById } = require('./user.service');
+const { getUserById, isUserExist } = require('./user.service');
 
 /**
  * Create a project
@@ -75,9 +75,9 @@ const isGroupExist = async (groupId) => {
   return group;
 };
 
-const getGroupMembers = async (groupId) => {
+const getGroupMembers = async (groupId, currentUserId) => {
   await isGroupExist(groupId);
-  const projectMembers = await ProjectMember.find({ group: groupId }).populate({
+  const projectMembers = await ProjectMember.find({ group: groupId, user: { $ne: currentUserId } }).populate({
     path: 'user',
     select: 'firstName surName profilePic',
   });
@@ -350,7 +350,6 @@ const createProjectGroup = async (name, projectId) => {
     project: projectId,
   });
   return newGroup.save();
-  createProfileWork;
 };
 
 const getProjectGroups = (projectId) => {
@@ -383,7 +382,7 @@ const getProjectTimeProfiles = (projectId) => {
   });
 };
 
-const createProjectFolder = async (name, groupId, projectId) => {
+const createProjectFolder = async (name, groupId, projectId, currentUserId) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
@@ -400,6 +399,7 @@ const createProjectFolder = async (name, groupId, projectId) => {
     name,
     group: groupId,
     project: projectId,
+    creator: currentUserId,
   });
   return newFolder.save();
 };
@@ -411,9 +411,10 @@ const getProjectFolders = (projectId, filters) => {
   }).populate('group');
 };
 
-const getFolderById = (folderId) => {
+const getFolderById = (folderId, filter = {}) => {
   return Folder.findOne({
     _id: folderId,
+    ...filter,
   });
 };
 
@@ -684,6 +685,38 @@ const getProjectAvailableMembers = async (projectId, currentUserId) => {
   });
 };
 
+const addOrRemoveFolderUser = async (folderId, userId) => {
+  const folder = await getFolderById(folderId);
+  if (!folder) throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
+  await isUserExist(userId);
+
+  const alreadyInFolder = folder?.access?.includes(userId);
+  if (alreadyInFolder) {
+    await Folder.findOneAndUpdate(
+      {
+        _id: folderId,
+      },
+      {
+        $pull: {
+          access: userId,
+        },
+      }
+    );
+  } else {
+    await Folder.findOneAndUpdate(
+      {
+        _id: folderId,
+      },
+      {
+        $addToSet: {
+          access: userId,
+        },
+      }
+    );
+  }
+  return alreadyInFolder;
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -727,4 +760,5 @@ module.exports = {
   getProjectAvailableMembers,
   getProjectOwners,
   getGroupMembers,
+  addOrRemoveFolderUser,
 };

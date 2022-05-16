@@ -36,6 +36,8 @@ const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
 const { checkUserPermission } = require('../middlewares/check-role-permission');
 const { filterArray } = require('../helpers/project.helper');
+const Group = require('../models/group.model');
+const { mapUsers, uniqueBy } = require('../helpers/user.helper');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -206,6 +208,12 @@ const getGroupDetail = catchAsync(async (req, res) => {
   res.status(200).send(group);
 });
 
+const getGroupUsers = catchAsync(async (req, res) => {
+  const { groupId } = req.params;
+  const groupMembers = await projectService.getGroupMembers(groupId, req.user._id);
+  res.status(200).send(uniqueBy(groupMembers, '_id'));
+});
+
 const editGroup = catchAsync(async (req, res) => {
   const { groupId } = req.params;
   const { name } = req.body;
@@ -216,7 +224,7 @@ const editGroup = catchAsync(async (req, res) => {
 const createGroup = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { name } = req.body;
-  const group = await createProjectGroup(name, projectId);
+  const group = await createProjectGroup(name, projectId, req.user._id);
   res.status(200).send(group);
 });
 
@@ -270,7 +278,7 @@ const editTimeProfile = catchAsync(async (req, res) => {
 const createFolder = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { name, groupId } = req.body;
-  const folder = await createProjectFolder(name, groupId, projectId);
+  const folder = await createProjectFolder(name, groupId, projectId, req.user._id);
   res.status(200).json({
     data: folder,
   });
@@ -279,7 +287,17 @@ const createFolder = catchAsync(async (req, res) => {
 const getProjectFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { search } = req.query;
-  let filter = {};
+  const { _id } = req.user;
+  let filter = {
+    $or: [
+      {
+        access: _id,
+      },
+      {
+        creator: _id,
+      },
+    ],
+  };
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
     filter = {
@@ -298,6 +316,8 @@ const getProjectFolders = catchAsync(async (req, res) => {
       id: folder._id,
       group: folder.group,
       createdAt: folder.createdAt,
+      access: folder.access,
+      creator: folder.creator,
     };
   });
   res.status(200).send(data);
@@ -305,10 +325,21 @@ const getProjectFolders = catchAsync(async (req, res) => {
 
 const uploadFileToFolder = catchAsync(async (req, res) => {
   const { folderId } = req.params;
+  const { _id } = req.user;
   if (!req.file) {
     throw new ApiError();
   }
-  const folder = await getFolderById(folderId);
+  const filter = {
+    $or: [
+      {
+        access: _id,
+      },
+      {
+        creator: _id,
+      },
+    ],
+  };
+  const folder = await getFolderById(folderId, filter);
   if (!folder) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
   }
@@ -464,6 +495,16 @@ const deleteProjectMember = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid member id');
   }
   if (member) {
+    await Group.updateOne(
+      {
+        _id: member.group,
+      },
+      {
+        $pull: {
+          members: req.user._id,
+        },
+      }
+    );
     await member.remove();
   }
   res.status(200).send('member deleted successfully');
@@ -574,6 +615,12 @@ const updateProfilePic = catchAsync(async (req, res) => {
   res.status(200).send('project pic updated successfully');
 });
 
+const addRemoveFolderUser = catchAsync(async (req, res) => {
+  const { folderId, userId } = req.params;
+  const isRemoved = await projectService.addOrRemoveFolderUser(folderId, userId);
+  res.status(200).send(isRemoved ? 'User removed' : 'User added');
+});
+
 module.exports = {
   createProject,
   getProjects,
@@ -615,5 +662,7 @@ module.exports = {
   deleteGroup,
   getProjectAvailableMembers,
   getGroupsMembers,
+  getGroupUsers,
+  addRemoveFolderUser,
   // getProjectMembersWithOwners
 };
