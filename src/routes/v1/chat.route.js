@@ -13,6 +13,10 @@ router
   .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat)
   .get(auth('getChatRooms'), chatController.getChats);
 
+router
+  .route('/room/single/:userId')
+  .post(auth('createChatRoom'), validate(chatValidation.createOneToOneChat), chatController.createOneToOneChat);
+
 router.route('/room/messages/:roomId').get(auth('getChatRooms'), chatController.getConversationByRoomId);
 
 router.route('/unread/count').get(auth('getChatRooms'), chatController.getUnreadMessagesCount);
@@ -144,6 +148,36 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+/**
+ * @swagger
+ * /chat/room/single/{userId}:
+ *   post:
+ *     summary: Create a one to one chat room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
 
 /**

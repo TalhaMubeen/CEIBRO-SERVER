@@ -8,6 +8,10 @@ const chatSchema = mongoose.Schema(
     name: {
       type: String,
     },
+    isGroupChat: {
+      type: Boolean,
+      default: true,
+    },
     initiator: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     members: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
     removedMembers: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],

@@ -8,6 +8,12 @@ const createChatRoom = {
   }),
 };
 
+const createOneToOneChat = {
+  params: Joi.object().keys({
+    userId: Joi.string(),
+  }),
+};
+
 const sendMessage = {
   body: Joi.object().keys({
     message: Joi.string(),
@@ -26,5 +32,6 @@ const forwardMessage = {
 
 module.exports = {
   createChatRoom,
+  createOneToOneChat,
   sendMessage,
 };

@@ -37,6 +37,26 @@ const createChat = async (chatBody, initiator) => {
   return Chat.create(obj);
 };
 
+const createOneToOneChat = async (userId, initiator) => {
+  const user = await userService.isUserExist(userId);
+  const chatExist = await Chat.findOne({
+    isGroupChat: false,
+    members: {
+      $in: [user._id, initiator],
+    },
+  });
+
+  if (chatExist) {
+    return chatExist;
+  } else {
+    return Chat.create({
+      initiator,
+      members: [initiator, user._id],
+      isGroupChat: false,
+    });
+  }
+};
+
 /**
  * Get user by id
  * @param {ObjectId} id
@@ -520,4 +540,5 @@ module.exports = {
   getMessageByIds,
   getAvailableChatMembers,
   getChatByIdWithMembers,
+  createOneToOneChat,
 };

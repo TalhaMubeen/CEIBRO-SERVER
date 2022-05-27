@@ -38,6 +38,7 @@ router
   .post(auth('manageProfile'), validate(userValidation.acceptAllInvites), userController.acceptAllInvites);
 
 router.route('/connections').get(auth('manageProfile'), userController.getMyConnections);
+router.route('/connection/:connectionId').delete(auth('manageProfile'), userController.deleteMyConnection);
 router.route('/connections/count').get(auth('manageProfile'), userController.getMyConnectionsCount);
 
 router
@@ -578,6 +579,41 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/connection/{connectionId}:
+ *   delete:
+ *     summary: delete my connection
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *
+ *     parameters:
+ *       - in: path
+ *         name: connectionId
+ *         schema:
+ *           type: string
+ *         description: connection or email invite id
+ *       - in: query
+ *         name: isEmailInvite
+ *         schema:
+ *           type: boolean
+ *         description: true if connection is invited through email and still pending
  *     responses:
  *       "200":
  *         description: OK

@@ -29,6 +29,14 @@ const createChat = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send(newChat);
 });
 
+const createOneToOneChat = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { userId } = req.params;
+  const chat = await chatService.createOneToOneChat(userId, _id);
+  const newChat = await chatService.getChatByIdWithMembers(chat._id);
+  res.status(httpStatus.CREATED).send(newChat);
+});
+
 const getChats = catchAsync(async (req, res) => {
   const { _id } = req.user;
 
@@ -116,28 +124,26 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   const messageIds = await getMessageIdsByFilter(idsFilter);
   let selectedMessageIds = [];
 
-  if(messageId){
+  if (messageId) {
     // when user want directly to a message. then 5 messages before and after will also will be sent so that user can scroll up or down to see messages
     const messageIndex = messageIds.findIndex((id) => String(messageId) === String(id));
-    if(messageIndex < 0) {
-      throw new ApiError(httpStatus.BAD_REQUEST, "Invalid message id")
+    if (messageIndex < 0) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid message id');
     }
     // cut 5 messages before this message and after this message
-    const preIndex = messageIndex - 5 >= 0 ? (messageIndex - 5): 0;
-    const postIndex = messageIndex + 5; 
-    selectedMessageIds = messageIds?.slice(preIndex, postIndex)
-  
-  }
-  else {
+    const preIndex = messageIndex - 5 >= 0 ? messageIndex - 5 : 0;
+    const postIndex = messageIndex + 5;
+    selectedMessageIds = messageIds?.slice(preIndex, postIndex);
+  } else {
     const options = {
       page: parseInt(req.query.page) || 0,
       limit: parseInt(req.query.limit) || 10,
       upPagination: down != 'true',
     };
-  
+
     // zero index if start of paginatio || last message index if not start of pagination
     let index = messageIds.length > 0 ? messageIds.length : -1;
-  
+
     // if already some pagination is sent then last message id will be  required for next slice of messages
     if (lastMessageId && lastMessageId != 'null' && lastMessageId != 'undefined') {
       const oldIndex = messageIds.findIndex((id) => String(lastMessageId) === String(id));
@@ -146,21 +152,21 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
         index = oldIndex;
       }
     }
-  
+
     // Example1 down pagination{
     //   index: 0,
     //   limit: 3,
     //   startingIndex: 0,
     //   downIndex: 4
     // }
-  
+
     // Example2 up pagination{
     //   index: 5,
     //   limit: 3,
     //   startingIndex: 2,
     //   downIndex: 5
     // }
-  
+
     const startingIndex = options?.upPagination ? index - options.limit : index + 1;
     const downIndex = options?.upPagination ? index : index + 1 + options.limit;
     selectedMessageIds = messageIds.slice(startingIndex, downIndex);
@@ -172,7 +178,6 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     return conversation;
   });
   res.status(httpStatus.CREATED).send(conversations);
-  
 });
 
 const setRoomMessagesRead = catchAsync(async (req, res) => {
@@ -689,5 +694,6 @@ module.exports = {
   forwardMessage,
   getQuestionairByTypeMessage,
   getAvailableChatMembers,
+  createOneToOneChat,
   // uploadImage
 };

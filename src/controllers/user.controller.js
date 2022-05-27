@@ -175,11 +175,30 @@ const getMyConnections = catchAsync(async (req, res) => {
     }
     return invite;
   });
-  const emailInvites = await EmailInvite.find({
+  let emailInvites = await EmailInvite.find({
     from: _id,
   }).populate('from');
+  emailInvites = emailInvites.map((invite) => {
+    invite._doc.isEmailInvite = true;
+    return invite;
+  });
   result = [...result, ...emailInvites];
   res.send(result);
+});
+
+const deleteMyConnection = catchAsync(async (req, res) => {
+  const { _id } = req.user;
+  const { connectionId } = req.params;
+  const { isEmailInvite } = req.query;
+
+  if (isEmailInvite === 'true') {
+    // delete email invite
+    await userService.deleteEmailInvite(connectionId, _id);
+  } else {
+    // delete actual invite
+    await userService.deleteMyConnection(connectionId, _id);
+  }
+  res.status(200).send('connection deleted');
 });
 
 const getMyConnectionsCount = catchAsync(async (req, res) => {
@@ -205,4 +224,5 @@ module.exports = {
   getMyConnections,
   getMyConnectionsCount,
   updateUserProfilePic,
+  deleteMyConnection,
 };

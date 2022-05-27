@@ -53,11 +53,11 @@ module.exports = {
   },
   email: {
     smtp: {
-      host: envVars.SMTP_HOST,
+      host: 'smtp.ceibro.ee',
       port: envVars.SMTP_PORT,
       auth: {
-        user: envVars.SMTP_USERNAME,
-        pass: envVars.SMTP_PASSWORD,
+        user: 'team@ceibro.ee',
+        pass: 'Ceibr_2022',
       },
     },
     from: envVars.EMAIL_FROM,

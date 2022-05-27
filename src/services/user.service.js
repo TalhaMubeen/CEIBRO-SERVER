@@ -124,6 +124,9 @@ const inviteUserByEmail = async (email, currentUserId) => {
         to: user._id,
       });
       await myInvite.save();
+    } else {
+      inviteExist.status = invitesStatus.PENDING;
+      await inviteExist.save();
     }
   }
   return;
@@ -196,6 +199,35 @@ const getConnectionsByUserId = async (currentUserId) => {
   }).populate('to from');
 };
 
+const deleteMyConnection = async (connectionId, currentUserId) => {
+  const connection = await Invite.findOne({
+    $or: [
+      {
+        to: currentUserId,
+      },
+      {
+        from: currentUserId,
+      },
+    ],
+    _id: connectionId,
+  });
+  if (!connection) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid connection id');
+  }
+  return connection.remove();
+};
+
+const deleteEmailInvite = async (inviteId, currentUserId) => {
+  const emailInvite = await EmailInvite.findOne({
+    from: currentUserId,
+    _id: inviteId,
+  });
+  if (!emailInvite) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid email invite');
+  }
+  return emailInvite.remove();
+};
+
 const getConnectionsCountByUserId = async (currentUserId) => {
   return Invite.count({
     $or: [
@@ -259,4 +291,6 @@ module.exports = {
   getConnectionsByUserId,
   getConnectionsCountByUserId,
   isUserExist,
+  deleteMyConnection,
+  deleteEmailInvite,
 };
