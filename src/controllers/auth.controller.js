@@ -6,8 +6,9 @@ const ApiError = require('../utils/ApiError');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
-  const verifyEmailOtp = await tokenService.generateVerifyEmailOtp(user._id);
-  await emailService.sendVerificationEmail(user.email, verifyEmailOtp);
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
+  console.log('verifyEmailToken: ', verifyEmailToken);
+  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
   res.status(httpStatus.CREATED).send('Verification email sent');
 });
 
@@ -29,14 +30,14 @@ const refreshTokens = catchAsync(async (req, res) => {
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
-  const resetPasswordOtp = await tokenService.generateResetPasswordOtp(req.body.email);
-  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordOtp);
+  const resetPasswordToken = await tokenService.generateResetPasswordToken(req.body.email);
+  await emailService.sendResetPasswordEmail(req.body.email, resetPasswordToken);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-  await authService.resetPassword(req.query.otp, req.body.password);
-  res.status(httpStatus.OK).send('Done');
+  await authService.resetPassword(req.query.token, req.body.password);
+  res.status(httpStatus.NO_CONTENT).send();
 });
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
@@ -49,13 +50,13 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already verified');
   }
 
-  const otp = await tokenService.generateVerifyEmailOtp(user._id);
-  await emailService.sendVerificationEmail(user.email, otp);
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
+  await emailService.sendVerificationEmail(user.email, verifyEmailToken);
   res.send('Verification email sent');
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  await authService.verifyEmail(req.query.otp);
+  await authService.verifyEmail(req.query.token);
   res.send('Email verified');
 });
 

@@ -11,7 +11,7 @@ router.post('/login', validate(authValidation.login), authController.login);
 router.post('/logout', validate(authValidation.logout), authController.logout);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
-router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
+router.post('/reset-password',  authController.resetPassword);
 router.post('/send-verification-email', validate(authValidation.forgotPassword), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
@@ -216,11 +216,11 @@ module.exports = router;
  *     tags: [Auth]
  *     parameters:
  *       - in: query
- *         name: otp
+ *         name: token
  *         required: true
  *         schema:
  *           type: string
- *         description: The reset password otp
+ *         description: The reset password token
  *     requestBody:
  *       required: true
  *       content:
@@ -289,7 +289,7 @@ module.exports = router;
  *     tags: [Auth]
  *     parameters:
  *       - in: query
- *         name: otp
+ *         name: token
  *         required: true
  *         schema:
  *           type: string

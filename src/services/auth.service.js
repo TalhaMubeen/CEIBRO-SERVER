@@ -69,49 +69,46 @@ const refreshAuth = async (refreshToken) => {
  * @param {string} newPassword
  * @returns {Promise}
  */
-const resetPassword = async (otpToken, newPassword) => {
+ const resetPassword = async (resetPasswordToken, newPassword) => {
   try {
-    const otp = await Otp.findOne({ otp: otpToken, type: otpTypes.RESET_PASSWORD });
-    if (otp) {
-      const user = await userService.getUserById(otp.user);
-      if (!user) {
-        throw new Error();
-      }
-      await userService.updateUserById(user.id, { password: newPassword });
-      await Otp.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
-    } else {
+    const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
+    const user = await userService.getUserById(resetPasswordTokenDoc.user);
+    if (!user) {
       throw new Error();
     }
+    await userService.updateUserById(user.id, { password: newPassword });
+    await Token.deleteMany({ user: user.id, type: tokenTypes.RESET_PASSWORD });
   } catch (error) {
     console.log('error: ', error);
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Password reset failed');
   }
 };
 
+
 /**
  * Verify email
  * @param {string} verifyEmailToken
  * @returns {Promise}
  */
-const verifyEmail = async (otpToken) => {
+const verifyEmail = async (verifyEmailToken) => {
   try {
-    const otp = await Otp.findOne({ otp: otpToken, type: otpTypes.VERIFY_EMAIL });
-    if (otp) {
-      const user = await userService.getUserById(otp.user);
-      if (!user) {
-        throw new Error();
-      }
-      await Otp.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-      await userService.updateUserById(user.id, { isEmailVerified: true });
+    if(verifyEmailToken) {
+    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
+    const user = await userService.getUserById(verifyEmailTokenDoc.user);
+    if (!user) {
+      throw new Error();
+    }
+    await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
+    await userService.updateUserById(user.id, { isEmailVerified: true });
 
-      const emailInvites = await EmailInvite.find({ email: user.email });
-      emailInvites.map((emailInvite) => {
-        const myInvite = new Invite({
-          from: emailInvite._doc.from,
-          to: user._id,
-        });
-        return myInvite.save();
+    const emailInvites = await EmailInvite.find({ email: user.email });
+    emailInvites.map((emailInvite) => {
+      const myInvite = new Invite({
+        from: emailInvite._doc.from,
+        to: user._id,
       });
+      return myInvite.save();
+    });
       await EmailInvite.deleteMany({ email: user.email });
 
       const members = await ProjectMember.find({
