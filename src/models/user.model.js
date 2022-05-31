@@ -20,6 +20,19 @@ const userSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    wrongAttempts: {
+      type: Number,
+      default: 0,
+      private: true
+    },
+    isLocked: {
+      type: Boolean,
+      default: false,
+      private: true
+    },
+    lockedUntil: {
+      type: Date
+    },
     email: {
       type: String,
       required: true,

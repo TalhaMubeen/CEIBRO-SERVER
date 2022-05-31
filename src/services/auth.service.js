@@ -8,6 +8,7 @@ const { EmailInvite, Invite } = require('../models');
 const ProjectMember = require('../models/ProjectMember.model');
 const Otp = require('../models/otp.model');
 const Group = require('../models/group.model');
+const moment = require('moment')
 
 /**
  * Login with username and password
@@ -23,8 +24,28 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   if (!user.isEmailVerified) {
     throw new ApiError(httpStatus.NOT_ACCEPTABLE, 'Please verify you email address');
   }
+
+  if (user.isLocked) {
+    if(user.lockedUntil) {
+      const startTime = moment();
+      const endTime = moment(user.lockedUntil)
+      if(moment.duration(endTime.diff(startTime)).asMinutes() < 0) {
+        user.isLocked = false;
+        await user.save();
+      } else {
+        throw new ApiError(httpStatus.LOCKED, 'Account locked. Retry after 15 minutes');
+      }
+    } 
+  }
   const isPasswordMatch = await user.isPasswordMatch(password);
   if (!isPasswordMatch) {
+    user.wrongAttempts = (user.wrongAttempts || 0) + 1;
+    if(user.wrongAttempts >= 2) {
+      user.isLocked = true;
+      user.wrongAttempts = 0;
+      user.lockedUntil = moment().add(15, 'minutes');
+    }
+    user.save();
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
 
