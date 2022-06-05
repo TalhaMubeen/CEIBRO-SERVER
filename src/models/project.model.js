@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const { projectPublishStatus } = require('../config/project.config');
 const { toJSON, paginate } = require('./plugins');
+const Role = require('./role.model');
+const Group = require('./group.model');
 
 const projectSchema = mongoose.Schema(
   {
@@ -8,7 +10,6 @@ const projectSchema = mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      unique: true,
     },
     owner: [
       {
@@ -67,6 +68,24 @@ const projectSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+projectSchema.post('save', function(doc) {
+  
+  // creating default role
+  const defaultRole = new Role({
+    name: 'Admin',
+    admin: true,
+    project: doc._id,
+  });
+  defaultRole.save();
+
+  // creating default group
+  const defaultGroup = new Group({
+    name: "Admin",
+    project: doc._id,
+  });
+  defaultGroup.save();
+});
 
 // add plugin that converts mongoose to json
 projectSchema.plugin(toJSON);

@@ -16,6 +16,11 @@ const userSchema = mongoose.Schema(
       // required: true,
       trim: true,
     },
+    username: {
+      type: String,
+      trim: true,
+      required: false
+    },
     profilePic: {
       type: String,
       required: false,
@@ -136,6 +141,17 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   const user = await this.findOne({ email, _id: { $ne: excludeUserId } });
   return !!user;
 };
+
+/**
+ * Check if username is taken
+ * @param {string} username - The user's username
+ * @returns {Promise<boolean>}
+ */
+ userSchema.statics.isUsernameTaken = async function (username) {
+  const user = await this.findOne({ username });
+  return !!user;
+};
+
 
 /**
  * Check if password matches the user's password

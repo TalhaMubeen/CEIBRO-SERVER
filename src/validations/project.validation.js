@@ -4,22 +4,22 @@ const { rolesAccess } = require('../config/project.config');
 const createProject = {
   body: Joi.object().keys({
     title: Joi.string().required(),
-    description: Joi.string(),
-    location: Joi.string(),
-    owner: Joi.any(),
-    dueDate: Joi.string(),
-    publishStatus: Joi.string(),
+    description: Joi.string().optional(),
+    location: Joi.string().optional(),
+    owner: Joi.any().optional(),
+    dueDate: Joi.string().optional(),
+    publishStatus: Joi.string().optional(),
   }),
 };
 
 const updateProject = {
   body: Joi.object().keys({
     title: Joi.string().required(),
-    description: Joi.string(),
-    location: Joi.string(),
-    owner: Joi.any(),
-    dueDate: Joi.string(),
-    publishStatus: Joi.string(),
+    description: Joi.string().optional(),
+    location: Joi.string().optional(),
+    owner: Joi.any().optional(),
+    dueDate: Joi.string().optional(),
+    publishStatus: Joi.string().optional(),
   }),
 };
 

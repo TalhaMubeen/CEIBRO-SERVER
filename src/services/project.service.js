@@ -20,6 +20,7 @@ const { getUserById, isUserExist } = require('./user.service');
  */
 
 const createProject = async (projectBody, currentUserId) => {
+  console.log('creating ', projectBody)
   return Project.create(projectBody);
 };
 

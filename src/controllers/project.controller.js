@@ -46,7 +46,6 @@ const createProject = catchAsync(async (req, res) => {
     req.body.projectPhoto = path.url;
   }
   let body = Object.create(req.body);
-  console.log(body.owner);
 
   if (typeof req.body?.owner === 'string') {
     try {
@@ -122,6 +121,17 @@ const getProjectMembers = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const project = await projectService.getProjectById(projectId);
   let members = project.members;
+  let owners = await getProjectOwners(projectId);
+  members = members?.concat(
+    owners?.map((owner) => {
+      console.log('owner: ', owner);
+      // converting them to act like project members object;
+      return {
+        isInvited: false,
+        user: owner,
+      };
+    })
+  );
   members = members?.filter?.((member) => String(member.id) !== String(_id)) || [];
   res.send(members);
 });
@@ -407,6 +417,7 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
       owners?.map((owner) => {
         // converting them to act like project members object;
         return {
+          isOwner: true,
           isInvited: false,
           user: owner,
         };

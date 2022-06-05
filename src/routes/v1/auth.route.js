@@ -46,6 +46,8 @@ module.exports = router;
  *                 type: string
  *               surName:
  *                 type: string
+ *               username:
+ *                 type: string
  *               email:
  *                 type: string
  *                 format: email
@@ -58,6 +60,7 @@ module.exports = router;
  *             example:
  *               firstName: fake
  *               surName: name
+ *               username: fake.example
  *               email: fake@example.com
  *               password: password1
  *     responses:

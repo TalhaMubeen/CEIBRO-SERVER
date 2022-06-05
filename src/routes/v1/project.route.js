@@ -23,7 +23,7 @@ router
   .post(
     auth('manageProject'),
     multerUpload.single('projectPhoto'),
-    validate(validation.createProject),
+    // validate(validation.createProject),
     projectController.createProject
   )
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);

@@ -9,9 +9,9 @@ const password = (value, helpers) => {
   if (value.length < 8) {
     return helpers.message('password must be at least 8 characters');
   }
-  if (!value.match(/^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/)) {
+  if (!value.match(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
     return helpers.message(
-      'Password must contain at least 8 characters, one uppercase, one number and one special case character'
+      'Password must contain at least 8 characters, one uppercase, one number'
     );
   }
   return value;
