@@ -21,7 +21,8 @@ router.route('/room/messages/:roomId').get(auth('getChatRooms'), chatController.
 
 router.route('/unread/count').get(auth('getChatRooms'), chatController.getUnreadMessagesCount);
 
-router.route('/room/unread/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesRead);
+router.route('/room/read/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesRead);
+router.route('/room/unread/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesUnRead);
 
 router.route('/room/favourite/:roomId').post(auth('getChatRooms'), chatController.addToFavouite);
 
@@ -38,6 +39,8 @@ router
   .route('/message/forward')
   .post(auth('getChatRooms'), validate(chatValidation.forwardMessage), chatController.forwardMessage);
 
+router.route('/pinned/title/:roomId').put(auth('manageProject'), chatController.updateChatPinTitle);
+
 router
   .route('/message/favourite/:messageId')
   .post(auth('getChatRooms'), chatController.addMessageToFavourite)
@@ -52,6 +55,10 @@ router
   .route('/room/:roomId')
   .delete(auth('getChatRooms'), chatController.deleteChatRoomForUser)
   .put(auth('getChatRooms'), chatController.updateChatRoom);
+
+router
+  .route('/room/profile-pic/:roomId')
+  .patch(auth('getChatRooms'), multerUpload.single('profilePic'), chatController.updateChatProfilePic);
 
 router.route('/message/questioniar').post(auth('getChatRooms'), chatController.saveQuestioniar);
 router
@@ -234,6 +241,46 @@ module.exports = router;
 
 /**
  * @swagger
+ * /chat/room/profile-pic/{roomId}:
+ *   patch:
+ *     summary: Update chat room profile pic
+ *     description: update profile
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: chat room id.
+ *     requestBody:
+ *        content:
+ *          multipart/form-data:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                profilePic:
+ *                  type: string
+ *                  format: binary
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
  * /chat/room/{roomId}:
  *   delete:
  *     summary: delete chat room
@@ -302,9 +349,83 @@ module.exports = router;
 
 /**
  * @swagger
+ * /chat/pinned/title/{roomId}:
+ *   put:
+ *     summary: update chat room
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - message
+ *             properties:
+ *               title:
+ *                 type: string
+ *             example:
+ *                 title: new name
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
  * /chat/room/unread/{roomId}:
  *   put:
- *     summary: set all room messages uread
+ *     summary: set all room messages unread
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Room id
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /chat/room/read/{roomId}:
+ *   put:
+ *     summary: set all room messages read
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
@@ -441,7 +562,13 @@ module.exports = router;
  *     tags: [Chat]
  *     security:
  *       - bearerAuth: []
- *
+ *     parameters:
+ *       - in: query
+ *         name: filesOnly
+ *         required: false
+ *         schema:
+ *           type: boolean
+ *         description: forward file only of messages
  *     requestBody:
  *       required: true
  *       content:

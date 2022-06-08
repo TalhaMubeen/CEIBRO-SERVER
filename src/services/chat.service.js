@@ -17,6 +17,11 @@ const { filterArray } = require('../helpers/project.helper');
 const createChat = async (chatBody, initiator) => {
   const { name, projectId, members } = chatBody;
 
+  const chatExist = await getChatByName(name);
+  if (chatExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Chat with this name already exist');
+  }
+
   const membersCount = await User.count({ _id: members });
   if (membersCount < members.length) {
     throw new ApiError(400, 'Invalid user ids');
@@ -35,6 +40,20 @@ const createChat = async (chatBody, initiator) => {
   }
 
   return Chat.create(obj);
+};
+
+const getChatByName = async (name) => {
+  return Chat.findOne({
+    name,
+  });
+};
+
+const isChatExist = async (chatId) => {
+  const chatExist = await Chat.findOne({ _id: chatId });
+  if (!chatExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Chat not found');
+  }
+  return chatExist;
 };
 
 const createOneToOneChat = async (userId, initiator) => {
@@ -217,6 +236,17 @@ const getMessageByIds = async function (messagIds, currentUser) {
 
 const setAllMessagesReadByRoomId = async function (roomId, userId) {
   return Message.updateMany({ chat: roomId }, { $addToSet: { readBy: userId } });
+};
+
+const setLastMessagesUnRead = async function (roomId, userId) {
+  const lastMessage = await Message.findOne({
+    chat: roomId,
+  }).sort({
+    createdAt: -1,
+  });
+  if (lastMessage) {
+    await Message.updateOne({ chat: roomId, _id: lastMessage._id }, { $pull: { readBy: userId } });
+  }
 };
 
 const addOrRemoveChatRoomToFavourite = async function (roomId, userId) {
@@ -541,4 +571,7 @@ module.exports = {
   getAvailableChatMembers,
   getChatByIdWithMembers,
   createOneToOneChat,
+  isChatExist,
+  setLastMessagesUnRead,
+  getChatByName,
 };

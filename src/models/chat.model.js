@@ -40,6 +40,13 @@ const chatSchema = mongoose.Schema(
         ref: 'User',
       },
     ],
+    pinTitle: {
+      type: String,
+      default: 'Pinned messages',
+    },
+    picture: {
+      type: String,
+    },
   },
   {
     timestamps: true,

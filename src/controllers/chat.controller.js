@@ -14,6 +14,7 @@ const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
 const { getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
 const QuestionOption = require('../models/questionOption.model');
+const { bucketFolders } = require('../services/aws.service');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -194,6 +195,20 @@ const setRoomMessagesRead = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send('All messages read by users');
 });
 
+const setRoomMessagesUnRead = catchAsync(async (req, res) => {
+  const currentLoggedUser = req.user._id;
+  const { roomId } = req.params;
+
+  const room = await chatService.getChatRoomByRoomId(roomId);
+  if (!room) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
+  }
+
+  await chatService.setLastMessagesUnRead(roomId, currentLoggedUser);
+
+  res.status(httpStatus.CREATED).send('OK');
+});
+
 const addToFavouite = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
@@ -271,6 +286,10 @@ const replyMessage = catchAsync(async (req, res) => {
 const forwardMessage = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { chatIds, messageId } = req.body;
+  const { filesOnly = false } = req.query;
+
+  const onlyFile = filesOnly === 'true' ? true : false;
+
   const message = await chatService.getMessageById(messageId);
   if (!message) {
     throw new ApiError('Message not found');
@@ -278,7 +297,7 @@ const forwardMessage = catchAsync(async (req, res) => {
   await Promise.all(
     chatIds.map(async (chatId) => {
       const newMessage = await chatService.sendMessage(
-        message.message,
+        onlyFile ? '' : message.message,
         chatId,
         currentLoggedUser,
         message.type === 'voice' ? [{ url: message.voiceUrl }] : message.files,
@@ -632,9 +651,20 @@ const updateChatRoom = catchAsync(async (req, res) => {
   res.status(200).send('Room updated');
 });
 
-const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
+const updateChatPinTitle = catchAsync(async (req, res) => {
+  const { title } = req.body;
   const { roomId } = req.params;
   console.log('roomId: ', roomId);
+
+  const myChat = await chatService.isChatExist(roomId);
+  myChat.pinTitle = title;
+  await myChat.save();
+
+  res.status(200).send('modified');
+});
+
+const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
   const { _id } = req.user;
 
   const typeQuestion = await Message.find(
@@ -648,6 +678,16 @@ const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
 
   console.log(typeQuestion);
   res.status(200).send(typeQuestion);
+});
+
+const updateChatProfilePic = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+  const file = req.file;
+  const path = await awsService.uploadFile(file, bucketFolders.USER_FOLDER);
+  const chat = await chatService.getChatById(roomId);
+  chat.picture = path.url;
+  await chat.save();
+  res.status(200).send('profile pic updated successfully');
 });
 
 // const uploadImage = catchAsync(async (req, res) => {
@@ -677,6 +717,7 @@ module.exports = {
   updateChat,
   getConversationByRoomId,
   setRoomMessagesRead,
+  setRoomMessagesUnRead,
   addToFavouite,
   muteChat,
   replyMessage,
@@ -695,5 +736,7 @@ module.exports = {
   getQuestionairByTypeMessage,
   getAvailableChatMembers,
   createOneToOneChat,
+  updateChatPinTitle,
+  updateChatProfilePic,
   // uploadImage
 };

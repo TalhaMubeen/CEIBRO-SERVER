@@ -20,7 +20,7 @@ const { getUserById, isUserExist } = require('./user.service');
  */
 
 const createProject = async (projectBody, currentUserId) => {
-  console.log('creating ', projectBody)
+  console.log('creating ', projectBody);
   return Project.create(projectBody);
 };
 
@@ -102,7 +102,7 @@ const isWorkExist = async (workId) => {
 };
 
 const getAllProjects = (projectIds) => {
-  return Project.find({ _id: projectIds }, { title: 1 });
+  return Project.find({ _id: projectIds }, { title: 1, location: 1 });
 };
 
 const getProjects = () => {
