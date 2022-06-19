@@ -1,6 +1,8 @@
 module.exports.Token = require('./token.model');
 module.exports.User = require('./user.model');
 module.exports.Project = require('./project.model');
+module.exports.Task = require('./task.model');
+module.exports.SubTask = require('./subTask.model');
 module.exports.Chat = require('./chat.model');
 module.exports.EmailInvite = require('./emailInvite.model');
 module.exports.Invite = require('./invite.model');

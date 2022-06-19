@@ -4,6 +4,7 @@ const userRoute = require('./user.route');
 const chatRoute = require('./chat.route');
 const docsRoute = require('./docs.route');
 const projectRoute = require('./project.route');
+const taskRoute = require('./task.route');
 const config = require('../../config/config');
 
 const router = express.Router();
@@ -26,6 +27,10 @@ const defaultRoutes = [
     route: projectRoute,
   },
   {
+    path: '/task',
+    route: taskRoute,
+  },
+  {
     path: '/docs',
     route: docsRoute,
   },
@@ -42,12 +47,5 @@ const devRoutes = [
 defaultRoutes.forEach((route) => {
   router.use(route.path, route.route);
 });
-
-/* istanbul ignore next */
-if (config.env === 'development') {
-  devRoutes.forEach((route) => {
-    router.use(route.path, route.route);
-  });
-}
 
 module.exports = router;

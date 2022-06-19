@@ -9,6 +9,7 @@ const taskSchema = mongoose.Schema(
     },
     assignedTo: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     admins: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
+    creator: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     project: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
@@ -20,7 +21,7 @@ const taskSchema = mongoose.Schema(
     multiTask: {
       type: Boolean,
       required: false,
-      default: false
+      default: false,
     },
   },
   {

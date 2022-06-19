@@ -71,7 +71,6 @@ const getProjects = catchAsync(async (req, res) => {
 
   if (filter.title) {
     const regex = new RegExp(escapeRegex(filter.title), 'gi');
-    console.log('regex: ', regex);
     filter = {
       ...filter,
       title: regex,
@@ -104,7 +103,6 @@ const getProjects = catchAsync(async (req, res) => {
   };
 
   options.populate = 'owner';
-  console.log('filters are', filter, req.query);
   const result = await projectService.queryProjects(filter, options);
   res.send(result);
 });

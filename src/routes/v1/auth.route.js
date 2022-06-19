@@ -11,7 +11,7 @@ router.post('/login', validate(authValidation.login), authController.login);
 router.post('/logout', validate(authValidation.logout), authController.logout);
 router.post('/refresh-tokens', validate(authValidation.refreshTokens), authController.refreshTokens);
 router.post('/forgot-password', validate(authValidation.forgotPassword), authController.forgotPassword);
-router.post('/reset-password',  authController.resetPassword);
+router.post('/reset-password', authController.resetPassword);
 router.post('/send-verification-email', validate(authValidation.forgotPassword), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
@@ -103,7 +103,7 @@ module.exports = router;
  *                 format: password
  *             example:
  *               email: qasim.ali3460@gmail.com
- *               password: Ebryx123!
+ *               password: Ebryx123
  *     responses:
  *       "200":
  *         description: OK
