@@ -15,7 +15,8 @@ const {
   validateUpdateMember,
   validateCreateTimeProfile,
   validateUpdateTimeProfile,
-} = require('../../middlewares/check-role-permission');
+} = require('../../middlewares/project.middleware');
+
 const router = express.Router();
 
 router

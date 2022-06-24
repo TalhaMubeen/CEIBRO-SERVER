@@ -7,7 +7,7 @@ const taskSchema = mongoose.Schema(
     title: {
       type: String,
     },
-    assignedTo: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
+    assignedTo: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
     admins: [{ type: mongoose.SchemaTypes.ObjectId, ref: 'User' }],
     creator: { type: mongoose.SchemaTypes.ObjectId, ref: 'User' },
     project: {

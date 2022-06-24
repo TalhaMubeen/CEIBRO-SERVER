@@ -3,6 +3,8 @@ const express = require('express');
 const validate = require('../../middlewares/validate');
 const validation = require('../../validations/task.validation.js');
 
+const { validateSubTaskAction, validateModifySubTask, validateCreateSubTask } = require('../../middlewares/task.middleware');
+
 const { taskController } = require('../../controllers');
 const auth = require('../../middlewares/auth');
 
@@ -21,21 +23,31 @@ router
 
 router
   .route('/subTask/:taskId')
-  .post(auth('manageProject'), validate(validation.createSubTask), taskController.createSubTask)
+  .post(auth('manageProject'), validateCreateSubTask, validate(validation.createSubTask), taskController.createSubTask)
   .get(auth('manageProject'), taskController.getSubTasks);
 
 router
   .route('/subTask/detail/:subTaskId')
-  .put(auth('manageProject'), validate(validation.updateSubTask), taskController.updateSubTask)
-  .delete(auth('manageProject'), taskController.deleteSubTask);
+  .put(auth('manageProject'), validateModifySubTask, validate(validation.updateSubTask), taskController.updateSubTask)
+  .delete(auth('manageProject'), validateModifySubTask, taskController.deleteSubTask);
 
 router
   .route('/subTask/accept/:subTaskId')
-  .post(auth('manageProject'), validate(validation.subTaskAcceptAction), taskController.subTaskAcceptAction);
+  .post(
+    auth('manageProject'),
+    validateSubTaskAction,
+    validate(validation.subTaskAcceptAction),
+    taskController.subTaskAcceptAction
+  );
 
 router
   .route('/subTask/complete/:subTaskId')
-  .post(auth('manageProject'), validate(validation.subTaskCompleteAction), taskController.subTaskCompleteAction);
+  .post(
+    auth('manageProject'),
+    validateSubTaskAction,
+    validate(validation.subTaskCompleteAction),
+    taskController.subTaskCompleteAction
+  );
 
 module.exports = router;
 
@@ -73,7 +85,7 @@ module.exports = router;
  *                 type: string
  *             example:
  *               title: testTask
- *               assignedTo: 234234234
+ *               assignedTo: [234234234]
  *               admins: [23487239847]
  *               dueDate: 12-12-2022
  *     responses:
@@ -188,7 +200,7 @@ module.exports = router;
  *                 type: string
  *             example:
  *               title: testTask
- *               assignedTo: 234234234
+ *               assignedTo: [234234234]
  *               admins: [23487239847]
  *               project: 2348792374
  *               dueDate: 12-12-2022

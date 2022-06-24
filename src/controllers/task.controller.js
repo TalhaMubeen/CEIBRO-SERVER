@@ -97,8 +97,7 @@ const createSubTask = catchAsync(async (req, res) => {
   if (customNudgeTime && nudgeBeforeDays) {
     delete body['nudgeBeforeDays'];
   }
-
-  if (nudgeBeforeDays && !isNaN(nudgeBeforeDays)) {
+  if (nudgeBeforeDays && isNaN(nudgeBeforeDays)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid nudge before days value');
   }
 

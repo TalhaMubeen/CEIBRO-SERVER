@@ -34,7 +34,6 @@ const { projectPublishStatus, avaialablePermissions, roleEntities } = require('.
 const Project = require('../models/project.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
-const { checkUserPermission } = require('../middlewares/check-role-permission');
 const { filterArray } = require('../helpers/project.helper');
 const Group = require('../models/group.model');
 const { mapUsers, uniqueBy } = require('../helpers/user.helper');
