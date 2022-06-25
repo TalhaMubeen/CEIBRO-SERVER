@@ -69,23 +69,22 @@ const projectSchema = mongoose.Schema(
   }
 );
 
-projectSchema.post('save', function(doc) {
-  
+projectSchema.statics.createDefultRoleAndGroup = async function (projectId) {
   // creating default role
   const defaultRole = new Role({
     name: 'Admin',
     admin: true,
-    project: doc._id,
+    project: projectId,
   });
   defaultRole.save();
 
   // creating default group
   const defaultGroup = new Group({
-    name: "Admin",
-    project: doc._id,
+    name: 'Admin',
+    project: projectId,
   });
   defaultGroup.save();
-});
+};
 
 // add plugin that converts mongoose to json
 projectSchema.plugin(toJSON);

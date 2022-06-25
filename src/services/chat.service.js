@@ -60,10 +60,13 @@ const createOneToOneChat = async (userId, initiator) => {
   const user = await userService.isUserExist(userId);
   const chatExist = await Chat.findOne({
     isGroupChat: false,
-    members: {
-      $in: [user._id, initiator],
-    },
+    $and: [{
+      members: user._id
+    }, {
+      members: initiator
+    }]
   });
+  console.log('chatExist: ', chatExist);
 
   if (chatExist) {
     return chatExist;
@@ -545,6 +548,10 @@ const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
   }
 };
 
+const removeUserCompletely = async function (roomId, userId) {
+  return Chat.updateOne({ _id: roomId }, { $pull: { removedMembers: userId } });
+};
+
 module.exports = {
   createChat,
   getChatById,
@@ -574,4 +581,5 @@ module.exports = {
   isChatExist,
   setLastMessagesUnRead,
   getChatByName,
+  removeUserCompletely,
 };

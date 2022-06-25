@@ -621,6 +621,10 @@ const deleteChatRoomForUser = catchAsync(async (req, res) => {
   }
 
   if (myChat.members.findIndex((userId) => String(userId) === String(_id)) < 0) {
+    if (myChat.removedMembers.findIndex((userId) => String(userId) === String(_id)) > -1) {
+      await chatService.removeUserCompletely(roomId, _id);
+      return res.status(200).send('Room deleted');
+    }
     throw new ApiError(400, 'User does not belongs to this chat room');
   }
 

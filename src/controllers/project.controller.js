@@ -55,6 +55,7 @@ const createProject = catchAsync(async (req, res) => {
   } else {
   }
   const project = await projectService.createProject(req.body, req.user._id);
+  await Project.createDefultRoleAndGroup(project._id);
   res.status(httpStatus.CREATED).send(project);
 });
 
@@ -403,6 +404,7 @@ const getFolderAllFiles = catchAsync(async (req, res) => {
 const getProjectAllMembers = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { excludeMe } = req.query;
+
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
@@ -410,16 +412,15 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
   let members = await getProjectMembersById(projectId, excludeMe);
   if (excludeMe === 'true') {
     let owners = await getProjectOwners(projectId);
-    members = members?.concat(
-      owners?.map((owner) => {
-        // converting them to act like project members object;
-        return {
-          isOwner: true,
-          isInvited: false,
-          user: owner,
-        };
-      })
-    );
+    const ownerMembers = owners?.map((owner) => {
+      // converting them to act like project members object;
+      return {
+        isOwner: true,
+        isInvited: false,
+        user: owner,
+      };
+    });
+    members = ownerMembers.concat(members);
     members = members?.filter?.((member) => String(member?.user?._id) !== String(req.user._id));
   }
   members = members;
