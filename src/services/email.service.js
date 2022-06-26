@@ -1,7 +1,12 @@
 const nodemailer = require('nodemailer');
 const config = require('../config/config');
 const logger = require('../config/logger');
-const { getVerifyEmailTemplate, getResetPasswordTemplate, getInviationEmailTemplate } = require('../helpers/email.helper');
+const {
+  getVerifyEmailTemplate,
+  getResetPasswordTemplate,
+  getInviationEmailTemplate,
+  getAccountLockTemplate,
+} = require('../helpers/email.helper');
 
 const transport = nodemailer.createTransport(config.email.smtp);
 /* istanbul ignore next */
@@ -71,10 +76,18 @@ const sendVerificationEmail = async (to, token) => {
   await sendEmail(to, subject, text, html);
 };
 
+const sendAccountLockedEmail = async (to, name) => {
+  const subject = 'Account locked';
+  const text = ``;
+  const html = getAccountLockTemplate(name);
+  await sendEmail(to, subject, text, html);
+};
+
 module.exports = {
   transport,
   sendEmail,
   sendResetPasswordEmail,
   sendVerificationEmail,
+  sendAccountLockedEmail,
   sendInvitationEmail,
 };

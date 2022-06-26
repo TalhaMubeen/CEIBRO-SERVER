@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userService, awsService } = require('../services');
+const { userService, awsService, projectService } = require('../services');
 const { invitesStatus } = require('../config/user.config');
 const TimeAgo = require('javascript-time-ago');
 const en = require('javascript-time-ago/locale/en.json');
@@ -11,6 +11,7 @@ const timeAgo = new TimeAgo('en-US');
 const { bucketFolders } = require('../services/aws.service');
 const { mapUsers } = require('../helpers/user.helper');
 const { EmailInvite } = require('../models');
+const ProjectMember = require('../models/ProjectMember.model');
 
 const createUser = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -143,6 +144,8 @@ const acceptInvite = catchAsync(async (req, res) => {
   if (accepted == 'true') {
     accept = true;
     invite.status = invitesStatus.ACCEPTED;
+    projectService.addUserToMyDefaultProject(_id, invite.from);
+    projectService.addUserToMyDefaultProject(invite.from, _id);
   }
   if (accepted == 'false') {
     invite.status = invitesStatus.REJECTED;
@@ -156,7 +159,13 @@ const acceptAllInvites = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const { accepted } = req.params;
   if (accepted === 'true') {
+    const allInvites = await userService.getInvitesByUserId(_id);
     await userService.acceptAllInvitations(_id);
+    // adding all accepted invites to default project of each other
+    allInvites.forEach((invite) => {
+      projectService.addUserToMyDefaultProject(_id, invite.from);
+      projectService.addUserToMyDefaultProject(invite.from, _id);
+    });
   } else {
     await userService.rejectAllInvitations(_id);
   }

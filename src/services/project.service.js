@@ -20,7 +20,6 @@ const { getUserById, isUserExist } = require('./user.service');
  */
 
 const createProject = async (projectBody, currentUserId) => {
-  console.log('creating ', projectBody);
   return Project.create(projectBody);
 };
 
@@ -718,6 +717,25 @@ const addOrRemoveFolderUser = async (folderId, userId) => {
   return alreadyInFolder;
 };
 
+const getUserDefaultProject = (userId) => {
+  return Project.findOne({
+    isDefault: true,
+    owner: userId,
+  });
+};
+
+const addUserToMyDefaultProject = async (user1, user2) => {
+  // adding user to my default project
+  const myDefaultProject = await getUserDefaultProject(user1);
+  if (myDefaultProject) {
+    return ProjectMember.create({
+      user: user2,
+      project: myDefaultProject._id,
+    });
+  }
+  return;
+};
+
 module.exports = {
   createProject,
   queryProjects,
@@ -762,4 +780,6 @@ module.exports = {
   getProjectOwners,
   getGroupMembers,
   addOrRemoveFolderUser,
+  getUserDefaultProject,
+  addUserToMyDefaultProject,
 };

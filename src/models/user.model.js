@@ -3,6 +3,7 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const { toJSON, paginate } = require('./plugins');
 const { roles } = require('../config/roles');
+const Project = require('./project.model');
 
 const userSchema = mongoose.Schema(
   {
@@ -19,7 +20,7 @@ const userSchema = mongoose.Schema(
     username: {
       type: String,
       trim: true,
-      required: false
+      required: false,
     },
     profilePic: {
       type: String,
@@ -28,15 +29,15 @@ const userSchema = mongoose.Schema(
     wrongAttempts: {
       type: Number,
       default: 0,
-      private: true
+      private: true,
     },
     isLocked: {
       type: Boolean,
       default: false,
-      private: true
+      private: true,
     },
     lockedUntil: {
-      type: Date
+      type: Date,
     },
     email: {
       type: String,
@@ -120,7 +121,7 @@ const userSchema = mongoose.Schema(
     },
     emailVerifyOtp: {
       type: String,
-    }
+    },
   },
   {
     timestamps: true,
@@ -147,11 +148,22 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
  * @param {string} username - The user's username
  * @returns {Promise<boolean>}
  */
- userSchema.statics.isUsernameTaken = async function (username) {
+userSchema.statics.isUsernameTaken = async function (username) {
   const user = await this.findOne({ username });
   return !!user;
 };
 
+userSchema.statics.createDefultProject = async function (userId) {
+  // creating default role
+  const defaultProject = await Project.create({
+    title: 'Default Project',
+    status: 'draft',
+    owner: [userId],
+    isDefault: true,
+  });
+  await Project.createDefultRoleAndGroup(defaultProject._id);
+  return defaultProject._id;
+};
 
 /**
  * Check if password matches the user's password

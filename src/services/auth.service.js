@@ -4,11 +4,12 @@ const userService = require('./user.service');
 const Token = require('../models/token.model');
 const ApiError = require('../utils/ApiError');
 const { tokenTypes, otpTypes } = require('../config/tokens');
-const { EmailInvite, Invite } = require('../models');
+const { EmailInvite, Invite, User, Project } = require('../models');
 const ProjectMember = require('../models/ProjectMember.model');
 const Otp = require('../models/otp.model');
 const Group = require('../models/group.model');
-const moment = require('moment')
+const moment = require('moment');
+const emailService = require('./email.service');
 
 /**
  * Login with username and password
@@ -26,24 +27,26 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   }
 
   if (user.isLocked) {
-    if(user.lockedUntil) {
+    if (user.lockedUntil) {
       const startTime = moment();
-      const endTime = moment(user.lockedUntil)
-      if(moment.duration(endTime.diff(startTime)).asMinutes() < 0) {
+      const endTime = moment(user.lockedUntil);
+      if (moment.duration(endTime.diff(startTime)).asMinutes() < 0) {
         user.isLocked = false;
         await user.save();
       } else {
-        throw new ApiError(httpStatus.LOCKED, 'Account locked. Retry after 15 minutes');
+        const wait = moment.duration(endTime.diff(startTime)).asMinutes();
+        throw new ApiError(httpStatus.LOCKED, `Account locked. Retry after ${parseInt(wait)} minutes `);
       }
-    } 
+    }
   }
   const isPasswordMatch = await user.isPasswordMatch(password);
   if (!isPasswordMatch) {
     user.wrongAttempts = (user.wrongAttempts || 0) + 1;
-    if(user.wrongAttempts >= 2) {
+    if (user.wrongAttempts >= 2) {
       user.isLocked = true;
       user.wrongAttempts = 0;
       user.lockedUntil = moment().add(15, 'minutes');
+      await emailService.sendAccountLockedEmail(user.email, user.firstName + ' ' + user.surName);
     }
     user.save();
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
@@ -90,7 +93,7 @@ const refreshAuth = async (refreshToken) => {
  * @param {string} newPassword
  * @returns {Promise}
  */
- const resetPassword = async (resetPasswordToken, newPassword) => {
+const resetPassword = async (resetPasswordToken, newPassword) => {
   try {
     const resetPasswordTokenDoc = await tokenService.verifyToken(resetPasswordToken, tokenTypes.RESET_PASSWORD);
     const user = await userService.getUserById(resetPasswordTokenDoc.user);
@@ -105,7 +108,6 @@ const refreshAuth = async (refreshToken) => {
   }
 };
 
-
 /**
  * Verify email
  * @param {string} verifyEmailToken
@@ -113,23 +115,25 @@ const refreshAuth = async (refreshToken) => {
  */
 const verifyEmail = async (verifyEmailToken) => {
   try {
-    if(verifyEmailToken) {
-    const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
-    const user = await userService.getUserById(verifyEmailTokenDoc.user);
-    if (!user) {
-      throw new Error();
-    }
-    await Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL });
-    await userService.updateUserById(user.id, { isEmailVerified: true });
-
-    const emailInvites = await EmailInvite.find({ email: user.email });
-    emailInvites.map((emailInvite) => {
-      const myInvite = new Invite({
-        from: emailInvite._doc.from,
-        to: user._id,
+    if (verifyEmailToken) {
+      const verifyEmailTokenDoc = await tokenService.verifyToken(verifyEmailToken, tokenTypes.VERIFY_EMAIL);
+      const user = await userService.getUserById(verifyEmailTokenDoc.user);
+      if (!user) {
+        throw new Error();
+      }
+      await Promise.all([
+        Token.deleteMany({ user: user.id, type: tokenTypes.VERIFY_EMAIL }),
+        userService.updateUserById(user.id, { isEmailVerified: true }),
+        User.createDefultProject(user.id),
+      ]);
+      const emailInvites = await EmailInvite.find({ email: user.email });
+      emailInvites.map((emailInvite) => {
+        const myInvite = new Invite({
+          from: emailInvite._doc.from,
+          to: user._id,
+        });
+        return myInvite.save();
       });
-      return myInvite.save();
-    });
       await EmailInvite.deleteMany({ email: user.email });
 
       const members = await ProjectMember.find({

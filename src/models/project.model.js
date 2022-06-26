@@ -9,7 +9,6 @@ const projectSchema = mongoose.Schema(
     title: {
       type: String,
       required: true,
-      trim: true,
     },
     owner: [
       {
@@ -18,6 +17,10 @@ const projectSchema = mongoose.Schema(
         required: false,
       },
     ],
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
     dueDate: {
       type: Date,
       required: false,
