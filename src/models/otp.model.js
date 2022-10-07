@@ -18,7 +18,7 @@ const otpSchema = mongoose.Schema(
       type: String,
       enum: [tokenTypes.RESET_PASSWORD, tokenTypes.VERIFY_EMAIL],
       required: true,
-    }
+    },
   },
   {
     timestamps: true,

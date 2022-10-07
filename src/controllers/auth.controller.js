@@ -18,6 +18,7 @@ const login = catchAsync(async (req, res) => {
   res.send({ user, tokens });
 });
 
+
 const logout = catchAsync(async (req, res) => {
   await authService.logout(req.body.refreshToken);
   res.status(httpStatus.NO_CONTENT).send();
@@ -41,6 +42,7 @@ const resetPassword = catchAsync(async (req, res) => {
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const { email } = req.body;
+
   const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email not registered');
@@ -48,6 +50,7 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
   if (user.isEmailVerified) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already verified');
   }
+
 
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);

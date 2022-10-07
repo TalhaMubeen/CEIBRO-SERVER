@@ -53,6 +53,7 @@ const userSchema = mongoose.Schema(
     },
     phone: {
       type: String,
+      trim: true,
     },
     password: {
       type: String,
@@ -125,7 +126,7 @@ const userSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // add plugin that converts mongoose to json
@@ -156,7 +157,7 @@ userSchema.statics.isUsernameTaken = async function (username) {
 userSchema.statics.createDefultProject = async function (userId) {
   // creating default role
   const defaultProject = await Project.create({
-    title: 'Default Project',
+    title: 'Ceibro Default',
     status: 'draft',
     owner: [userId],
     isDefault: true,
@@ -189,3 +190,4 @@ userSchema.pre('save', async function (next) {
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
+

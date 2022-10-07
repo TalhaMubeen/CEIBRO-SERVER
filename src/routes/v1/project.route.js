@@ -25,7 +25,7 @@ router
     auth('manageProject'),
     multerUpload.single('projectPhoto'),
     // validate(validation.createProject),
-    projectController.createProject
+    projectController.createProject,
   )
   .get(auth('manageProject'), validate(validation.getProjectsList), projectController.getProjects);
 
@@ -36,7 +36,7 @@ router
     auth('manageProject'),
     multerUpload.single('projectPhoto'),
     validate(validation.updateProject),
-    projectController.updateProject
+    projectController.updateProject,
   )
   .delete(auth('manageProject'), projectController.deleteProject);
 
@@ -64,7 +64,7 @@ router
     auth('manageProject'),
     validate(validation.createTimeProfile),
     validateCreateTimeProfile,
-    projectController.createTimeProfile
+    projectController.createTimeProfile,
   );
 
 router
@@ -74,7 +74,7 @@ router
     auth('manageProject'),
     validate(validation.updateTimeProfile),
     validateUpdateTimeProfile,
-    projectController.editTimeProfile
+    projectController.editTimeProfile,
   );
 
 router
@@ -97,6 +97,11 @@ router
   .get(auth('manageProject'), projectController.getProjectFolders)
   .post(auth('manageProject'), validate(validation.createProjectFolder), projectController.createFolder);
 
+router.route('/sub-folders/:projectId')
+  .get(auth('manageProject'), projectController.getProjectSubFolders);
+router.route('/version/:projectId')
+  .post(auth('manageProject'), multerUpload.single('file'), projectController.createVersion);
+
 router
   .route('/folder-user/:folderId/:userId')
   .post(auth('manageProject'), validate(validation.addRemoveFolderUser), projectController.addRemoveFolderUser);
@@ -113,13 +118,13 @@ router
     auth('manageProject'),
     validate(validation.addMemberToProject),
     validateCreateMember,
-    projectController.addMemberToProject
+    projectController.addMemberToProject,
   )
   .patch(
     auth('manageProject'),
     validate(validation.updateUserRoleAndGroup),
     validateUpdateMember,
-    projectController.updateMemberRoleAndGroup
+    projectController.updateMemberRoleAndGroup,
   );
 
 router

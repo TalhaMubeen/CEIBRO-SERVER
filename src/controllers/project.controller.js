@@ -37,6 +37,7 @@ const Role = require('../models/role.model');
 const { filterArray } = require('../helpers/project.helper');
 const Group = require('../models/group.model');
 const { mapUsers, uniqueBy } = require('../helpers/user.helper');
+const Folder = require('../models/folder.model');
 
 const createProject = catchAsync(async (req, res) => {
   if (req.file) {
@@ -292,11 +293,54 @@ const createFolder = catchAsync(async (req, res) => {
   });
 });
 
+const createVersion = catchAsync(async(req,res)=>{
+  console.log(req.body , 'bodyy')
+   const { projectId } = req.params;
+  const {  fileId, folderId} = req.body;
+  const file = await ProjectFile.findOne({
+    _id:fileId,
+    folder:folderId,
+    project:projectId
+  });
+  // return res.send(file);
+
+  const currentFolder = await Folder.findById(folderId)
+  // return res.send(currentFolder);
+  const folder = await createProjectFolder(file?.name, currentFolder.group, currentFolder.project, req.user._id,currentFolder.id);
+   const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
+const newFile = new ProjectFile({
+  name: path?.fileName,
+    fileType: path?.fileType,
+    url: file?.url,
+    uploadedBy: req.user._id,
+    access: [req.user._id],
+    project: folder.project,
+    folder: folder.id,
+})
+  const copyFile = new ProjectFile({
+    name: file?.name,
+    fileType: file?.fileType,
+    url: file?.url,
+    uploadedBy: req.user._id,
+    access: [req.user._id],
+    project: folder.project,
+    folder: folder.id,
+
+  });
+  await copyFile.save();
+  await newFile.save();
+  res.status(200).json({
+    data: {folder:folder, file:newFile},
+  });
+
+})
+
 const getProjectFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { search } = req.query;
   const { _id } = req.user;
   let filter = {
+    parentFolder:null,
     $or: [
       {
         access: _id,
@@ -330,7 +374,46 @@ const getProjectFolders = catchAsync(async (req, res) => {
   });
   res.status(200).send(data);
 });
-
+const getProjectSubFolders = catchAsync(async (req, res) => {
+  const { projectId } = req.params;
+  const {folderId }= req.body
+  const { search } = req.query;
+  const { _id } = req.user;
+  let filter = {
+    parentFolder:folderId,
+    $or: [
+      {
+        access: _id,
+      },
+      {
+        creator: _id,
+      },
+    ],
+  };
+  if (search) {
+    const regex = new RegExp(escapeRegex(search), 'gi');
+    filter = {
+      ...filter,
+      name: regex,
+    };
+  }
+  const project = await getProjectById(projectId);
+  if (!project) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
+  }
+  const folders = await projectService.getProjectFolders(projectId, filter);
+  const data = folders.map((folder) => {
+    return {
+      name: folder.name,
+      id: folder._id,
+      group: folder.group,
+      createdAt: folder.createdAt,
+      access: folder.access,
+      creator: folder.creator,
+    };
+  });
+  res.status(200).send(data);
+});
 const uploadFileToFolder = catchAsync(async (req, res) => {
   const { folderId } = req.params;
   const { _id } = req.user;
@@ -521,20 +604,13 @@ const deleteProjectMember = catchAsync(async (req, res) => {
 
 const createWork = catchAsync(async (req, res) => {
   const { profileId } = req.params;
-  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
+  const { name, locations, works } =
     req.body;
   const work = await projectService.createProfileWork(
     profileId,
     name,
-    roles,
-    time,
-    timeRequired,
-    quantity,
-    quantityRequired,
-    comment,
-    commentRequired,
-    photo,
-    photoRequired
+    locations,
+    works
   );
   res.status(200).send(work);
 });
@@ -549,21 +625,14 @@ const getProfileWorks = catchAsync(async (req, res) => {
 
 const editProfileWork = catchAsync(async (req, res) => {
   const { workId } = req.params;
-  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
+  const { name, locations, works } =
     req.body;
 
   const newWork = await projectService.editProfileWork(
     workId,
     name,
-    roles,
-    time,
-    timeRequired,
-    quantity,
-    quantityRequired,
-    comment,
-    commentRequired,
-    photo,
-    photoRequired
+    locations,
+    works
   );
   res.status(200).send(newWork);
 });
@@ -646,7 +715,9 @@ module.exports = {
   createGroup,
   getProjectGroups,
   createFolder,
+  createVersion,
   getProjectFolders,
+  getProjectSubFolders,
   uploadFileToFolder,
   getFolderAllFiles,
   addMemberToProject,

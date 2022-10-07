@@ -16,11 +16,15 @@ router
   .get(auth('manageProject'), validate(validation.getProjectTasks), taskController.getTasksList);
 
 router
-  .route('/detail/:taskId')
+  .route('/update/:taskId')
   .get(auth('manageProject'), taskController.getTaskDetail)
   .put(auth('manageProject'), validate(validation.updateTask), taskController.updateTask)
   .delete(auth('manageProject'), taskController.deleteTask);
 
+router
+  .route('/confirm/:taskId')
+  .post(auth('manageProject'), validate(validation.createTask), taskController.createTask)
+  .get(auth('manageProject'), validate(validation.getProjectTasks), taskController.getTasksList);
 router
   .route('/subTask/:taskId')
   .post(auth('manageProject'), validateCreateSubTask, validate(validation.createSubTask), taskController.createSubTask)
@@ -48,6 +52,8 @@ router
     validate(validation.subTaskCompleteAction),
     taskController.subTaskCompleteAction
   );
+
+
 
 module.exports = router;
 
@@ -85,8 +91,8 @@ module.exports = router;
  *                 type: string
  *             example:
  *               title: testTask
- *               assignedTo: [234234234]
- *               admins: [23487239847]
+ *               assignedTo: "234234234"
+ *               admins: "23487239847"
  *               dueDate: 12-12-2022
  *     responses:
  *       "201":
@@ -200,9 +206,8 @@ module.exports = router;
  *                 type: string
  *             example:
  *               title: testTask
- *               assignedTo: [234234234]
- *               admins: [23487239847]
- *               project: 2348792374
+ *               assignedTo: "234234234"
+ *               admins: "23487239847"
  *               dueDate: 12-12-2022
  *     responses:
  *       "201":

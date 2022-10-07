@@ -12,6 +12,11 @@ const folderSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
     },
+    parentFolder: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Folder',
+      default: null,
+    },
     group: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Group',
@@ -29,7 +34,7 @@ const folderSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // add plugin that converts mongoose to json

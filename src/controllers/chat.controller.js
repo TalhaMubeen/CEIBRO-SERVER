@@ -8,13 +8,16 @@ const { formatMessage, getPercentage } = require('../helpers/chat.helper');
 const { RECEIVE_MESSAGE, REPLY_MESSAGE } = require('../config/chat.constants');
 const io = require('./webSocket.controller');
 const AWS = require('aws-sdk');
-const { Message, User, Chat } = require('../models');
+const { Message, User, Chat, Group } = require('../models');
 const Question = require('../models/question.model');
 const Answer = require('../models/answers.model');
 const ChatTypes = require('../config/chat.constants');
 const { getMessageByIds, getMessageIdsByFilter } = require('../services/chat.service');
 const QuestionOption = require('../models/questionOption.model');
 const { bucketFolders } = require('../services/aws.service');
+const { getUsers } = require('./user.controller');
+const ProjectMember = require('../models/ProjectMember.model');
+const { resolve } = require('path');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -103,8 +106,7 @@ const updateChat = catchAsync(async (req, res) => {
 const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
-  const { lastMessageId = null, down = 'false', search, messageId = null } = req.query;
-
+  const { lastMessageId = null, down = 'false', search, messageId = null,username,company,group, startDate,endDate } = req.query;
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
@@ -113,6 +115,50 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   let idsFilter = {
     chat: roomId,
   };
+  let usersFilters = {};
+  searchUsers = false;
+  if(username){
+    searchUsers=true
+    usersFilters = {
+      ...usersFilters,
+    username: { $regex: '.*' + username + '.*' }
+  }
+}
+  if(company){
+    searchUsers=true
+    usersFilters = {
+      ...usersFilters,
+    companyName: { $regex: '.*' + company + '.*' }
+  }
+  }
+
+  if(group){
+    const searchGroup = await Group.find({
+      name:{ $regex: '.*' + group + '.*' }
+    });
+
+    let filterUsers = [];
+   searchGroup.forEach(g => {
+    filterUsers = [...filterUsers, ...g.members]
+    });
+  }
+
+
+    if(searchUsers){
+    const users =  await User.find(usersFilters);
+    if(users){
+     filterUsers = users.map(user=>user.id);
+    idsFilter={
+      ...idsFilter,
+      $or: [{
+       receivedBy:{"$in" :filterUsers},
+       sender:{"$in" :filterUsers}}]
+    }
+  }
+  }
+
+
+
 
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
@@ -121,7 +167,24 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
       message: regex,
     };
   }
-
+  if(startDate && endDate){
+    idsFilter = {
+      ...idsFilter,
+      createdAt: {$gt:startDate,$lt:endDate}
+    }
+  }
+  else if(startDate){
+    idsFilter = {
+      ...idsFilter,
+      createdAt: {$gt:startDate}
+    }
+  }
+  else if(endDate){
+    idsFilter = {
+      ...idsFilter,
+      createdAt: {$lt:endDate}
+    }
+  }
   const messageIds = await getMessageIdsByFilter(idsFilter);
   let selectedMessageIds = [];
 

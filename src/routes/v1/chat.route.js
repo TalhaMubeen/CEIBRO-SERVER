@@ -32,7 +32,7 @@ router.route('/message/reply').post(
   auth('getChatRooms'),
   multerUpload.array('products'),
   // validate(chatValidation.sendMessage),
-  chatController.replyMessage
+  chatController.replyMessage,
 );
 
 router
@@ -72,8 +72,9 @@ router
 
 router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage);
 
-// router.route('/file-upload')
-//     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
+// router
+//   .route('/room/file-upload/:roomId')
+//   .post(auth('getChatRooms'), multerUpload.single('files'), chatController.uploadImage);
 
 module.exports = router;
 
