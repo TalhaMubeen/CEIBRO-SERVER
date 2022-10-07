@@ -8,7 +8,9 @@ const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);
-  res.status(httpStatus.CREATED).send('Verification email sent');
+  res.status(httpStatus.CREATED).json({
+    message: 'Verification email sent',
+  });
 });
 
 const login = catchAsync(async (req, res) => {

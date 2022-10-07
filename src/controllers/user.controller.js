@@ -95,7 +95,9 @@ const updateUserProfilePic = catchAsync(async (req, res) => {
   const user = await userService.getUserById(myUserId);
   user.profilePic = path.url;
   await user.save();
-  res.status(200).send('profile pic updated successfully');
+  res.status(200).json({
+    message: 'profile pic updated successfully'
+  });
 });
 
 const inviteUser = catchAsync(async (req, res) => {
