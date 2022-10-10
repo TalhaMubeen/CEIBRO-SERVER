@@ -46,7 +46,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
       user.isLocked = true;
       user.wrongAttempts = 0;
       user.lockedUntil = moment().add(15, 'minutes');
-      await emailService.sendAccountLockedEmail(user.email, user.firstName);
+      await emailService.sendAccountLockedEmail(user.email, user.firstName + ' ' + user.surName);
     }
     user.save();
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');

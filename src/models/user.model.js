@@ -20,7 +20,6 @@ const userSchema = mongoose.Schema(
     username: {
       type: String,
       trim: true,
-      required: false,
     },
     profilePic: {
       type: String,
