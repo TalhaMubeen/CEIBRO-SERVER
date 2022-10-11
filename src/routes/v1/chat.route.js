@@ -105,15 +105,65 @@ module.exports = router;
  *                 description: project id to which ths belongs to
  *             example:
  *               name: chat room
- *               members: [2342423]
- *               projectId: 89908098
+ *               members: ["2342423"]
+ *               projectId: "89908098"
  *     responses:
  *       "200":
  *         description: OK
  *         content:
  *           application/json:
- *             schema:
- *                $ref: '#/components/schemas/User'
+ *             example:
+ *              isGroupChat: true
+ *              members: [{
+                  "role": "user",
+                  "isEmailVerified": true,
+                  "pinnedMessages": [],
+                  "pinnedChat": [],
+                  "mutedChat": [],
+                  "isOnline": true,
+                  "firstName": "ali",
+                  "surName": "ramay",
+                  "email": "test@gmail.com",
+                  "socketId": "2Cs-UPJ4rTB-EXgwAAAR",
+                  "id": "63440bc8b866c91778afb006"
+                },{"role": "user",
+                  "isEmailVerified": true,
+                  "pinnedMessages": [],
+                  "pinnedChat": [],
+                  "mutedChat": [],
+                  "isOnline": true,
+                  "firstName": "ali",
+                  "surName": "ramay",
+                  "email": "test@gmail.com",
+                  "socketId": "2Cs-UPJ4rTB-EXgwAAAR",
+                  "id": "63440bc8b866c91778afb006"
+                }]
+ *              removedMembers: []
+ *              pinnedBy: []
+ *              mutedBy: []
+ *              pinTitle: "Pinned messages"
+ *              name: "chat room"
+ *              initiator: "63440bc8b866c91778afb006"
+ *              project: {
+ *                "owner": [
+                    "63440bc8b866c91778afb006",
+                    "634403b96247483834f0d01c"
+                  ],
+ *                "isDefault": "false",
+ *                "usersCount": 0,
+ *                "docsCount":  0,
+ *                "tasksCount": 0,
+ *                "chatCount":  1,
+ *                "publishStatus": "approved",
+ *                "extraStatus": [],
+ *                "title": "project",
+ *                "location": "as",
+ *                "description": "asd",
+ *                "dueDate": "2022-10-27T00:00:00.000Z",
+ *                "projectPhoto": "https://ceibro.s3.eu-north-1.amazonaws.com/projects/WhatsApp%20Image%202022-09-20%20at%204.02.41%20AM.jpeg",
+ *                "id": "63440cacb866c91778afb150",
+ *              }
+ *              "id": "63440d83b866c91778afb187"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
