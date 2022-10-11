@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/profile')
-  .post(auth('manageProfile'), userController.getMyProfile)
+  .get(auth('manageProfile'), userController.getMyProfile)
   .post(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
 
 router
@@ -330,8 +330,8 @@ module.exports = router;
  * @swagger
  * /users/profile:
  *   get:
- *     summary: post my profile
- *     description: post profile
+ *     summary: Get my profile
+ *     description: get profile
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
