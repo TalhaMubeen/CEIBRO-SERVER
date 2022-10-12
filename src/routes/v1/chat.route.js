@@ -229,7 +229,38 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  isGroupChat: true
+ *                  members: [{
+                      "role": "user",
+                      "isEmailVerified": true,
+                      "pinnedMessages": [],
+                      "pinnedChat": [],
+                      "mutedChat": [],
+                      "isOnline": true,
+                      "firstName": "ali",
+                      "surName": "ramay",
+                      "email": "test@gmail.com",
+                      "socketId": "2Cs-UPJ4rTB-EXgwAAAR",
+                      "id": "63440bc8b866c91778afb006"
+                    },{"role": "user",
+                      "isEmailVerified": true,
+                      "pinnedMessages": [],
+                      "pinnedChat": [],
+                      "mutedChat": [],
+                      "isOnline": true,
+                      "firstName": "ali",
+                      "surName": "ramay",
+                      "email": "test@gmail.com",
+                      "socketId": "2Cs-UPJ4rTB-EXgwAAAR",
+                      "id": "63440bc8b866c91778afb006"
+                    }]
+ *                  removedMembers: []
+ *                  pinnedBy: []
+ *                  pinTitle: "Pinned messages"
+ *                  name: "chat room"
+ *                  initiator: "63440bc8b866c91778afb006"
+ *                  id: "634515c18b1cf14550f9370b"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -321,7 +352,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                 message: "profile pic updated successfully"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -351,7 +383,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  message: "Room deleted"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -425,7 +458,7 @@ module.exports = router;
  *               title:
  *                 type: string
  *             example:
- *                 title: new name
+ *                 title: modified
  *     responses:
  *       "200":
  *         description: OK
@@ -462,7 +495,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  message: "Ok"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -493,7 +527,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *               example:
+ *                  message: "All messages read by users"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -524,7 +559,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  message: "Chat added to favourite"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -555,7 +591,8 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  message: "Chat muted"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -590,12 +627,51 @@ module.exports = router;
  *                 type: string
  *             example:
  *                 message: This is reply
- *                 chat: 234234234
- *                 messageId: afjaklfja
+ *                 chatroomId: "234234234"
  *                 type: 'message || questioniar || voice'
  *     responses:
  *       "200":
  *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                example:
+ *                  type: "message"
+ *                  receivedBy: ["63455d4093aefb34d80d7ac8"]
+ *                  members: [{
+                      "role": "user",
+                      "isEmailVerified": true,
+                      "pinnedMessages": [],
+                      "pinnedChat": ["63456481c8473c32d0f78fb0"],
+                      "mutedChat": ["63456481c8473c32d0f78fb0"],
+                      "isOnline": true,
+                      "firstName": "ali",
+                      "surName": "ramay",
+                      "email": "ahmadramay3@gmail.com",
+                      "socketId": "NUZjwGI8HF6e-aT3AAAF",
+                      "id": "63455d4093aefb34d80d7ac8"
+                    }]
+ *                  pinnedBy: []
+ *                  answeredB: []
+ *                  access: ["63455d4093aefb34d80d7ac8"]
+ *                  questions: []
+ *                  sender: {
+ *                    "role": "user",
+ *                    "isEmailVerified": true,
+ *                    "pinnedChat": ["63456481c8473c32d0f78fb0"],
+ *                    "mutedChat": ["63456481c8473c32d0f78fb0"],
+ *                    "isOnline": true,
+ *                    "firstName": "ali",
+ *                    "surName": "ramay",
+ *                    "email": "ahmadramay3@gmail.com",
+ *                    "socketId": "NUZjwGI8HF6e-aT3AAAF",
+ *                    "id": "63455d4093aefb34d80d7ac8"
+ *                  }
+ *                  chat: "63456481c8473c32d0f78fb0"
+ *                  message: "This is reply"
+ *                  files: []
+ *                  voiceUrl: null
+ *                  id: "634577e3c4606b3c38e634a9"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
@@ -634,11 +710,16 @@ module.exports = router;
  *               messageId:
  *                 type: string
  *             example:
- *              messageId: 23423423424
- *              chatIds: [234234234,23423423423]
+ *              messageId: "23423423424"
+ *              chatIds: ["234234234"]
  *     responses:
  *       "200":
  *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               example:
+ *                message: "forwarded"
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
