@@ -308,7 +308,7 @@ const getPinnedMessages = catchAsync(async (req, res) => {
   const { messageId: roomId } = req.params;
 
   const messages = await chatService.getPinnedMessages(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).send(messages);
+  res.status(httpStatus.CREATED).json({message:messages});
 });
 
 const muteChat = catchAsync(async (req, res) => {
@@ -390,7 +390,7 @@ const getChatRoomMedia = catchAsync(async (req, res) => {
   console.log('current user is ', currentUser, req.user);
   const media = await chatService.getRoomMediaById(roomId, currentUser);
   console.log('media ', media);
-  res.status(200).send(media[0]?.files || []);
+  res.status(200).json({message:media[0]?.files || []});
 });
 
 const getUnreadMessagesCount = catchAsync(async (req, res) => {
@@ -410,13 +410,13 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
   }
 
   const result = await chatService.addOrRemoveChatMember(roomId, memberId, temporary);
-  res.status(200).send(`Member ${result ? 'added' : 'removed'}`);
+  res.status(200).json({message:`Member ${result ? 'added' : 'removed'}`});
 });
 
 const getAvailableChatMembers = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const result = await chatService.getAvailableChatMembers(roomId, req.user._id);
-  res.status(200).send(result);
+  res.status(200).json({message:result});
 });
 
 const saveQuestioniar = catchAsync(async (req, res) => {
@@ -723,7 +723,7 @@ const updateChatRoom = catchAsync(async (req, res) => {
   myChat.name = name;
   await myChat.save();
 
-  res.status(200).send('Room updated');
+  res.status(200).json({message:'Room updated'});
 });
 
 const updateChatPinTitle = catchAsync(async (req, res) => {
