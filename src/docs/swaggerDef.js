@@ -15,12 +15,12 @@ const swaggerDef = {
     {
       url: `http://localhost:${config.port}/v1`,
     },
-    // {
-    //   url: `https://backend.ceibro.ee/v1`,
-    // },
-    // {
-    //   url: `https://shielded-plateau-81277.herokuapp.com/v1`,
-    // },
+    {
+      url: `https://backend.ceibro.ee/v1`,
+    },
+    {
+      url: `https://shielded-plateau-81277.herokuapp.com/v1`,
+    },
   ],
 };
 

@@ -118,48 +118,64 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   let usersFilters = {};
   searchUsers = false;
   if(username){
-    searchUsers=true
+    searchUsers=true 
     usersFilters = {
       ...usersFilters,
     username: { $regex: '.*' + username + '.*' }
   }
 }
-  if(company){
+  if(company){ 
     searchUsers=true
     usersFilters = {
       ...usersFilters,
     companyName: { $regex: '.*' + company + '.*' }
   }
   }
-
+  let groupMembers = [];
   if(group){
     const searchGroup = await Group.find({
       name:{ $regex: '.*' + group + '.*' }
     });
-
-    let filterUsers = [];
+    
+    
    searchGroup.forEach(g => {
-    filterUsers = [...filterUsers, ...g.members]
+    // res.send(g.members.toObject());
+   g.members.forEach(item=> groupMembers.push(item.toString()))
+
+   
     });
   }
-
-
+  
+    let searchUsersList = [];  
     if(searchUsers){
     const users =  await User.find(usersFilters);
     if(users){
-     filterUsers = users.map(user=>user.id);
-    idsFilter={
-      ...idsFilter,
-      $or: [{
-       receivedBy:{"$in" :filterUsers},
-       sender:{"$in" :filterUsers}}]
-    }
+      searchUsersList = users.map(user=>user.id.toString());
+  
   }
   }
-
-
-
-
+  if(group && searchUsers){
+    // res.send({searchUsersList, groupMembers})
+  let filterUsers = searchUsersList.filter(value => groupMembers.includes(value.toString()));
+  // res.send({filterUsers,searchUsersList,groupMembers});
+  idsFilter={
+    ...idsFilter,
+    
+    access:{"$in":filterUsers}
+  }
+  }else{
+let filterUsers = [...searchUsersList, ...groupMembers];
+if(filterUsers.length > 0){
+  idsFilter={
+    ...idsFilter,
+    access:{"$in":filterUsers}
+  }
+}
+  }
+  
+  
+  // return res.send(idsFilter)
+  
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
     idsFilter = {
@@ -255,7 +271,7 @@ const setRoomMessagesRead = catchAsync(async (req, res) => {
 
   await chatService.setAllMessagesReadByRoomId(roomId, currentLoggedUser);
 
-  res.status(httpStatus.CREATED).json({message:'All messages read by users'});
+  res.status(httpStatus.CREATED).send('All messages read by users');
 });
 
 const setRoomMessagesUnRead = catchAsync(async (req, res) => {
@@ -269,9 +285,7 @@ const setRoomMessagesUnRead = catchAsync(async (req, res) => {
 
   await chatService.setLastMessagesUnRead(roomId, currentLoggedUser);
 
-  res.status(httpStatus.CREATED).json({
-   message:'OK'
-  });
+  res.status(httpStatus.CREATED).send('OK');
 });
 
 const addToFavouite = catchAsync(async (req, res) => {
@@ -283,9 +297,7 @@ const addToFavouite = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
   const [, , added] = await chatService.addOrRemoveChatRoomToFavourite(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({
-    message : `Chat ${added ? 'added to ' : 'removed from '} favourite`
-  });
+  res.status(httpStatus.CREATED).send(`Chat ${added ? 'added to ' : 'removed from '} favourite`);
 });
 
 const addMessageToFavourite = catchAsync(async (req, res) => {
@@ -300,7 +312,7 @@ const addMessageToFavourite = catchAsync(async (req, res) => {
   await chatService.checkChatAuthorization(currentLoggedUser, message.chat);
 
   const [, , added] = await chatService.addOrRemoveMessageToFavourite(messageId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:`Message ${added ? 'added to ' : 'removed from '} favourite`});
+  res.status(httpStatus.CREATED).send(`Message ${added ? 'added to ' : 'removed from '} favourite`);
 });
 
 const getPinnedMessages = catchAsync(async (req, res) => {
@@ -308,7 +320,7 @@ const getPinnedMessages = catchAsync(async (req, res) => {
   const { messageId: roomId } = req.params;
 
   const messages = await chatService.getPinnedMessages(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:messages});
+  res.status(httpStatus.CREATED).send(messages);
 });
 
 const muteChat = catchAsync(async (req, res) => {
@@ -320,7 +332,7 @@ const muteChat = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
   const [, , muted] = await chatService.muteOrUnmuteChat(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:`Chat ${muted ? 'muted' : 'unmuted'}`});
+  res.status(httpStatus.CREATED).send(`Chat ${muted ? 'muted' : 'unmuted'}`);
 });
 
 const replyMessage = catchAsync(async (req, res) => {
@@ -381,7 +393,7 @@ const forwardMessage = catchAsync(async (req, res) => {
     })
   );
 
-  res.status(200).json({message:'forwarded'});
+  res.status(200).send('forwarded');
 });
 
 const getChatRoomMedia = catchAsync(async (req, res) => {
@@ -390,7 +402,7 @@ const getChatRoomMedia = catchAsync(async (req, res) => {
   console.log('current user is ', currentUser, req.user);
   const media = await chatService.getRoomMediaById(roomId, currentUser);
   console.log('media ', media);
-  res.status(200).json({message:media[0]?.files || []});
+  res.status(200).send(media[0]?.files || []);
 });
 
 const getUnreadMessagesCount = catchAsync(async (req, res) => {
@@ -410,13 +422,13 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
   }
 
   const result = await chatService.addOrRemoveChatMember(roomId, memberId, temporary);
-  res.status(200).json({message:`Member ${result ? 'added' : 'removed'}`});
+  res.status(200).send(`Member ${result ? 'added' : 'removed'}`);
 });
 
 const getAvailableChatMembers = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const result = await chatService.getAvailableChatMembers(roomId, req.user._id);
-  res.status(200).json({message:result});
+  res.status(200).send(result);
 });
 
 const saveQuestioniar = catchAsync(async (req, res) => {
@@ -690,17 +702,13 @@ const deleteChatRoomForUser = catchAsync(async (req, res) => {
   if (myChat.members.findIndex((userId) => String(userId) === String(_id)) < 0) {
     if (myChat.removedMembers.findIndex((userId) => String(userId) === String(_id)) > -1) {
       await chatService.removeUserCompletely(roomId, _id);
-      return res.status(200).json({
-    message: 'Room deleted'
-  });
+      return res.status(200).send('Room deleted');
     }
     throw new ApiError(400, 'User does not belongs to this chat room');
   }
 
   await chatService.removeChatForUser(roomId, _id);
-  res.status(200).json({
-    message: 'Room deleted'
-  });
+  res.status(200).send('Room deleted');
 });
 
 const updateChatRoom = catchAsync(async (req, res) => {
@@ -723,7 +731,7 @@ const updateChatRoom = catchAsync(async (req, res) => {
   myChat.name = name;
   await myChat.save();
 
-  res.status(200).json({message:'Room updated'});
+  res.status(200).send('Room updated');
 });
 
 const updateChatPinTitle = catchAsync(async (req, res) => {
@@ -735,7 +743,7 @@ const updateChatPinTitle = catchAsync(async (req, res) => {
   myChat.pinTitle = title;
   await myChat.save();
 
-  res.status(200).json({message:'modified'});
+  res.status(200).send('modified');
 });
 
 const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
@@ -762,9 +770,7 @@ const updateChatProfilePic = catchAsync(async (req, res) => {
   const chat = await chatService.getChatById(roomId);
   chat.picture = path.url;
   await chat.save();
-  res.status(200).json({
-    message: 'profile pic updated successfully'
-  });
+  res.status(200).send('profile pic updated successfully');
 });
 
 // const uploadImage = catchAsync(async (req, res) => {

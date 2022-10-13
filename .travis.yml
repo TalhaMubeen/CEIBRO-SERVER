@@ -10,7 +10,7 @@ branches:
 env:
   global:
     - PORT=3000
-    - MONGODB_URL=mongodb+srv://ceibro:Appleapple1829@cluster0.t0y9jgi.mongodb.net/?retryWrites=true&w=majority
+    - MONGODB_URL=mongodb://localhost:27017/node-boilerplate
     - JWT_SECRET=thisisasamplesecret
     - JWT_ACCESS_EXPIRATION_MINUTES=30
     - JWT_REFRESH_EXPIRATION_DAYS=30

@@ -303,7 +303,7 @@ const createVersion = catchAsync(async(req,res)=>{
     project:projectId
   });
   // return res.send(file);
-
+  
   const currentFolder = await Folder.findById(folderId)
   // return res.send(currentFolder);
   const folder = await createProjectFolder(file?.name, currentFolder.group, currentFolder.project, req.user._id,currentFolder.id);
@@ -325,7 +325,7 @@ const newFile = new ProjectFile({
     access: [req.user._id],
     project: folder.project,
     folder: folder.id,
-
+  
   });
   await copyFile.save();
   await newFile.save();
@@ -604,13 +604,20 @@ const deleteProjectMember = catchAsync(async (req, res) => {
 
 const createWork = catchAsync(async (req, res) => {
   const { profileId } = req.params;
-  const { name, locations, works } =
+  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
     req.body;
   const work = await projectService.createProfileWork(
     profileId,
     name,
-    locations,
-    works
+    roles,
+    time,
+    timeRequired,
+    quantity,
+    quantityRequired,
+    comment,
+    commentRequired,
+    photo,
+    photoRequired
   );
   res.status(200).send(work);
 });
@@ -625,14 +632,21 @@ const getProfileWorks = catchAsync(async (req, res) => {
 
 const editProfileWork = catchAsync(async (req, res) => {
   const { workId } = req.params;
-  const { name, locations, works } =
+  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
     req.body;
 
   const newWork = await projectService.editProfileWork(
     workId,
     name,
-    locations,
-    works
+    roles,
+    time,
+    timeRequired,
+    quantity,
+    quantityRequired,
+    comment,
+    commentRequired,
+    photo,
+    photoRequired
   );
   res.status(200).send(newWork);
 });

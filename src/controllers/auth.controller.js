@@ -8,9 +8,7 @@ const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);
-  res.status(httpStatus.CREATED).json({
-    message: 'Verification email sent',
-  });
+  res.status(httpStatus.CREATED).send('Verification email sent');
 });
 
 const login = catchAsync(async (req, res) => {
@@ -19,7 +17,6 @@ const login = catchAsync(async (req, res) => {
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });
 });
-
 
 const logout = catchAsync(async (req, res) => {
   await authService.logout(req.body.refreshToken);
@@ -44,7 +41,6 @@ const resetPassword = catchAsync(async (req, res) => {
 
 const sendVerificationEmail = catchAsync(async (req, res) => {
   const { email } = req.body;
-
   const user = await userService.getUserByEmail(email);
   if (!user) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email not registered');
@@ -52,7 +48,6 @@ const sendVerificationEmail = catchAsync(async (req, res) => {
   if (user.isEmailVerified) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already verified');
   }
-
 
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user._id);
   await emailService.sendVerificationEmail(user.email, verifyEmailToken);

@@ -9,7 +9,7 @@ const router = express.Router();
 router
   .route('/profile')
   .get(auth('manageProfile'), userController.getMyProfile)
-  .post(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
+  .patch(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
 
 router
   .route('/profile/pic')
@@ -348,7 +348,7 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *   post:
+ *   patch:
  *     summary: Update my profile
  *     description: update profile
  *     tags: [Users]

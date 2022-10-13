@@ -22,14 +22,6 @@ const isSubTaskExist = async (subTaskId, populate = []) => {
   return subTask;
 };
 
-const advanceConfirm = async (subTaskId, populate = []) => {
-  const subTask = await SubTask.findById(subTaskId).populate(populate);
-  if (!subTask) {
-    throw new ApiError(400, 'Invalid sub task id');
-  }
-  return subTask;
-};
-
 const updateTaskById = async (taskId, updateBody) => {
   const task = await isTaskExist(taskId);
   Object.assign(task, updateBody);
@@ -82,5 +74,4 @@ module.exports = {
   isSubTaskExist,
   updateSubTaskById,
   queryTasks,
-  advanceConfirm,
 };

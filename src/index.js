@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
-const http = require('http');
-const { Server } = require('socket.io');
 const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
+const http = require('http');
+const { Server } = require('socket.io');
 const { webSocket } = require('./controllers');
 
-// let server;
+let server;
 mongoose
   .connect(config.mongoose.url, config.mongoose.options)
   .then(() => {
@@ -46,7 +46,7 @@ mongoose
   .catch((err) => {
     console.log('error connnecting mongo');
   });
-// let server
+
 const exitHandler = () => {
   if (server) {
     server.close(() => {
