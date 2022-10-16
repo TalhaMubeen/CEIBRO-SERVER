@@ -69,7 +69,7 @@ const projectSchema = mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 projectSchema.statics.createDefultRoleAndGroup = async function (projectId) {

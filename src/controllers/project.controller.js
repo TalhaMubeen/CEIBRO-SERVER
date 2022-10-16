@@ -57,7 +57,7 @@ const createProject = catchAsync(async (req, res) => {
   }
   const project = await projectService.createProject(req.body, req.user._id);
   await Project.createDefultRoleAndGroup(project._id);
-  res.status(httpStatus.CREATED).send(project);
+  res.status(httpStatus.CREATED).json({createProject:project});
 });
 
 const getProjects = catchAsync(async (req, res) => {
@@ -105,14 +105,14 @@ const getProjects = catchAsync(async (req, res) => {
 
   options.populate = 'owner';
   const result = await projectService.queryProjects(filter, options);
-  res.send(result);
+  res.json({getproject:result});
 });
 
 const getAllProjects = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const projectIds = await projectService.getUserProjectIds(_id);
   const result = await projectService.getAllProjects(projectIds);
-  res.send(result);
+  res.json({getproject:result});
 });
 
 const getProjectMembers = catchAsync(async (req, res) => {

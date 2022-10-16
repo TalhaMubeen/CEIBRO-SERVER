@@ -74,7 +74,7 @@ const getMyProfile = catchAsync(async (req, res) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  res.send(user);
+  res.json({user:user});
 });
 
 const updateMyProfile = catchAsync(async (req, res) => {

@@ -8,7 +8,7 @@ const router = express.Router();
 
 router
   .route('/profile')
-  .get(auth('manageProfile'), userController.getMyProfile)
+  .post(auth('manageProfile'), userController.getMyProfile)
   .post(auth('manageProfile'), validate(userValidation.updateProfile), userController.updateMyProfile);
 
 router

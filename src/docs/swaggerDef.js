@@ -15,6 +15,9 @@ const swaggerDef = {
     {
       url: `http://localhost:${config.port}/v1`,
     },
+    {
+      url: `http://13.50.5.234/v1`,
+    },
     // {
     //   url: `https://backend.ceibro.ee/v1`,
     // },

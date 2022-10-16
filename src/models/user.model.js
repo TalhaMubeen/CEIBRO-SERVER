@@ -156,7 +156,7 @@ userSchema.statics.isUsernameTaken = async function (username) {
 userSchema.statics.createDefultProject = async function (userId) {
   // creating default role
   const defaultProject = await Project.create({
-    title: 'Ceibro Default',
+    title: 'My Ceibro',
     status: 'draft',
     owner: [userId],
     isDefault: true,
@@ -189,4 +189,3 @@ userSchema.pre('save', async function (next) {
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
-

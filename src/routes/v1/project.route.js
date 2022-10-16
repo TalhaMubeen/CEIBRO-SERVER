@@ -274,7 +274,23 @@ module.exports = router;
  *         content:
  *           application/json:
  *             schema:
- *                $ref: '#/components/schemas/User'
+ *                example:
+ *                  [{
+                          "name": "all",
+                          "count": 1
+                      },{
+                          "name": "ongoing",
+                          "count": 0
+                      },{
+                          "name": "approved",
+                          "count": 1
+                      },{
+                          "name": "done",
+                          "count": 0
+                      },{
+                          "name": "draft",
+                          "count": 0
+                    }]
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
