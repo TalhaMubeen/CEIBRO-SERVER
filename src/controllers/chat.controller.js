@@ -118,48 +118,64 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   let usersFilters = {};
   searchUsers = false;
   if(username){
-    searchUsers=true
+    searchUsers=true 
     usersFilters = {
       ...usersFilters,
     username: { $regex: '.*' + username + '.*' }
   }
 }
-  if(company){
+  if(company){ 
     searchUsers=true
     usersFilters = {
       ...usersFilters,
     companyName: { $regex: '.*' + company + '.*' }
   }
   }
-
+  let groupMembers = [];
   if(group){
     const searchGroup = await Group.find({
       name:{ $regex: '.*' + group + '.*' }
     });
-
-    let filterUsers = [];
+    
+    
    searchGroup.forEach(g => {
-    filterUsers = [...filterUsers, ...g.members]
+    // res.send(g.members.toObject());
+   g.members.forEach(item=> groupMembers.push(item.toString()))
+
+   
     });
   }
-
-
+  
+    let searchUsersList = [];  
     if(searchUsers){
     const users =  await User.find(usersFilters);
     if(users){
-     filterUsers = users.map(user=>user.id);
-    idsFilter={
-      ...idsFilter,
-      $or: [{
-       receivedBy:{"$in" :filterUsers},
-       sender:{"$in" :filterUsers}}]
-    }
+      searchUsersList = users.map(user=>user.id.toString());
+  
   }
   }
-
-
-
-
+  if(group && searchUsers){
+    // res.send({searchUsersList, groupMembers})
+  let filterUsers = searchUsersList.filter(value => groupMembers.includes(value.toString()));
+  // res.send({filterUsers,searchUsersList,groupMembers});
+  idsFilter={
+    ...idsFilter,
+    
+    access:{"$in":filterUsers}
+  }
+  }else{
+let filterUsers = [...searchUsersList, ...groupMembers];
+if(filterUsers.length > 0){
+  idsFilter={
+    ...idsFilter,
+    access:{"$in":filterUsers}
+  }
+}
+  }
+  
+  
+  // return res.send(idsFilter)
+  
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
     idsFilter = {

@@ -26,7 +26,7 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from server!' });
 });
 
-if (config.env !== 'production') {
+if (config.env !== 'test') {
   app.use(morgan.successHandler);
 }
 app.use(realMorgan('dev'));

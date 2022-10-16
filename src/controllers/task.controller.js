@@ -6,16 +6,6 @@ const { taskService, projectService } = require('../services');
 const moment = require('moment');
 const { BAD_REQUEST } = require('http-status');
 const { escapeRegex } = require('../helpers/query.helper');
-const { isUserExist, getUserByEmail } = require('../services/user.service');
-const {
-  getProjectById,
-  getRoleById,
-  isGroupExist,
-  getProjectMemberByRoleAndGroup,
-  getProjectMemberByEmailRoleAndGroup,
-} = require('../services/project.service');
-
-const ProjectMember = require('../models/ProjectMember.model');
 
 const populate = [
   {
@@ -85,43 +75,6 @@ const getTaskDetail = catchAsync(async (req, res) => {
   res.send(task);
 });
 
-const advanceConfirm = catchAsync(async (req, res) => {
-  const { projectId } = req.params;
-  const { groupId, roleId, email } = req.body;
-  await getRoleById(roleId);
-  await isGroupExist(groupId);
-  // await isGroupExist(subContractor);
-  const member = await getUserByEmail(email);
-
-  const project = await getProjectById(projectId);
-
-  if (!project) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
-  }
-
-  if (member) {
-    const alreadyMember = await getProjectMemberByRoleAndGroup(member._id, groupId, roleId, null, projectId);
-    if (alreadyMember) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
-    }
-    const newMember = await projectService.advanceConfirm(member._id, groupId, roleId, null, projectId);
-    const membersCount = await ProjectMember.count({ project: projectId });
-    project.usersCount = membersCount;
-    project.save();
-    res.status(200).send(newMember);
-  } else {
-   const alreadyMember = await getProjectMemberByEmailRoleAndGroup(email, groupId, roleId, null, projectId);
-    if (alreadyMember) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
-    }
-    const newMember = await projectService.sendProjectInviteByEmail(email, groupId, roleId, null, projectId, req.user._id);
-
-    const membersCount = await ProjectMember.count({ project: projectId });
-    project.usersCount = membersCount;
-    project.save();
-    res.status(200).send('Invitation sent to user');
-  }
-});
 const updateTask = catchAsync(async (req, res) => {
   await taskService.updateTaskById(req.params.taskId, req.body);
   const task = await taskService.isTaskExist(req.params.taskId, populate);
@@ -227,5 +180,4 @@ module.exports = {
   getTasksList,
   subTaskAcceptAction,
   subTaskCompleteAction,
-  advanceConfirm,
 };

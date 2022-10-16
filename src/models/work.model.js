@@ -8,24 +8,60 @@ const workSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
-    locations: [
+    profile: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'TimeProfile',
+    },
+    roles: [
       {
-        type: String,
-        required: true,
-        trim: true,
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Role',
       },
     ],
-    works: [
-      {
-        type: String,
-        required: true,
-        trim: true,
-      },
-    ],
+    time: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    timeRequired: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    quantity: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    quantityRequired: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    comment: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    commentRequired: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    photo: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    photoRequired: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json

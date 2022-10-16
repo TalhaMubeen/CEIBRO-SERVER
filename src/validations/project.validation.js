@@ -134,8 +134,15 @@ const createProjectWork = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
-    locations: Joi.string().required(),
-    works: Joi.string().required(),
+    roles: Joi.array().items(Joi.string()).required(),
+    time: Joi.boolean().required(),
+    timeRequired: Joi.boolean().required(),
+    quantity: Joi.boolean().required(),
+    quantityRequired: Joi.boolean().required(),
+    comment: Joi.boolean().required(),
+    commentRequired: Joi.boolean().required(),
+    photo: Joi.boolean().required(),
+    photoRequired: Joi.boolean().required(),
   }),
 };
 
@@ -145,8 +152,15 @@ const updateProjectWork = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
-    locations: Joi.string().required(),
-    works: Joi.string().required(),
+    roles: Joi.array().items(Joi.string()).required(),
+    time: Joi.boolean().required(),
+    timeRequired: Joi.boolean().required(),
+    quantity: Joi.boolean().required(),
+    quantityRequired: Joi.boolean().required(),
+    comment: Joi.boolean().required(),
+    commentRequired: Joi.boolean().required(),
+    photo: Joi.boolean().required(),
+    photoRequired: Joi.boolean().required(),
   }),
 };
 
