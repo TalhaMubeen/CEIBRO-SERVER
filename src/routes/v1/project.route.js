@@ -150,6 +150,15 @@ router
   .route('/profile/pic/:projectId')
   .patch(auth('manageProfile'), multerUpload.single('profilePic'), projectController.updateProfilePic);
 
+router
+  .route('/location/:timeProfileId')
+  .get(projectController.getExternalLocations)
+  .post(projectController.createLocation);
+
+router
+  .route('/internal/location/:locationId/:timeProfileId')
+  .get(projectController.getInternalLocations)
+
 module.exports = router;
 
 /**
