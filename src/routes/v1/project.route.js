@@ -152,12 +152,12 @@ router
 
 router
   .route('/location/:timeProfileId')
-  .get(projectController.getExternalLocations)
-  .post(projectController.createLocation);
+  .get(auth('manageProject'), projectController.getExternalLocations)
+  .post(auth('manageProject'), validate(validation.createLocation), projectController.createLocation);
 
 router
   .route('/internal/location/:locationId/:timeProfileId')
-  .get(projectController.getInternalLocations)
+  .get(auth('manageProject'), projectController.getInternalLocations)
 
 module.exports = router;
 
@@ -1495,6 +1495,7 @@ module.exports = router;
  *                 type: boolean
  *             example:
  *               name: project manager
+ *               location: 1234jj23jh234
  *               roles: []
  *               time: false,
  *               timeRequired: false,
@@ -1637,5 +1638,113 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *
+ */
+
+
+/**
+ * @swagger
+ * /project/location/{timeProfileId}:
+ *   get:
+ *     summary: get external locations of timeProfile
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create a time profile external locaiton
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               isInternal:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               parent: null,
+ *               isInternal: false
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/location/{locationId}/{timeProfileId}:
+ *   get:
+ *     summary: get internal locations and workds of a location 
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: locationID id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */

@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { rolesAccess } = require('../config/project.config');
+const { objectId } = require('./custom.validation');
 
 const createProject = {
   body: Joi.object().keys({
@@ -134,6 +135,7 @@ const createProjectWork = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
+    location: Joi.string().custom(objectId),
     roles: Joi.array().items(Joi.string()).required(),
     time: Joi.boolean().required(),
     timeRequired: Joi.boolean().required(),
@@ -164,6 +166,17 @@ const updateProjectWork = {
   }),
 };
 
+const createLocation = {
+  params: Joi.object().keys({
+    timeProfileId: Joi.string().custom(objectId),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+    parent: Joi.string().optional(),
+    isInternal: Joi.boolean().required(),
+  }),
+};
+
 module.exports = {
   createProject,
   updateProject,
@@ -179,4 +192,5 @@ module.exports = {
   updateUserRoleAndGroup,
   createProjectWork,
   updateProjectWork,
+  createLocation
 };

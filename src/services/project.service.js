@@ -224,6 +224,7 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
 const createProfileWork = async (
   profileId,
   name,
+  location,
   roles,
   time,
   timeRequired,
@@ -235,6 +236,7 @@ const createProfileWork = async (
   photoRequired
 ) => {
   await isTimeProfileExist(profileId);
+  await isLocationExist(location);
   const work = await getWorkByProfileAndName(name, profileId);
   if (work) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Work already exist');
@@ -245,6 +247,7 @@ const createProfileWork = async (
   const newWork = new Work({
     profile: profileId,
     name,
+    location,
     roles,
     time,
     timeRequired,
@@ -389,7 +392,7 @@ const getAllLocationsByTimeProfile = async (timeProfileId) => {
 const getAllInternalLocations = async (locationId, timeProfileId) => {
   return Location.find({
     isInternal: true,
-    // parent: locationId,
+    parent: locationId,
     timeProfile: timeProfileId,
     depth: 1,
   }, { name: 1, internalChilds: 1, parents: 1 }).populate([
@@ -404,6 +407,13 @@ const getAllInternalLocations = async (locationId, timeProfileId) => {
     },
     parentPopulate
   ])
+};
+
+const getAllWorksByLocation = async (timeProfileId, locationId) => {
+  return Work.find({
+    location: locationId,
+    profile: timeProfileId
+  }, { name: 1 });
 };
 
 const editProjectRole = async (roleId, name, admin, roles = [], member, timeProfile) => {
@@ -888,5 +898,6 @@ module.exports = {
   addToInternalCild,
   addParentIdsToLocation,
   getAllLocationsByTimeProfile,
-  getAllInternalLocations
+  getAllInternalLocations,
+  getAllWorksByLocation
 };
