@@ -1715,7 +1715,7 @@ module.exports = router;
 
 /**
  * @swagger
- * /project/location/{locationId}/{timeProfileId}:
+ * /project/location/internal/{locationId}/{timeProfileId}:
  *   get:
  *     summary: get internal locations and workds of a location 
  *     tags: [Project]
