@@ -177,6 +177,15 @@ const createLocation = {
   }),
 };
 
+const updateLocation = {
+  params: Joi.object().keys({
+    locationId: Joi.string().custom(objectId),
+  }),
+  body: Joi.object().keys({
+    name: Joi.string().required(),
+  }),
+};
+
 module.exports = {
   createProject,
   updateProject,
@@ -192,5 +201,6 @@ module.exports = {
   updateUserRoleAndGroup,
   createProjectWork,
   updateProjectWork,
-  createLocation
+  createLocation,
+  updateLocation
 };

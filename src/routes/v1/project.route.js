@@ -156,6 +156,11 @@ router
   .post(auth('manageProject'), validate(validation.createLocation), projectController.createLocation);
 
 router
+  .route('/location/manage/:locationId')
+  .delete(auth('manageProject'), projectController.deleteLocation)
+  .patch(auth('manageProject'), validate(validation.updateLocation), projectController.updateLocation);
+
+router
   .route('/internal/location/:locationId/:timeProfileId')
   .get(auth('manageProject'), projectController.getInternalLocations)
 
@@ -1734,6 +1739,77 @@ module.exports = router;
  *         schema:
  *           type: string
  *         description: locationID id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+
+/**
+ * @swagger
+ * /project/location/manage/{locationId}:
+ *   delete:
+ *     summary: delete location
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: location id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: update location name
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: update location id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               isInternal:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
  *     responses:
  *       "200":
  *         description: OK

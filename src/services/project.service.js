@@ -332,6 +332,19 @@ const isLocationExist = async (locationId) => {
   return location;
 };
 
+const removeLocationChilds = async (locationId) => {
+  return Location.deleteMany({
+    externalChilds: locationId,
+    internalChilds: locationId
+  })
+};
+
+const removeLocationWorks = async (locationId) => {
+  return Work.deleteMany({
+    location: locationId
+  })
+};
+
 const addToExternalCild = async (parentId, locationId) => {
   console.log('parentId: ', parentId);
   return Location.updateMany({
@@ -366,18 +379,17 @@ const addParentIdsToLocation = async (locationId, parentId) => {
 };
 
 const parentPopulate = {
-  path: 'parent', select: 'name'
+  path: 'parents', select: 'name'
 }
 
 const getAllLocationsByTimeProfile = async (timeProfileId) => {
-  Location.updateMany({}, { timeProfile: timeProfileId })
   return Location.find({
     isInternal: false,
     depth: 1,
-    // timeProfile: timeProfileId,
+    timeProfile: timeProfileId,
   }, { name: 1, externalChilds: 1, isInternal: 1, parents: 1 }).populate([
     {
-      path: 'externalChilds', select: "name externalChilds",
+      path: 'externalChilds', select: "name externalChilds parents",
       populate: [
         {
           path: 'externalChilds', select: "name"
@@ -899,5 +911,7 @@ module.exports = {
   addParentIdsToLocation,
   getAllLocationsByTimeProfile,
   getAllInternalLocations,
-  getAllWorksByLocation
+  getAllWorksByLocation,
+  removeLocationChilds,
+  removeLocationWorks
 };
