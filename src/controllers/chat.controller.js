@@ -18,6 +18,7 @@ const { bucketFolders } = require('../services/aws.service');
 const { getUsers } = require('./user.controller');
 const ProjectMember = require('../models/ProjectMember.model');
 const { resolve } = require('path');
+const { getChatRooms } = require('./webSocket.controller');
 
 const createChat = catchAsync(async (req, res) => {
   const { _id } = req.user;
@@ -771,6 +772,45 @@ const getQuestionairByTypeMessage = catchAsync(async (req, res) => {
   res.status(200).send(typeQuestion);
 });
 
+const getAvailableGroupsForChat = catchAsync(async (req, res) => {
+  const { roomId } = req.params;
+  const { _id } = req.user;
+
+  const room = await chatService.isChatExist(roomId);
+  let groups = [];
+  if (room.isGroupChat) {
+    const project = room.project;
+    const projectGroups = await projectService.getProjectGroups(project);
+    groups = projectGroups.map(group => {
+      return {
+        id: group._id,
+        name: group.name
+      }
+    });
+  }
+
+  res.status(200).json({
+    data: groups
+  });
+});
+
+const addOrRemoveGroupToChat = catchAsync(async (req, res) => {
+  const { roomId, groupId } = req.params;
+  const { _id } = req.user;
+  const room = await chatService.isChatExist(roomId);
+  let removed = true;
+  if (room.groups.includes(String(groupId))) {
+    await chatService.removeGroupFromChat(groupId, roomId);
+  } else {
+    await chatService.addGroupToChat(groupId, roomId);
+    removed = false;
+  }
+  res.status(200).json({
+    data: removed ? "Grouped removed successfully" : "Group added successfully"
+  });
+});
+
+
 const updateChatProfilePic = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const file = req.file;
@@ -831,5 +871,7 @@ module.exports = {
   createOneToOneChat,
   updateChatPinTitle,
   updateChatProfilePic,
+  getAvailableGroupsForChat,
+  addOrRemoveGroupToChat
   // uploadImage
 };

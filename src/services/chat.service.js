@@ -56,6 +56,26 @@ const isChatExist = async (chatId) => {
   return chatExist;
 };
 
+const addGroupToChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $addToSet: {
+      members: group.members,
+      groups: groupId
+    },
+  })
+};
+
+const removeGroupFromChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $pull: {
+      members: group.members,
+      groups: groupId
+    },
+  })
+};
+
 const createOneToOneChat = async (userId, initiator) => {
   const user = await userService.isUserExist(userId);
   const chatExist = await Chat.findOne({
@@ -582,4 +602,6 @@ module.exports = {
   setLastMessagesUnRead,
   getChatByName,
   removeUserCompletely,
+  addGroupToChat,
+  removeGroupFromChat
 };

@@ -48,12 +48,14 @@ const queryProjects = async (filter, options) => {
  * @returns {Promise<Project>}
  */
 const getProjectById = async (id) => {
+  console.log('id: ', id);
   const project = await Project.findById(id).populate([
     {
       path: 'owner',
       select: 'firstName surName',
     },
   ]);
+  console.log('project: ', project);
   if (!project) {
     throw new ApiError(400, 'Invalid project');
   }
