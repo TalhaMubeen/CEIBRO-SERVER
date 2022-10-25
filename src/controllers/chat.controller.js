@@ -30,7 +30,7 @@ const createChat = catchAsync(async (req, res) => {
     project.save();
   }
   const newChat = await chatService.getChatByIdWithMembers(chat._id);
-  res.status(httpStatus.CREATED).json({newchat:newChat});
+  res.status(httpStatus.CREATED).json({ newchat: newChat });
 });
 
 const createOneToOneChat = catchAsync(async (req, res) => {
@@ -38,7 +38,7 @@ const createOneToOneChat = catchAsync(async (req, res) => {
   const { userId } = req.params;
   const chat = await chatService.createOneToOneChat(userId, _id);
   const newChat = await chatService.getChatByIdWithMembers(chat._id);
-  res.status(httpStatus.CREATED).json({newchat:newChat});
+  res.status(httpStatus.CREATED).json({ newchat: newChat });
 });
 
 const getChats = catchAsync(async (req, res) => {
@@ -87,7 +87,7 @@ const getChats = catchAsync(async (req, res) => {
     chats = chats?.filter((chat) => !chat.unreadCount || chat.unreadCount <= 0);
   }
 
-  res.json({userallchat:chats.reverse()});
+  res.json({ userallchat: chats.reverse() });
 });
 
 const getChat = catchAsync(async (req, res) => {
@@ -95,7 +95,7 @@ const getChat = catchAsync(async (req, res) => {
   if (!chat) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Chat not found');
   }
-  res.json({getchat:chat});
+  res.json({ getchat: chat });
 });
 
 const updateChat = catchAsync(async (req, res) => {
@@ -106,7 +106,7 @@ const updateChat = catchAsync(async (req, res) => {
 const getConversationByRoomId = catchAsync(async (req, res) => {
   const currentLoggedUser = req.user._id;
   const { roomId } = req.params;
-  const { lastMessageId = null, down = 'false', search, messageId = null,username,company,group, startDate,endDate } = req.query;
+  const { lastMessageId = null, down = 'false', search, messageId = null, username, company, group, startDate, endDate } = req.query;
   const room = await chatService.getChatRoomByRoomId(roomId);
   if (!room) {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
@@ -117,65 +117,65 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
   };
   let usersFilters = {};
   searchUsers = false;
-  if(username){
-    searchUsers=true 
+  if (username) {
+    searchUsers = true
     usersFilters = {
       ...usersFilters,
-    username: { $regex: '.*' + username + '.*' }
+      username: { $regex: '.*' + username + '.*' }
+    }
   }
-}
-  if(company){ 
-    searchUsers=true
+  if (company) {
+    searchUsers = true
     usersFilters = {
       ...usersFilters,
-    companyName: { $regex: '.*' + company + '.*' }
-  }
+      companyName: { $regex: '.*' + company + '.*' }
+    }
   }
   let groupMembers = [];
-  if(group){
+  if (group) {
     const searchGroup = await Group.find({
-      name:{ $regex: '.*' + group + '.*' }
+      name: { $regex: '.*' + group + '.*' }
     });
-    
-    
-   searchGroup.forEach(g => {
-    // res.send(g.members.toObject());
-   g.members.forEach(item=> groupMembers.push(item.toString()))
 
-   
+
+    searchGroup.forEach(g => {
+      // res.send(g.members.toObject());
+      g.members.forEach(item => groupMembers.push(item.toString()))
+
+
     });
   }
-  
-    let searchUsersList = [];  
-    if(searchUsers){
-    const users =  await User.find(usersFilters);
-    if(users){
-      searchUsersList = users.map(user=>user.id.toString());
-  
+
+  let searchUsersList = [];
+  if (searchUsers) {
+    const users = await User.find(usersFilters);
+    if (users) {
+      searchUsersList = users.map(user => user.id.toString());
+
+    }
   }
-  }
-  if(group && searchUsers){
+  if (group && searchUsers) {
     // res.send({searchUsersList, groupMembers})
-  let filterUsers = searchUsersList.filter(value => groupMembers.includes(value.toString()));
-  // res.send({filterUsers,searchUsersList,groupMembers});
-  idsFilter={
-    ...idsFilter,
-    
-    access:{"$in":filterUsers}
+    let filterUsers = searchUsersList.filter(value => groupMembers.includes(value.toString()));
+    // res.send({filterUsers,searchUsersList,groupMembers});
+    idsFilter = {
+      ...idsFilter,
+
+      access: { "$in": filterUsers }
+    }
+  } else {
+    let filterUsers = [...searchUsersList, ...groupMembers];
+    if (filterUsers.length > 0) {
+      idsFilter = {
+        ...idsFilter,
+        access: { "$in": filterUsers }
+      }
+    }
   }
-  }else{
-let filterUsers = [...searchUsersList, ...groupMembers];
-if(filterUsers.length > 0){
-  idsFilter={
-    ...idsFilter,
-    access:{"$in":filterUsers}
-  }
-}
-  }
-  
-  
+
+
   // return res.send(idsFilter)
-  
+
   if (search) {
     const regex = new RegExp(escapeRegex(search), 'gi');
     idsFilter = {
@@ -183,22 +183,22 @@ if(filterUsers.length > 0){
       message: regex,
     };
   }
-  if(startDate && endDate){
+  if (startDate && endDate) {
     idsFilter = {
       ...idsFilter,
-      createdAt: {$gt:startDate,$lt:endDate}
+      createdAt: { $gt: startDate, $lt: endDate }
     }
   }
-  else if(startDate){
+  else if (startDate) {
     idsFilter = {
       ...idsFilter,
-      createdAt: {$gt:startDate}
+      createdAt: { $gt: startDate }
     }
   }
-  else if(endDate){
+  else if (endDate) {
     idsFilter = {
       ...idsFilter,
-      createdAt: {$lt:endDate}
+      createdAt: { $lt: endDate }
     }
   }
   const messageIds = await getMessageIdsByFilter(idsFilter);
@@ -257,7 +257,7 @@ if(filterUsers.length > 0){
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
   });
-  res.status(httpStatus.CREATED).json({message:conversations});
+  res.status(httpStatus.CREATED).json({ message: conversations });
 });
 
 const setRoomMessagesRead = catchAsync(async (req, res) => {
@@ -271,7 +271,7 @@ const setRoomMessagesRead = catchAsync(async (req, res) => {
 
   await chatService.setAllMessagesReadByRoomId(roomId, currentLoggedUser);
 
-  res.status(httpStatus.CREATED).json({message:'All messages read by users'});
+  res.status(httpStatus.CREATED).json({ message: 'All messages read by users' });
 });
 
 const setRoomMessagesUnRead = catchAsync(async (req, res) => {
@@ -286,7 +286,7 @@ const setRoomMessagesUnRead = catchAsync(async (req, res) => {
   await chatService.setLastMessagesUnRead(roomId, currentLoggedUser);
 
   res.status(httpStatus.CREATED).json({
-   message:'OK'
+    message: 'OK'
   });
 });
 
@@ -300,7 +300,7 @@ const addToFavouite = catchAsync(async (req, res) => {
   }
   const [, , added] = await chatService.addOrRemoveChatRoomToFavourite(roomId, currentLoggedUser);
   res.status(httpStatus.CREATED).json({
-    message : `Chat ${added ? 'added to ' : 'removed from '} favourite`
+    message: `Chat ${added ? 'added to ' : 'removed from '} favourite`
   });
 });
 
@@ -316,7 +316,7 @@ const addMessageToFavourite = catchAsync(async (req, res) => {
   await chatService.checkChatAuthorization(currentLoggedUser, message.chat);
 
   const [, , added] = await chatService.addOrRemoveMessageToFavourite(messageId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:`Message ${added ? 'added to ' : 'removed from '} favourite`});
+  res.status(httpStatus.CREATED).json({ message: `Message ${added ? 'added to ' : 'removed from '} favourite` });
 });
 
 const getPinnedMessages = catchAsync(async (req, res) => {
@@ -324,7 +324,7 @@ const getPinnedMessages = catchAsync(async (req, res) => {
   const { messageId: roomId } = req.params;
 
   const messages = await chatService.getPinnedMessages(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:messages});
+  res.status(httpStatus.CREATED).json({ message: messages });
 });
 
 const muteChat = catchAsync(async (req, res) => {
@@ -336,7 +336,7 @@ const muteChat = catchAsync(async (req, res) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'No room exists for this id');
   }
   const [, , muted] = await chatService.muteOrUnmuteChat(roomId, currentLoggedUser);
-  res.status(httpStatus.CREATED).json({message:`Chat ${muted ? 'muted' : 'unmuted'}`});
+  res.status(httpStatus.CREATED).json({ message: `Chat ${muted ? 'muted' : 'unmuted'}` });
 });
 
 const replyMessage = catchAsync(async (req, res) => {
@@ -363,7 +363,7 @@ const replyMessage = catchAsync(async (req, res) => {
     chat: String(myChat._id),
     mutedFor: myChat.mutedBy,
   });
-  res.status(200).json({message:newMessage});
+  res.status(200).json({ message: newMessage });
 });
 
 const forwardMessage = catchAsync(async (req, res) => {
@@ -397,7 +397,7 @@ const forwardMessage = catchAsync(async (req, res) => {
     })
   );
 
-  res.status(200).json({message:'forwarded'});
+  res.status(200).json({ message: 'forwarded' });
 });
 
 const getChatRoomMedia = catchAsync(async (req, res) => {
@@ -406,7 +406,7 @@ const getChatRoomMedia = catchAsync(async (req, res) => {
   console.log('current user is ', currentUser, req.user);
   const media = await chatService.getRoomMediaById(roomId, currentUser);
   console.log('media ', media);
-  res.status(200).json({message:media[0]?.files || []});
+  res.status(200).json({ message: media[0]?.files || [] });
 });
 
 const getUnreadMessagesCount = catchAsync(async (req, res) => {
@@ -426,13 +426,13 @@ const addOrRemoveChatMembers = catchAsync(async (req, res) => {
   }
 
   const result = await chatService.addOrRemoveChatMember(roomId, memberId, temporary);
-  res.status(200).json({message:`Member ${result ? 'added' : 'removed'}`});
+  res.status(200).json({ message: `Member ${result ? 'added' : 'removed'}` });
 });
 
 const getAvailableChatMembers = catchAsync(async (req, res) => {
   const { roomId } = req.params;
   const result = await chatService.getAvailableChatMembers(roomId, req.user._id);
-  res.status(200).json({message:result});
+  res.status(200).json({ message: result });
 });
 
 const saveQuestioniar = catchAsync(async (req, res) => {
@@ -707,8 +707,8 @@ const deleteChatRoomForUser = catchAsync(async (req, res) => {
     if (myChat.removedMembers.findIndex((userId) => String(userId) === String(_id)) > -1) {
       await chatService.removeUserCompletely(roomId, _id);
       return res.status(200).json({
-    message: 'Room deleted'
-  });
+        message: 'Room deleted'
+      });
     }
     throw new ApiError(400, 'User does not belongs to this chat room');
   }
@@ -739,7 +739,7 @@ const updateChatRoom = catchAsync(async (req, res) => {
   myChat.name = name;
   await myChat.save();
 
-  res.status(200).json({message:'Room updated'});
+  res.status(200).json({ message: 'Room updated' });
 });
 
 const updateChatPinTitle = catchAsync(async (req, res) => {
@@ -751,7 +751,7 @@ const updateChatPinTitle = catchAsync(async (req, res) => {
   myChat.pinTitle = title;
   await myChat.save();
 
-  res.status(200).json({message:'modified'});
+  res.status(200).json({ message: 'modified' });
 });
 
 const getQuestionairByTypeMessage = catchAsync(async (req, res) => {

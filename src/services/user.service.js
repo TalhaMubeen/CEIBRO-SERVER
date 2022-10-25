@@ -52,14 +52,16 @@ const getUserById = async (id) => {
  * @returns {Promise<User>}
  */
 const getUserByEmail = async (email) => {
-  return User.findOne({ $or: [
-    {
-      email
-    },
-    {
-      username: email
-    }
-  ] });
+  return User.findOne({
+    $or: [
+      {
+        email
+      },
+      {
+        username: email
+      }
+    ]
+  });
 };
 
 /**
@@ -110,6 +112,7 @@ const getInvitation = async (from, to) => {
 const inviteUserByEmail = async (email, currentUserId) => {
   const currentUser = await getUserById(currentUserId);
   const user = await getUserByEmail(email);
+  const name = currentUser.firstName + ' ' + currentUser.surName;
 
   if (user && String(currentUser._id) === String(user._id)) {
     throw new ApiError(BAD_REQUEST, 'User cannot invite himeself');
@@ -117,7 +120,6 @@ const inviteUserByEmail = async (email, currentUserId) => {
 
   if (!user) {
     // if email not exists in users then sent him an email invite
-    const name = currentUser.firstName + ' ' + currentUser.surName;
     const emailInvite = new EmailInvite({
       from: currentUserId,
       email: email,
@@ -136,6 +138,7 @@ const inviteUserByEmail = async (email, currentUserId) => {
         to: user._id,
       });
       await myInvite.save();
+      await emailService.sendInvitationEmail(email, name, currentUser.email);
     } else {
       inviteExist.status = invitesStatus.PENDING;
       await inviteExist.save();
@@ -254,6 +257,27 @@ const getConnectionsCountByUserId = async (currentUserId) => {
   });
 };
 
+const isEmailInviteExist = async (inviteId) => {
+  console.log('inviteId: ', inviteId);
+  const invite = await EmailInvite.findOne({
+    _id: inviteId
+  });
+  if (!invite) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invite not found');
+  }
+  return invite;
+};
+
+const isInviteExist = async (inviteId) => {
+  const invite = await Invite.findOne({
+    _id: inviteId
+  });
+  if (!invite) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invite not found');
+  }
+  return invite;
+};
+
 const getAvailableUsers = async (currentUserId) => {
   return Invite.find({
     $or: [
@@ -305,4 +329,6 @@ module.exports = {
   isUserExist,
   deleteMyConnection,
   deleteEmailInvite,
+  isEmailInviteExist,
+  isInviteExist
 };
