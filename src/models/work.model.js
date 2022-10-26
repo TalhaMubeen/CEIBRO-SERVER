@@ -12,6 +12,10 @@ const workSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'TimeProfile',
     },
+    location: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Location',
+    },
     roles: [
       {
         type: mongoose.SchemaTypes.ObjectId,

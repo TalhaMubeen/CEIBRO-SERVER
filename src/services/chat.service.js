@@ -56,6 +56,26 @@ const isChatExist = async (chatId) => {
   return chatExist;
 };
 
+const addGroupToChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $addToSet: {
+      members: group.members,
+      groups: groupId
+    },
+  })
+};
+
+const removeGroupFromChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $pull: {
+      members: group.members,
+      groups: groupId
+    },
+  })
+};
+
 const createOneToOneChat = async (userId, initiator) => {
   const user = await userService.isUserExist(userId);
   const chatExist = await Chat.findOne({
@@ -151,6 +171,7 @@ const getAllChats = async (filter, userId) => {
   const chats = await Chat.find(filter)
     .populate({ path: 'members', select: 'firstName surName profilePic companyName' })
     .populate({ path: 'project', select: 'title' })
+    .populate({ path: 'groups', select: 'name' })
     .populate({ path: 'lastMessage', select: 'message createdAt' });
 
   const chatIds = await chats.map((chat) => chat._id);
@@ -582,4 +603,6 @@ module.exports = {
   setLastMessagesUnRead,
   getChatByName,
   removeUserCompletely,
+  addGroupToChat,
+  removeGroupFromChat
 };

@@ -76,6 +76,14 @@ router
 
 router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage);
 
+router.route('/groups/:roomId')
+  .get(auth('getChatRooms'), chatController.getAvailableGroupsForChat)
+
+router.route('/groups/:roomId/:groupId')
+  .get(auth('getChatRooms'), chatController.addOrRemoveGroupToChat)
+
+
+
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
 
@@ -1074,4 +1082,72 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+
+/**
+ * @swagger
+ * /chat/groups/{roomId}:
+ *   get:
+ *     summary: get gorup chat's project groups
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: questainer room id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /chat/groups/{roomId}/{groupId}:
+ *   get:
+ *     summary: get gorup chat's project groups
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: room id.
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: group id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */

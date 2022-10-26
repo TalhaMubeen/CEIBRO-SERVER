@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const pick = require('../utils/pick');
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
-const { userService, awsService, projectService } = require('../services');
+const { userService, awsService, projectService, emailService } = require('../services');
 const { invitesStatus } = require('../config/user.config');
 const TimeAgo = require('javascript-time-ago');
 const en = require('javascript-time-ago/locale/en.json');
@@ -74,7 +74,7 @@ const getMyProfile = catchAsync(async (req, res) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  res.json({user:user});
+  res.json({ user: user });
 });
 
 const updateMyProfile = catchAsync(async (req, res) => {
@@ -216,6 +216,30 @@ const getMyConnectionsCount = catchAsync(async (req, res) => {
   res.send(invites.toString());
 });
 
+const reInvite = catchAsync(async (req, res) => {
+  const { _id, firstName, surName, email } = req.user;
+  const name = firstName + ' ' + surName
+  const { inviteId } = req.params;
+  const { isEmailInvite } = req.query;
+  console.log('ladjf ', inviteId, isEmailInvite)
+  let invite = null;
+  if (isEmailInvite == "true") {
+    console.log('ladsflj')
+    invite = await userService.isEmailInviteExist(inviteId);
+    if (String(invite.from) !== String(_id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid invite id')
+    }
+    await emailService.sendInvitationEmail(invite.email, name, email);
+  } else {
+    invite = await userService.isInviteExist(inviteId);
+    if (String(invite.from) !== String(_id)) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid invite id')
+    }
+    const toUser = await userService.isUserExist(invite.to);
+    await emailService.sendInvitationEmail(toUser.email, name, email);
+  }
+});
+
 module.exports = {
   createUser,
   getUsers,
@@ -234,4 +258,5 @@ module.exports = {
   getMyConnectionsCount,
   updateUserProfilePic,
   deleteMyConnection,
+  reInvite
 };

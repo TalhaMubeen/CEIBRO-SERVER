@@ -150,6 +150,20 @@ router
   .route('/profile/pic/:projectId')
   .patch(auth('manageProfile'), multerUpload.single('profilePic'), projectController.updateProfilePic);
 
+router
+  .route('/location/:timeProfileId')
+  .get(auth('manageProject'), projectController.getExternalLocations)
+  .post(auth('manageProject'), validate(validation.createLocation), projectController.createLocation);
+
+router
+  .route('/location/manage/:locationId')
+  .delete(auth('manageProject'), projectController.deleteLocation)
+  .patch(auth('manageProject'), validate(validation.updateLocation), projectController.updateLocation);
+
+router
+  .route('/internal/location/:locationId/:timeProfileId')
+  .get(auth('manageProject'), projectController.getInternalLocations)
+
 module.exports = router;
 
 /**
@@ -1486,6 +1500,7 @@ module.exports = router;
  *                 type: boolean
  *             example:
  *               name: project manager
+ *               location: 1234jj23jh234
  *               roles: []
  *               time: false,
  *               timeRequired: false,
@@ -1628,5 +1643,184 @@ module.exports = router;
  *         $ref: '#/components/responses/Forbidden'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
- *
+ */
+
+
+/**
+ * @swagger
+ * /project/location/{timeProfileId}:
+ *   get:
+ *     summary: get external locations of timeProfile
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: create a time profile external locaiton
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               isInternal:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *               parent: null,
+ *               isInternal: false
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /project/location/internal/{locationId}/{timeProfileId}:
+ *   get:
+ *     summary: get internal locations and workds of a location 
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: timeProfileId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: time profile id.
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: locationID id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+
+/**
+ * @swagger
+ * /project/location/manage/{locationId}:
+ *   delete:
+ *     summary: delete location
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: location id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *   post:
+ *     summary: update location name
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: locationId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: update location id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *             properties:
+ *               name:
+ *                 type: string
+ *               isInternal:
+ *                 type: boolean
+ *             example:
+ *               name: project manager
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */
