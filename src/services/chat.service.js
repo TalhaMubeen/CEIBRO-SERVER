@@ -171,6 +171,7 @@ const getAllChats = async (filter, userId) => {
   const chats = await Chat.find(filter)
     .populate({ path: 'members', select: 'firstName surName profilePic companyName' })
     .populate({ path: 'project', select: 'title' })
+    .populate({ path: 'groups', select: 'name' })
     .populate({ path: 'lastMessage', select: 'message createdAt' });
 
   const chatIds = await chats.map((chat) => chat._id);

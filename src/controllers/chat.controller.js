@@ -805,8 +805,9 @@ const addOrRemoveGroupToChat = catchAsync(async (req, res) => {
     await chatService.addGroupToChat(groupId, roomId);
     removed = false;
   }
+
   res.status(200).json({
-    data: removed ? "Grouped removed successfully" : "Group added successfully"
+    data: removed? "Grouped removed successfully": "Group added successfully"
   });
 });
 

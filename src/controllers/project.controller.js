@@ -34,7 +34,7 @@ const { projectPublishStatus, avaialablePermissions, roleEntities } = require('.
 const Project = require('../models/project.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
-const { filterArray } = require('../helpers/project.helper');
+const { filterArray, getUniqueFileName } = require('../helpers/project.helper');
 const Group = require('../models/group.model');
 const { mapUsers, uniqueBy } = require('../helpers/user.helper');
 const Folder = require('../models/folder.model');
@@ -308,7 +308,9 @@ const createVersion = catchAsync(async (req, res) => {
   const currentFolder = await Folder.findById(folderId)
   // return res.send(currentFolder);
   const folder = await createProjectFolder(file?.name, currentFolder.group, currentFolder.project, req.user._id, currentFolder.id);
-  const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
+  let version = file.version + 1;
+  const folderPath = `${bucketFolders.PROJECT_FOLDER}/project-${folder.project}/${req.file.originalname}/v${version}`
+  const path = await awsService.uploadFile(req.file, folderPath);
   const newFile = new ProjectFile({
     name: path?.fileName,
     fileType: path?.fileType,
@@ -317,6 +319,7 @@ const createVersion = catchAsync(async (req, res) => {
     access: [req.user._id],
     project: folder.project,
     folder: folder.id,
+    version
   })
   const copyFile = new ProjectFile({
     name: file?.name,
@@ -326,7 +329,7 @@ const createVersion = catchAsync(async (req, res) => {
     access: [req.user._id],
     project: folder.project,
     folder: folder.id,
-
+    version
   });
   await copyFile.save();
   await newFile.save();
@@ -435,7 +438,11 @@ const uploadFileToFolder = catchAsync(async (req, res) => {
   if (!folder) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
   }
-  const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
+
+  // const uniqueFileName = getUniqueFileName(req.fil)
+  const folderPath = `${bucketFolders.PROJECT_FOLDER}/project-${folder.project}/${req.file.originalname}/v1`
+
+  const path = await awsService.uploadFile(req.file, folderPath);
   const file = new ProjectFile({
     name: path?.fileName,
     fileType: path?.fileType,
