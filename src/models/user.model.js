@@ -17,11 +17,11 @@ const userSchema = mongoose.Schema(
       // required: true,
       trim: true,
     },
-    username: {
-      type: String,
-      trim: true,
-      required: false,
-    },
+    // username: {
+    //   type: String,
+    //   trim: true,
+    //   required: false,
+    // },
     profilePic: {
       type: String,
       required: false,
@@ -143,20 +143,20 @@ userSchema.statics.isEmailTaken = async function (email, excludeUserId) {
   return !!user;
 };
 
-/**
- * Check if username is taken
- * @param {string} username - The user's username
- * @returns {Promise<boolean>}
- */
-userSchema.statics.isUsernameTaken = async function (username) {
-  const user = await this.findOne({ username });
-  return !!user;
-};
+// /**
+//  * Check if username is taken
+//  * @param {string} username - The user's username
+//  * @returns {Promise<boolean>}
+//  */
+// userSchema.statics.isUsernameTaken = async function (username) {
+//   const user = await this.findOne({ username });
+//   return !!user;
+// };
 
 userSchema.statics.createDefultProject = async function (userId) {
   // creating default role
   const defaultProject = await Project.create({
-    title: 'Default Project',
+    title: 'My Ceibro',
     status: 'draft',
     owner: [userId],
     isDefault: true,

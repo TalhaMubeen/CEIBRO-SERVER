@@ -25,7 +25,7 @@ mongoose
 
     global.io = io;
 
-    server.listen(config.port || 3000, () => {
+    server.listen(config.port || 3000, '10.10.10.2', () => {
       logger.info(`Listening to port ${config.port}`);
     });
 

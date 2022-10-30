@@ -29,6 +29,8 @@ router
 
 router.route('/invite/count').get(auth('manageProfile'), userController.getMyInvitesCount);
 
+router.route('/invite/re-invite/:inviteId').get(auth('manageProfile'), userController.reInvite);
+
 router
   .route('/invite/accept/:accepted/:inviteId')
   .post(auth('manageProfile'), validate(userValidation.acceptInvite), userController.acceptInvite);
@@ -490,6 +492,42 @@ module.exports = router;
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /users/invite/re-invite/{inviteId}:
+ *   get:
+ *     summary: Get my invites count
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: isEmailInvite
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: is it an email invite or not
+ *       - in: path
+ *         name: inviteId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: invite id
  *     responses:
  *       "200":
  *         description: OK

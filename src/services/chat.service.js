@@ -19,6 +19,7 @@ const createChat = async (chatBody, initiator) => {
 
   const chatExist = await getChatByName(name);
   if (chatExist) {
+    leaveChat(chatExist._id, initiator)
     throw new ApiError(httpStatus.BAD_REQUEST, 'Chat with this name already exist');
   }
 
@@ -54,6 +55,34 @@ const isChatExist = async (chatId) => {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Chat not found');
   }
   return chatExist;
+};
+
+const getChatQuestioniarId= async (questioniarId) => {
+  const chatExist = await Message.findOne({ _id: questioniarId });
+  if (!chatExist) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Chat not found');
+  }
+  return chatExist;
+};
+
+const addGroupToChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $addToSet: {
+      members: group.members,
+      groups: groupId
+    },
+  })
+};
+
+const removeGroupFromChat = async (groupId, roomId) => {
+  const group = await projectService.isGroupExist(groupId);
+  return Chat.updateOne({ _id: roomId }, {
+    $pull: {
+      members: group.members,
+      groups: groupId
+    },
+  })
 };
 
 const createOneToOneChat = async (userId, initiator) => {
@@ -151,6 +180,7 @@ const getAllChats = async (filter, userId) => {
   const chats = await Chat.find(filter)
     .populate({ path: 'members', select: 'firstName surName profilePic companyName' })
     .populate({ path: 'project', select: 'title' })
+    .populate({ path: 'groups', select: 'name' })
     .populate({ path: 'lastMessage', select: 'message createdAt' });
 
   const chatIds = await chats.map((chat) => chat._id);
@@ -389,6 +419,7 @@ const sendMessage = async function (message, chatId, userId, files, type) {
     access: chat.members.map((member) => member),
   });
 
+  console.log(msg)
   await msg.save();
 
   chat.lastMessage = msg._id;
@@ -548,6 +579,28 @@ const addOrRemoveChatMember = async (roomId, userId, temporary = false) => {
   }
 };
 
+const leaveChat = async (roomId, userId, temporary = false) => {
+  const chat = await getChatRoomByRoomId(roomId);
+  if (!chat) {
+    throw new ApiError(400, 'Chat room not found');
+  }
+
+  const member = await userService.getUserById(userId);
+  if (!member) {
+    throw new ApiError(400, 'User not found');
+  }
+  const index = chat?.members?.findIndex((member) => String(member) === String(userId));
+  if (index < 0) {
+    await Chat.updateOne({ _id: roomId }, { $pull: { members: userId }, $addToSet: { removedMembers: userId } });
+    if (member.socketId) {
+      global.io.sockets.to(member.socketId).emit(REFRESH_CHAT.value);
+    }
+    return false;
+  } else {
+    throw new ApiError(400, 'User not found');
+  }
+};
+
 const removeUserCompletely = async function (roomId, userId) {
   return Chat.updateOne({ _id: roomId }, { $pull: { removedMembers: userId } });
 };
@@ -581,5 +634,9 @@ module.exports = {
   isChatExist,
   setLastMessagesUnRead,
   getChatByName,
+  getChatQuestioniarId,
   removeUserCompletely,
+  leaveChat,
+  addGroupToChat,
+  removeGroupFromChat
 };
