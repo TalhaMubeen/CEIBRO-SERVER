@@ -18,6 +18,7 @@ mongoose
     const server = http.createServer(app);
     const io = new Server(server, {
       cors: {
+        transports: 'Polling',
         origin: '*',
         methods: ['GET', 'POST'],
       },
