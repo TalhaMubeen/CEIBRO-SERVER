@@ -259,6 +259,7 @@ const getConversationByRoomId = catchAsync(async (req, res) => {
     conversation = formatMessage(conversation, currentLoggedUser);
     return conversation;
   });
+  setRoomMessagesRead(req);
   res.status(httpStatus.CREATED).json({ message: conversations });
 });
 
@@ -273,7 +274,9 @@ const setRoomMessagesRead = catchAsync(async (req, res) => {
 
   await chatService.setAllMessagesReadByRoomId(roomId, currentLoggedUser);
 
+  if (res){
   res.status(httpStatus.CREATED).json({ message: 'All messages read by users' });
+  }
 });
 
 const setRoomMessagesUnRead = catchAsync(async (req, res) => {
