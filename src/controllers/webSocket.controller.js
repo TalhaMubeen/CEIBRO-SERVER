@@ -6,69 +6,66 @@ const { formatMessage } = require('../helpers/chat.helper');
 
 class WebSocket {
     listenToChatServer(io) {
-
         io.on("connection", (socket) => {
             const { token } = socket.handshake.query;
+      if (typeof token === 'undefined') {
+        return
+      }
             const tokenVerify = verifyBearerToken(token);
             let userId = null;
             if (tokenVerify.isVerified) {
                 const { sub } = tokenVerify
                 userId = sub;
 
-                this.saveUsersSocket(tokenVerify.sub, socket, io);
-
-
-
-
-
-
-
-
-
+                this.initUserSockets(tokenVerify.sub, socket, io);
 
                 // Send message to another user
+        socket.on("SEND_MESSAGE", (data) => {
+          if (Object.keys(data).length === 0) {
+            return;
+          }
+          const { message, chat, messageId, type, files, myId } = data
 
-                // socket.on(ChatTypes.SEND_MESSAGE.value, (data) => {
+                    //Send message id if it's a reply to an existing message
+          this.sendMessageToChat(userId, io, message, chat, messageId, type, files, myId)
 
+                })
 
+                socket.on(ChatTypes.TYPING_START.value, (data) => {
+          if (Object.keys(data).length === 0) {
+            return;
+          }
+                    console.log('Typing Started', ChatTypes.TYPING_START.value)
+                    const { recieverId } = data
+                    this.typingStart(_id, recieverId, io)
+                })
 
-                // important!!!!!     changed to api
+                socket.on(ChatTypes.TYPING_END.value, (data) => {
+          if (Object.keys(data).length === 0) {
+            return;
+          }
+                    console.log('Typing End', ChatTypes.TYPING_END.value)
+                    const { recieverId } = data
+                    this.typingEnd(_id, recieverId, io)
+                })
 
+                socket.on(ChatTypes.MESSAGE_READ.value, (data) => {
+          if (Object.keys(data).length === 0) {
+            return;
+          }
+                    console.log(ChatTypes.MESSAGE_READ.value)
+                    const { messageId } = data
+                    this.markMessageRead(messageId)
+                })
 
-
-                //     const { chat, message } = data
-
-                //     this.sendMessageToChat(userId, chat, message, io)
-                // })
-
-                // socket.on(ChatTypes.REPLY_MESSAGE.value, (data) => {
-                //     const { message, messageId } = data
-                //     this.replyMessage(userId, messageId, message, io);
-                // })
-
-                // socket.on(ChatTypes.TYPING_START.value, (data) => {
-                //     console.log('Typing ', ChatTypes.TYPING_START.value)
-                //     const { recieverId } = data
-                //     this.typingStart(_id, recieverId, io)
-                // })
-
-                // socket.on(ChatTypes.TYPING_END.value, (data) => {
-                //     console.log('Typing Ejn', ChatTypes.TYPING_END.value)
-                //     const { recieverId } = data
-                //     this.typingEnd(_id, recieverId, io)
-                // })
-
-                // socket.on(ChatTypes.MESSAGE_READ.value, (data) => {
-                //     console.log(ChatTypes.MESSAGE_READ.value)
-                //     const { messageId } = data
-                //     this.markMessageRead(messageId)
-                // })
-
-                // socket.on(ChatTypes.ALL_MESSAGE_READ.value, (data) => {
-                //     console.log(ChatTypes.ALL_MESSAGE_READ.value)
-                //     const { roomId } = data
-                //     this.markAllMessagesRead(roomId)
-                // })
+                socket.on(ChatTypes.ALL_MESSAGE_READ.value, (data) => {
+          if (Object.keys(data).length === 0) {
+            return;
+          }
+                    console.log(ChatTypes.ALL_MESSAGE_READ.value)
+                    const { roomId } = data
+                    this.markAllMessagesRead(roomId)
+                })
             }
             else {
                 console.log('bad socket userIdconnection')
@@ -115,7 +112,7 @@ class WebSocket {
         }
       }
 
-      async saveUsersSocket(_id, socket, io) {
+      async initUserSockets(_id, socket, io) {
         const user = await User.findById(_id);
         if (user) {
             user.isOnline = true
@@ -123,10 +120,14 @@ class WebSocket {
             await user.save()
             io.emit(ChatTypes.USER_CONNECTED.value, { userId: user._id })
 
-            const chats = await chatService.getAllChats({ members: {
+            //Getting all rooms ids of current user
+      const chats = await chatService.getAllChats({
+        members: {
                 $in: _id
-            }});
+        }
+      });
 
+            //Joining all chat rooms sockets of current user
             chats?.map(chat => {
                 socket.join(String(chat._id));
             });
@@ -143,49 +144,41 @@ class WebSocket {
         io.emit(ChatTypes.USER_DISCONNECTED.value, { userId })
       }
 
-      async sendMessageToChat(senderId, chatId, message, io) {
+      //userId,  message, chat, messageId, type, io
+  async sendMessageToChat(senderId, io, message, chatId, messageId, type, files, myId) {
         try {
-            const chat = await chatService.getChatById(chatId);
-            if(!chat) return;
 
-            const newMessage = new Message({
-                sender: senderId,
-                chat: chatId,
-                receivedBy: [senderId],
-                readBy: [senderId],
-                message
-            });
+      if (files.length === 0) {
+        files = await Promise.all(files?.map((file) => awsService.uploadFile(file)));
+      }
 
-            await newMessage.save();
-            const originalMessage = await chatService.getMessageById(newMessage._id);
+            let newMessage = null;
+            if (messageId) {
+              newMessage = await chatService.replyMessage(message, messageId, senderId, files);
+            } else {
+        newMessage = await chatService.sendMessage(message, chatId, senderId, files, type);
+            }
+            const myChat = await chatService.getChatById(newMessage.chat);
+            const myMessage = await chatService.getMessageById(newMessage._id);
 
-            chat.lastMessage = originalMessage._id;
-            await chat.save();
+            const msgData = {
+                from: senderId,
+                message: formatMessage(myMessage),
+                chat: String(myChat._id),
+                mutedFor: myChat.mutedBy,
+              }
 
-            io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, { from: senderId, message: formatMessage(originalMessage), chat: String(chatId), mutedFor: chat.mutedBy });
-            console.log('aslkjfa fj asf akljfal fj')
-            // room.lastMessage = messageObj._id
-                // await room.save()
-            // }
+      const ret = {
+        myId:  myId,
+        data: msgData
+      }
+            //broadcast message to the destination room from this socket
+      io.to(String(chatId)).emit(ChatTypes.RECEIVE_MESSAGE.value, ret);
         }
         catch (e) {
             console.log('error is ', e)
         }
       }
-
-
-       async replyMessage(currentLoggedUser, messageId, message, io) {
-
-            const newMessage = await chatService.replyMessage(message, messageId, currentLoggedUser);
-            const chat = await chatService.getChatById(newMessage.chat);
-
-            io.to(String(newMessage.chat)).emit(REPLY_MESSAGE.value, { from: currentLoggedUser, message: formatMessage(newMessage), chat: String(chat._id), mutedFor: chat.mutedBy });
-
-            res.status(200).send(newMessage);
-
-        }
-
-
 
       getChatSocketEvents(_req, res, next) {
         try {

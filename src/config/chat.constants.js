@@ -9,5 +9,6 @@ module.exports =  {
      USER_DISCONNECTED: { value: 'USER_DISCONNECTED', description: "A user is disconnected: event received on client side", data: "userId = sent from server and received by all clients"},
      USER_CONNECTED: { value: 'USER_CONNECTED', description: "A new user connected: event received on client side", data: "userId = sent from server and received by all clients"},
      MESSAGE_READ: { value: 'MESSAGE_READ', description: "Set message is seen by receiver: Event sent from receiver client side", data: "messageId = sent from receiver client side"},
-     ALL_MESSAGE_READ: { value: 'ALL_MESSAGE_READ', description: "Set all conversation message is seen when a conversation is opened: event sent from receiver client side", data: "roomId = sent from receiver client side"}
+     ALL_MESSAGE_READ: { value: 'ALL_MESSAGE_READ', description: "Set all conversation message is seen when a conversation is opened: event sent from receiver client side", data: "roomId = sent from receiver client side"},
+     
 }

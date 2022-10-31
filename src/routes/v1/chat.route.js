@@ -10,17 +10,23 @@ const router = express.Router();
 
 router
   .route('/rooms')
-  .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat);
+  .post(auth('createChatRoom'), validate(chatValidation.createChatRoom), chatController.createChat)
+  .get(auth('getChatRooms'), chatController.getChats);
 
-router.route('/rooms/getchat').post(auth('getChatRooms'), chatController.getChats);
+router.route('/rooms/getchat')
+  .post(auth('getChatRooms'), chatController.getChats);
 
 router
   .route('/room/single/:userId')
   .post(auth('createChatRoom'), validate(chatValidation.createOneToOneChat), chatController.createOneToOneChat);
 
-router.route('/room/messages/:roomId').post(auth('getChatRooms'), chatController.getConversationByRoomId);
+router.route('/room/messages/:roomId')
+  .get(auth('getChatRooms'), chatController.getConversationByRoomId)
+  .post(auth('getChatRooms'), chatController.getConversationByRoomId);
 
-router.route('/unread/count').post(auth('getChatRooms'), chatController.getUnreadMessagesCount);
+router.route('/unread/count')
+  .get(auth('getChatRooms'), chatController.getUnreadMessagesCount)
+  .post(auth('getChatRooms'), chatController.getUnreadMessagesCount);
 
 router.route('/room/read/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesRead);
 router.route('/room/unread/:roomId').put(auth('getChatRooms'), chatController.setRoomMessagesUnRead);
@@ -32,7 +38,7 @@ router.route('/room/mute/:roomId').post(auth('getChatRooms'), chatController.mut
 router.route('/message/reply').post(
   auth('getChatRooms'),
   multerUpload.array('products'),
-  // validate(chatValidation.sendMessage),
+// validate(chatValidation.sendMessage),
   chatController.replyMessage
 );
 
@@ -40,14 +46,16 @@ router
   .route('/message/forward')
   .post(auth('getChatRooms'), validate(chatValidation.forwardMessage), chatController.forwardMessage);
 
-router.route('/pinned/title/:roomId').put(auth('manageProject'), chatController.updateChatPinTitle);
+router.route('/pinned/title/:roomId')
+  .put(auth('manageProject'), chatController.updateChatPinTitle);
 
 router
   .route('/message/favourite/:messageId')
-  .post(auth('getChatRooms'), chatController.addMessageToFavourite);
+  .post(auth('getChatRooms'), chatController.addMessageToFavourite)
+  .get(auth('getChatRooms'), chatController.getPinnedMessages);
+
 
 router.route('/message/favourites/:messageId').post(auth('getChatRooms'), chatController.getPinnedMessages);
-
 router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getPinnedMessages);
 
 router.route('/media/:roomId').get(auth('getChatRooms'), chatController.getChatRoomMedia);
@@ -75,6 +83,15 @@ router
   .get(auth('getChatRooms'), chatController.getQuestioniarAnswersByUser);
 
 router.route('/message/questionair/:roomId').get(auth('getChatRooms'), chatController.getQuestionairByTypeMessage);
+router.route('/message/questionairsearch/:roomId').post(auth('getChatRooms'), chatController.getQuestioniarSearch);
+
+router.route('/groups/:roomId')
+  .get(auth('getChatRooms'), chatController.getAvailableGroupsForChat)
+
+router.route('/groups/:roomId/:groupId')
+  .get(auth('getChatRooms'), chatController.addOrRemoveGroupToChat)
+
+
 
 // router.route('/file-upload')
 //     .post(auth("getChatRooms"), upload.single("product"), chatController.uploadImage);
@@ -1074,4 +1091,72 @@ module.exports = router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  *
+ */
+
+
+/**
+ * @swagger
+ * /chat/groups/{roomId}:
+ *   get:
+ *     summary: get gorup chat's project groups
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: questainer room id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *
+ */
+
+/**
+ * @swagger
+ * /chat/groups/{roomId}/{groupId}:
+ *   get:
+ *     summary: get gorup chat's project groups
+ *     tags: [Chat]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: roomId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: room id.
+ *       - in: path
+ *         name: groupId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: group id.
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *                $ref: '#/components/schemas/User'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
  */

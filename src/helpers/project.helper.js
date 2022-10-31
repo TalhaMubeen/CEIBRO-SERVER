@@ -8,6 +8,16 @@ function filterArray(dataArray, key) {
   });
 }
 
+function getUniqueFileName(file) {
+  const originalname = file?.originalname;
+  const extension = originalname.split(".");
+  return file?.fieldname + "-" + Date.now() + "." + extension[extension.length - 1];
+}
+
+
+
+
 module.exports = {
   filterArray,
+  getUniqueFileName
 };

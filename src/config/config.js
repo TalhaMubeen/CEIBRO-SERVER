@@ -32,7 +32,10 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
+
+
 module.exports = {
+  backendUrl: envVars.FRONTEND_URL,
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongoose: {

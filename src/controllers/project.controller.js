@@ -34,7 +34,7 @@ const { projectPublishStatus, avaialablePermissions, roleEntities } = require('.
 const Project = require('../models/project.model');
 const ProjectMember = require('../models/ProjectMember.model');
 const Role = require('../models/role.model');
-const { filterArray } = require('../helpers/project.helper');
+const { filterArray, getUniqueFileName } = require('../helpers/project.helper');
 const Group = require('../models/group.model');
 const { mapUsers, uniqueBy } = require('../helpers/user.helper');
 const Folder = require('../models/folder.model');
@@ -57,7 +57,7 @@ const createProject = catchAsync(async (req, res) => {
   }
   const project = await projectService.createProject(req.body, req.user._id);
   await Project.createDefultRoleAndGroup(project._id);
-  res.status(httpStatus.CREATED).json({createProject:project});
+  res.status(httpStatus.CREATED).json({ createProject: project });
 });
 
 const getProjects = catchAsync(async (req, res) => {
@@ -94,6 +94,7 @@ const getProjects = catchAsync(async (req, res) => {
   }
 
   let myProjectIds = await projectService.getUserProjectIds(req.user._id);
+  console.log('myProjectIds: ', myProjectIds);
   filter = {
     $and: [
       filter,
@@ -102,17 +103,17 @@ const getProjects = catchAsync(async (req, res) => {
       },
     ],
   };
-
+  
   options.populate = 'owner';
   const result = await projectService.queryProjects(filter, options);
-  res.json({getproject:result});
+  res.json({ getproject: result });
 });
 
 const getAllProjects = catchAsync(async (req, res) => {
   const { _id } = req.user;
   const projectIds = await projectService.getUserProjectIds(_id);
   const result = await projectService.getAllProjects(projectIds);
-  res.json({getproject:result});
+  res.json({ getproject: result });
 });
 
 const getProjectMembers = catchAsync(async (req, res) => {
@@ -293,30 +294,33 @@ const createFolder = catchAsync(async (req, res) => {
   });
 });
 
-const createVersion = catchAsync(async(req,res)=>{
-  console.log(req.body , 'bodyy')
-   const { projectId } = req.params;
-  const {  fileId, folderId} = req.body;
+const createVersion = catchAsync(async (req, res) => {
+  console.log(req.body, 'bodyy')
+  const { projectId } = req.params;
+  const { fileId, folderId } = req.body;
   const file = await ProjectFile.findOne({
-    _id:fileId,
-    folder:folderId,
-    project:projectId
+    _id: fileId,
+    folder: folderId,
+    project: projectId
   });
   // return res.send(file);
-  
+
   const currentFolder = await Folder.findById(folderId)
   // return res.send(currentFolder);
-  const folder = await createProjectFolder(file?.name, currentFolder.group, currentFolder.project, req.user._id,currentFolder.id);
-   const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
-const newFile = new ProjectFile({
-  name: path?.fileName,
+  const folder = await createProjectFolder(file?.name, currentFolder.group, currentFolder.project, req.user._id, currentFolder.id);
+  let version = file.version + 1;
+  const folderPath = `${bucketFolders.PROJECT_FOLDER}/project-${folder.project}/${req.file.originalname}/v${version}`
+  const path = await awsService.uploadFile(req.file, folderPath);
+  const newFile = new ProjectFile({
+    name: path?.fileName,
     fileType: path?.fileType,
     url: file?.url,
     uploadedBy: req.user._id,
     access: [req.user._id],
     project: folder.project,
     folder: folder.id,
-})
+    version
+  })
   const copyFile = new ProjectFile({
     name: file?.name,
     fileType: file?.fileType,
@@ -325,12 +329,12 @@ const newFile = new ProjectFile({
     access: [req.user._id],
     project: folder.project,
     folder: folder.id,
-  
+    version
   });
   await copyFile.save();
   await newFile.save();
   res.status(200).json({
-    data: {folder:folder, file:newFile},
+    data: { folder: folder, file: newFile },
   });
 
 })
@@ -340,7 +344,7 @@ const getProjectFolders = catchAsync(async (req, res) => {
   const { search } = req.query;
   const { _id } = req.user;
   let filter = {
-    parentFolder:null,
+    parentFolder: null,
     $or: [
       {
         access: _id,
@@ -376,11 +380,11 @@ const getProjectFolders = catchAsync(async (req, res) => {
 });
 const getProjectSubFolders = catchAsync(async (req, res) => {
   const { projectId } = req.params;
-  const {folderId }= req.body
+  const { folderId } = req.body
   const { search } = req.query;
   const { _id } = req.user;
   let filter = {
-    parentFolder:folderId,
+    parentFolder: folderId,
     $or: [
       {
         access: _id,
@@ -434,7 +438,11 @@ const uploadFileToFolder = catchAsync(async (req, res) => {
   if (!folder) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid folder id');
   }
-  const path = await awsService.uploadFile(req.file, bucketFolders.PROJECT_FOLDER);
+
+  // const uniqueFileName = getUniqueFileName(req.fil)
+  const folderPath = `${bucketFolders.PROJECT_FOLDER}/project-${folder.project}/${req.file.originalname}/v1`
+
+  const path = await awsService.uploadFile(req.file, folderPath);
   const file = new ProjectFile({
     name: path?.fileName,
     fileType: path?.fileType,
@@ -604,11 +612,12 @@ const deleteProjectMember = catchAsync(async (req, res) => {
 
 const createWork = catchAsync(async (req, res) => {
   const { profileId } = req.params;
-  const { name, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
+  const { name, location, roles, time, timeRequired, quantity, quantityRequired, comment, commentRequired, photo, photoRequired } =
     req.body;
   const work = await projectService.createProfileWork(
     profileId,
     name,
+    location,
     roles,
     time,
     timeRequired,
@@ -713,6 +722,95 @@ const addRemoveFolderUser = catchAsync(async (req, res) => {
   res.status(200).send(isRemoved ? 'User removed' : 'User added');
 });
 
+const createLocation = catchAsync(async (req, res) => {
+  const { timeProfileId } = req.params;
+  const { name, parentId, isInternal = false } = req.body;
+  await projectService.isTimeProfileExist(timeProfileId);
+
+  let depth = 1;
+  let parent = null;
+  if (parentId) {
+    parent = await projectService.isLocationExist(parentId);
+    if (parent && !isInternal) {
+      // if trying to add external child then check if parent depth < 3
+      if (parent.depth > 2) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Cannot add furthur sub location.")
+      }
+    }
+    if (parent.isInternal && isInternal) {
+      // if trying to add external child then check if parent depth < 3
+      if (parent.depth > 2) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Cannot add furthur sub location.")
+      }
+    }
+    if (!parent.isInternal && !isInternal) {
+      // trying to add external child to external parent
+      depth = parent.depth + 1;
+    }
+    if (!parent.isInternal && isInternal) {
+      // trying to add internal child to external parent
+      depth = 1;
+    }
+    if (parent.isInternal && isInternal) {
+      // trying to add internal child to internal parent
+      depth = parent.depth + 1;
+    }
+  }
+
+  const location = await projectService.createLocation(name, depth, isInternal, timeProfileId);
+  if (parentId) {
+    if (parent) {
+      await isInternal ? projectService.addToInternalCild(parentId, location._id) : projectService.addToExternalCild(parentId, location._id);
+      await projectService.addParentIdsToLocation(location._id, parentId);
+    }
+  }
+  const myLocation = await projectService.isLocationExist(location._id);
+  res.status(200).json({ message: "Location created", data: myLocation })
+});
+
+const updateLocation = catchAsync(async (req, res) => {
+  const { locationId } = req.params;
+  const { name } = req.body;
+  const location = await projectService.isLocationExist(locationId);
+  location.name = name;
+  await location.save();
+  res.status(200).json({
+    message: "Location updated"
+  })
+});
+
+const deleteLocation = catchAsync(async (req, res) => {
+  const { locationId } = req.params;
+  const location = await projectService.isLocationExist(locationId);
+  await projectService.removeLocaitonChilds();
+  await projectService.removeLocationWorks();
+  await location.remove()
+  res.status(200).json({
+    message: "Location updated"
+  })
+});
+
+// get locations with external childs
+// get internal childs of a location with works
+
+
+const getExternalLocations = catchAsync(async (req, res) => {
+  const { timeProfileId } = req.params;
+  console.log('timeProfileId: ', timeProfileId);
+  const locations = await projectService.getAllLocationsByTimeProfile(timeProfileId)
+  res.status(200).json({ data: locations })
+});
+
+const getInternalLocations = catchAsync(async (req, res) => {
+  const { timeProfileId, locationId } = req.params;
+  const locations = await projectService.getAllInternalLocations(timeProfileId, locationId)
+  const works = await projectService.getAllWorksByLocation(timeProfileId, locationId);
+  res.status(200).json({ data: { locations, works } })
+});
+
+
+
+
 module.exports = {
   createProject,
   getProjects,
@@ -758,5 +856,10 @@ module.exports = {
   getGroupsMembers,
   getGroupUsers,
   addRemoveFolderUser,
+  createLocation,
+  getExternalLocations,
+  getInternalLocations,
+  deleteLocation,
+  updateLocation
   // getProjectMembersWithOwners
 };

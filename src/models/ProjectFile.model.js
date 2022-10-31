@@ -35,6 +35,10 @@ const fileSchema = mongoose.Schema(
       type: String,
       required: false,
     },
+    version: {
+      type: Number,
+      default: 1
+    }
   },
   {
     timestamps: true,

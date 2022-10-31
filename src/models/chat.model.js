@@ -21,9 +21,10 @@ const chatSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
     },
-    group: {
-      type: String,
-    },
+    groups: [{
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'Group',
+    }],
     lastMessage: {
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Message',

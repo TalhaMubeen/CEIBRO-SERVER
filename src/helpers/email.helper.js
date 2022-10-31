@@ -1,3 +1,5 @@
+const config = require('../config/config');
+const backend = config.backendUrl
 const getResetPasswordTemplate = (resetPasswordUrl) => {
   return `
 
@@ -26,7 +28,7 @@ const getResetPasswordTemplate = (resetPasswordUrl) => {
                           </tr>
                           <tr>
                               <td style="text-align:center;">
-                                <a href="www.ceibro.ee" title="logo" target="_blank">
+                                <a href= ${backend} title="logo" target="_blank">
                                   <img width="160" src="https://ceibro.s3.eu-north-1.amazonaws.com/chat_media/logo.png" title="logo" alt="logo">
                                 </a>
                               </td>
@@ -67,7 +69,7 @@ const getResetPasswordTemplate = (resetPasswordUrl) => {
                           </tr>
                           <tr>
                               <td style="text-align:center;">
-                                  <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">www.ceibro.ee</strong></p>
+                                  <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">${backend}</strong></p>
                               </td>
                           </tr>
                           <tr>
@@ -113,7 +115,7 @@ const getInviationEmailTemplate = (url, fromName, fromEmail) => {
                             </tr>
                             <tr>
                                 <td style="text-align:center;">
-                                  <a href="www.ceibro.ee" title="logo" target="_blank">
+                                  <a href="${backend}" title="logo" target="_blank">
                                     <img width="160" src="https://ceibro.s3.eu-north-1.amazonaws.com/chat_media/logo.png" title="logo" alt="logo">
                                   </a>
                                 </td>
@@ -150,7 +152,7 @@ const getInviationEmailTemplate = (url, fromName, fromEmail) => {
                             </tr>
                             <tr>
                                 <td style="text-align:center;">
-                                    <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">www.ceibro.ee</strong></p>
+                                    <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">${backend}</strong></p>
                                 </td>
                             </tr>
                             <tr>
@@ -195,7 +197,7 @@ const getVerifyEmailTemplate = (verificationEmailUrl) => {
                                   </tr>
                                   <tr>
                                       <td style="text-align:center;">
-                                      <a href="www.ceibro.ee" title="logo" target="_blank">
+                                      <a href="${backend}" title="logo" target="_blank">
                                           <img width="160" src="https://ceibro.s3.eu-north-1.amazonaws.com/chat_media/logo.png" title="logo" alt="logo">
                                       </a>
                                       </td>
@@ -232,7 +234,7 @@ const getVerifyEmailTemplate = (verificationEmailUrl) => {
                                   </tr>
                                   <tr>
                                       <td style="text-align:center;">
-                                          <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">www.ceibro.ee</strong></p>
+                                          <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">${backend}</strong></p>
                                       </td>
                                   </tr>
                                   <tr>
@@ -277,7 +279,7 @@ const getAccountLockTemplate = (username) => {
                             </tr>
                             <tr>
                                 <td style="text-align:center;">
-                                <a href="www.ceibro.ee" title="logo" target="_blank">
+                                <a href="${backend}" title="logo" target="_blank">
                                     <img width="160" src="https://ceibro.s3.eu-north-1.amazonaws.com/chat_media/logo.png" title="logo" alt="logo">
                                 </a>
                                 </td>
@@ -312,7 +314,7 @@ const getAccountLockTemplate = (username) => {
                             </tr>
                             <tr>
                                 <td style="text-align:center;">
-                                    <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">www.ceibro.ee</strong></p>
+                                    <p style="font-size:14px; line-height:18px; margin:0 0 0;">&copy; <strong style="color: #F1B740">${backend}</strong></p>
                                 </td>
                             </tr>
                             <tr>
