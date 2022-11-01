@@ -15,6 +15,7 @@ const {
   validateUpdateMember,
   validateCreateTimeProfile,
   validateUpdateTimeProfile,
+  checkSubContractor,
 } = require('../../middlewares/project.middleware');
 
 const router = express.Router();
@@ -59,7 +60,7 @@ router.route('/permissions/:projectId').get(auth('manageProject'), projectContro
 
 router
   .route('/timeProfile/:projectId')
-  .get(auth('manageProject'), projectController.getProjectTimeProfiles)
+  .get(auth('manageProject'), checkSubContractor, projectController.getProjectTimeProfiles)
   .post(
     auth('manageProject'),
     validate(validation.createTimeProfile),
@@ -113,7 +114,7 @@ router
 
 router
   .route('/member/:projectId')
-  .get(auth('manageProject'), projectController.getProjectAllMembers)
+  .get(auth('manageProject'), checkSubContractor, projectController.getProjectAllMembers)
   .post(
     auth('manageProject'),
     validate(validation.addMemberToProject),
@@ -133,7 +134,7 @@ router
 
 router.route('/members/available/:projectId').get(auth('manageProject'), projectController.getProjectAvailableMembers);
 
-router.route('/members/:projectId').get(auth('manageProject'), projectController.getProjectAllMembers);
+router.route('/members/:projectId').get(auth('manageProject'), checkSubContractor, projectController.getProjectAllMembers);
 
 router
   .route('/work/:profileId')

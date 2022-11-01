@@ -220,7 +220,9 @@ const getGroupDetail = catchAsync(async (req, res) => {
 
 const getGroupUsers = catchAsync(async (req, res) => {
   const { groupId } = req.params;
-  const groupMembers = await projectService.getGroupMembers(groupId, req.user._id);
+  const { _id } = req.user;
+  const condition = req.isSubContractor ? { createdBy: _id } : {};
+  const groupMembers = await projectService.getGroupMembers(groupId, req.user._id, condition);
   res.status(200).send(uniqueBy(groupMembers, '_id'));
 });
 
@@ -251,7 +253,9 @@ const getProjectGroups = catchAsync(async (req, res) => {
 const getGroupsMembers = catchAsync(async (req, res) => {
   const { groupId } = req.params;
   await isGroupExist(groupId);
-  const members = await projectService.getGroupMembers(groupId);
+  const { _id } = req.user;
+  const condition = req.isSubContractor ? { createdBy: _id } : {};
+  const members = await projectService.getGroupMembers(groupId, null, condition);
   res.status(200).send(members);
 });
 
@@ -268,7 +272,9 @@ const getProjectTimeProfiles = catchAsync(async (req, res) => {
   if (!project) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid project id');
   }
-  const timeProfiles = await projectService.getProjectTimeProfiles(projectId);
+  const { _id } = req.user;
+  const condition = req.isSubContractor ? { createdBy: _id } : {};
+  const timeProfiles = await projectService.getProjectTimeProfiles(projectId, condition);
   res.status(200).send(timeProfiles);
 });
 

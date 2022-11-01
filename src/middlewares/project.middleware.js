@@ -5,6 +5,16 @@ const { getRoleById, isMemberExistInProject, getProjectMemberById } = require('.
 const ApiError = require('../utils/ApiError');
 const catchAsync = require('../utils/catchAsync');
 
+
+const checkSubContractor = catchAsync(async (req, res, next) => {
+  const { projectId } = req.params;
+  const { _id } = req.user;
+  const permissions = await projectService.getProjectPermissions(_id, projectId);
+  req.isSubContractor = permissions.isSubContractor;
+  next()
+});
+
+
 const validateCreateRole = catchAsync(async (req, res, next) => {
   const { projectId } = req.params;
   const { roleType } = req.body;
@@ -190,4 +200,5 @@ module.exports = {
   validateCreateTimeProfile,
   validateUpdateTimeProfile,
   validateDeleteTimeProfile,
+  checkSubContractor
 };

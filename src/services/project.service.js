@@ -79,9 +79,9 @@ const isGroupExist = async (groupId) => {
   return group;
 };
 
-const getGroupMembers = async (groupId, currentUserId) => {
+const getGroupMembers = async (groupId, currentUserId, condition = {}) => {
   await isGroupExist(groupId);
-  const projectMembers = await ProjectMember.find({ group: groupId, user: { $ne: currentUserId } }).populate({
+  const projectMembers = await ProjectMember.find({ group: groupId, ...condition, user: { $ne: currentUserId } }).populate({
     path: 'user',
     select: 'firstName surName profilePic',
   });
@@ -502,9 +502,10 @@ const createProjectTimeProfile = async (name, projectId, createdBy) => {
   return newProfile.save();
 };
 
-const getProjectTimeProfiles = (projectId) => {
+const getProjectTimeProfiles = (projectId, condition = {}) => {
   return TimeProfile.find({
     project: projectId,
+    ...condition
   });
 };
 
