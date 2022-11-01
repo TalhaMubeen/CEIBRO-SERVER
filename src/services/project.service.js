@@ -1,4 +1,5 @@
 const httpStatus = require('http-status');
+const { roleTypes } = require('../config/project.config');
 const { invitesStatus } = require('../config/user.config');
 const { Project, Invite } = require('../models');
 const Folder = require('../models/folder.model');
@@ -186,7 +187,7 @@ const getFolderByProjectAndName = (name, projectId) => {
     project: projectId,
   });
 };
-const createProjectRole = async (name, admin, roles = [], member, timeProfile, projectId, members) => {
+const createProjectRole = async (name, roles = [], member, timeProfile, projectId, roleType, createdBy) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
@@ -199,27 +200,29 @@ const createProjectRole = async (name, admin, roles = [], member, timeProfile, p
 
   const newRole = new Role({
     name,
-    admin,
+    // admin,
     roles,
     member,
     timeProfile,
+    roleType,
+    createdBy,
     project: projectId,
   });
   await newRole.save();
 
-  if (members) {
-    const users = await User.find({
-      _id: members,
-    });
-    const membersToCreate = users.map((user) => ({
-      user: user._id,
-      role: newRole._id,
-      project: projectId,
-    }));
-    ProjectMember.insertMany(membersToCreate).then((user) => {
-      console.log('created members are', user);
-    });
-  }
+  // if (members) {
+  //   const users = await User.find({
+  //     _id: members,
+  //   });
+  //   const membersToCreate = users.map((user) => ({
+  //     user: user._id,
+  //     role: newRole._id,
+  //     project: projectId,
+  //   }));
+  //   ProjectMember.insertMany(membersToCreate).then((user) => {
+  //     console.log('created members are', user);
+  //   });
+  // }
   return newRole.save();
 };
 
@@ -480,7 +483,7 @@ const getProjectGroups = (projectId) => {
   });
 };
 
-const createProjectTimeProfile = async (name, projectId) => {
+const createProjectTimeProfile = async (name, projectId, createdBy) => {
   const project = await getProjectById(projectId);
   if (!project) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Project not found');
@@ -494,6 +497,7 @@ const createProjectTimeProfile = async (name, projectId) => {
   const newProfile = new TimeProfile({
     name,
     project: projectId,
+    createdBy
   });
   return newProfile.save();
 };
@@ -593,6 +597,7 @@ const sendProjectInviteByEmail = async (email, groupId, roleId, subContractorId,
     role: roleId,
     subContractor: subContractorId,
     project: projectId,
+    createdBy: currentUser.id
   });
   await projectMember.save();
   await sendInvitationEmail(email, name, currentUser.email);
@@ -616,13 +621,14 @@ const getProjectMemberById = async (memberId) => {
   });
 };
 
-const addMemberToProject = async (memberId, groupId, roleId, subContractorId, projectId) => {
+const addMemberToProject = async (memberId, groupId, roleId, subContractorId, projectId, createdBy) => {
   const projectMember = await ProjectMember({
     user: memberId,
     group: groupId,
     role: roleId,
     subContractor: subContractorId,
     project: projectId,
+    createdBy
   });
 
   await Group.updateOne(
@@ -733,9 +739,17 @@ const getProjectPermissions = async (userId, projectId) => {
   let memberPermissions = [];
   let timeProfilePermissions = [];
   let admin = false;
+  let isSubContractor = false;
+  let isIndividual = false;
   roles.forEach((role) => {
-    if (role.admin && !admin) {
+    if (role.roleType === roleTypes.admin && !admin) {
       admin = true;
+    }
+    if (role.roleType === roleTypes.subContractor && !isSubContractor) {
+      isSubContractor = true;
+    }
+    if (role.roleType === roleTypes.subContractor && !isSubContractor) {
+      isIndividual = true;
     }
 
     if (role.roles && Array.isArray(role.roles)) rolePermissions = [...rolePermissions, ...role.roles];
@@ -755,7 +769,7 @@ const getProjectPermissions = async (userId, projectId) => {
   if (project?.owner?.findIndex((owner) => String(owner._id) === String(userId)) > -1) {
     admin = true;
   }
-  return { member: memberPermissions, timeProfile: timeProfilePermissions, roles: rolePermissions, admin };
+  return { member: memberPermissions, timeProfile: timeProfilePermissions, roles: rolePermissions, admin, isSubContractor, isIndividual };
 };
 
 const getUserProjectIds = async (userId) => {

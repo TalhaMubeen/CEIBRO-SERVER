@@ -33,6 +33,10 @@ const projectMemberSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Role',
     },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

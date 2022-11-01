@@ -12,6 +12,10 @@ const timeProfileSchema = mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project',
     },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User',
+    },
   },
   {
     timestamps: true,

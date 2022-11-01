@@ -1,5 +1,5 @@
 const Joi = require('joi');
-const { rolesAccess } = require('../config/project.config');
+const { rolesAccess, roleTypesEnum } = require('../config/project.config');
 const { objectId } = require('./custom.validation');
 
 const createProject = {
@@ -41,8 +41,9 @@ const createProjectRole = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
-    admin: Joi.boolean().required(),
-    memberIds: Joi.any(),
+    // admin: Joi.boolean().required(),
+    // memberIds: Joi.any(),
+    roleType: Joi.string().valid(...roleTypesEnum).required(),
     roles: Joi.array().items(Joi.string().valid(...rolesAccess)),
     member: Joi.array().items(Joi.string().valid(...rolesAccess)),
     timeProfile: Joi.array().items(Joi.string().valid(...rolesAccess)),
@@ -55,7 +56,8 @@ const updateProjectRole = {
   }),
   body: Joi.object().keys({
     name: Joi.string().required(),
-    admin: Joi.boolean().required(),
+    // admin: Joi.boolean().required(),   
+    roleType: Joi.string().valid(...roleTypesEnum).required(),
     roles: Joi.array().items(Joi.string().valid(...rolesAccess)),
     member: Joi.array().items(Joi.string().valid(...rolesAccess)),
     timeProfile: Joi.array().items(Joi.string().valid(...rolesAccess)),

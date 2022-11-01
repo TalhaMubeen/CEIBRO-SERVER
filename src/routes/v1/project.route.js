@@ -572,8 +572,7 @@ module.exports = router;
  *                 type: boolean
  *             example:
  *               name: project manager
- *               memberIds: [234242423, 23423424234, 24323424243, l234243234, 23423424]
- *               admin: false
+ *               roleType: admin | subContractor | individual
  *               roles: ['create', 'edit', 'delete', 'self-made']
  *               member: ['create', 'edit', 'delete', 'self-made']
  *               timeProfile: ['create', 'edit', 'delete', 'self-made']
@@ -709,7 +708,7 @@ module.exports = router;
  *                 type: boolean
  *             example:
  *               name: project manager
- *               admin: false
+ *               roleType: admin | subContractor | individual
  *               roles: ['create', 'edit', 'delete', 'self-made']
  *               member: ['create', 'edit', 'delete', 'self-made']
  *               timeProfile: ['create', 'edit', 'delete', 'self-made']

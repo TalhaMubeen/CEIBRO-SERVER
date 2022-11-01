@@ -16,6 +16,12 @@ const avaialablePermissions = {
   self_made_permission: 'self-made',
 };
 
+const roleTypes = {
+  admin: 'admin',
+  subContractor: 'subContractor',
+  individual: 'individual'
+};
+
 const roleEntities = {
   ROLE_ENTITY: 'roles',
   MEMBER_ENTITY: 'member',
@@ -25,6 +31,7 @@ const roleEntities = {
 const rolesAccess = Object.values(avaialablePermissions);
 const memberAccess = Object.values(avaialablePermissions);
 const timeProfileAccess = Object.values(avaialablePermissions);
+const roleTypesEnum = Object.values(roleTypes)
 
 module.exports = {
   projectPublishStatus,
@@ -33,4 +40,6 @@ module.exports = {
   timeProfileAccess,
   avaialablePermissions,
   roleEntities,
+  roleTypes,
+  roleTypesEnum
 };

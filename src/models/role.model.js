@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { rolesAccess, memberAccess, timeProfileAccess } = require('../config/project.config');
+const { rolesAccess, memberAccess, timeProfileAccess, roleTypesEnum } = require('../config/project.config');
 const { toJSON, paginate } = require('./plugins');
 
 const roleSchema = mongoose.Schema(
@@ -15,10 +15,16 @@ const roleSchema = mongoose.Schema(
         enum: rolesAccess
       }
     ],
-    admin: {
-      type: Boolean,
-      default: false
+
+    roleType: {
+      type: String,
+      enum: roleTypesEnum
     },
+
+    // admin: {
+    //   type: Boolean,
+    //   default: false
+    // },
     member: [
       {
         type: String,
@@ -32,8 +38,12 @@ const roleSchema = mongoose.Schema(
       }
     ],
     project: {
-      type: mongoose.SchemaTypes.ObjectId, 
+      type: mongoose.SchemaTypes.ObjectId,
       ref: 'Project'
+    },
+    createdBy: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: 'User'
     },
   },
   {

@@ -169,8 +169,8 @@ const deleteProject = catchAsync(async (req, res) => {
 
 const createRole = catchAsync(async (req, res) => {
   const { projectId } = req.params;
-  const { name, admin, memberIds, roles, member, timeProfile } = req.body;
-  const role = await createProjectRole(name, admin, roles, member, timeProfile, projectId, memberIds);
+  const { name, roles, member, timeProfile, roleType } = req.body;
+  const role = await createProjectRole(name, roles, member, timeProfile, projectId, roleType, req.user._id);
   res.status(200).send(role);
 });
 
@@ -258,7 +258,7 @@ const getGroupsMembers = catchAsync(async (req, res) => {
 const createTimeProfile = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { name } = req.body;
-  const timeProfile = await createProjectTimeProfile(name, projectId);
+  const timeProfile = await createProjectTimeProfile(name, projectId, req.user._id);
   res.status(200).send(timeProfile);
 });
 
@@ -531,7 +531,7 @@ const getProjectAllMembers = catchAsync(async (req, res) => {
 const addMemberToProject = catchAsync(async (req, res) => {
   const { projectId } = req.params;
   const { groupId, subContractor, roleId, email } = req.body;
-
+  const { _id: user_id } = req.user;
   await getRoleById(roleId);
   await isGroupExist(groupId);
   // await isGroupExist(subContractor);
@@ -548,7 +548,7 @@ const addMemberToProject = catchAsync(async (req, res) => {
     if (alreadyMember) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Member already exist');
     }
-    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, null, projectId);
+    const newMember = await projectService.addMemberToProject(member._id, groupId, roleId, null, projectId, user_id);
     const membersCount = await ProjectMember.count({ project: projectId });
     project.usersCount = membersCount;
     project.save();
