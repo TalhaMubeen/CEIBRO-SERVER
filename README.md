@@ -1,4 +1,4 @@
-# RESTful API Node Server Boilerplate
+# Ceibro Node Server
 
 The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
 
