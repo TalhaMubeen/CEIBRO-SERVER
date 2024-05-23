@@ -1,12 +1,6 @@
 # RESTful API Node Server Boilerplate
 
-[![Build Status](https://travis-ci.org/hagopj13/node-express-boilerplate.svg?branch=master)](https://travis-ci.org/hagopj13/node-express-boilerplate)
-[![Coverage Status](https://coveralls.io/repos/github/hagopj13/node-express-boilerplate/badge.svg?branch=master)](https://coveralls.io/github/hagopj13/node-express-boilerplate?branch=master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-
-A boilerplate/starter project for quickly building RESTful APIs using Node.js, Express, and Mongoose.
-
-By running a single command, you will get a production-ready Node.js app installed and fully configured on your machine. The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
+The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
 
 ## Quick Start
 
@@ -80,69 +74,6 @@ cp .env.example .env
 - **Santizing**: sanitize request data against xss and query injection
 - **CORS**: Cross-Origin Resource-Sharing enabled using [cors](https://github.com/expressjs/cors)
 - **Compression**: gzip compression with [compression](https://github.com/expressjs/compression)
-- **CI**: continuous integration with [Travis CI](https://travis-ci.org)
-- **Docker support**
-- **Code coverage**: using [coveralls](https://coveralls.io)
-- **Code quality**: with [Codacy](https://www.codacy.com)
-- **Git hooks**: with [husky](https://github.com/typicode/husky) and [lint-staged](https://github.com/okonet/lint-staged)
-- **Linting**: with [ESLint](https://eslint.org) and [Prettier](https://prettier.io)
-- **Editor config**: consistent editor configuration using [EditorConfig](https://editorconfig.org)
-
-## Commands
-
-Running locally:
-
-```bash
-yarn dev
-```
-
-Running in production:
-
-```bash
-yarn start
-```
-
-Testing:
-
-```bash
-# run all tests
-yarn test
-
-# run all tests in watch mode
-yarn test:watch
-
-# run test coverage
-yarn coverage
-```
-
-Docker:
-
-```bash
-# run docker container in development mode
-yarn docker:dev
-
-# run docker container in production mode
-yarn docker:prod
-
-# run all tests in a docker container
-yarn docker:test
-```
-
-Linting:
-
-```bash
-# run ESLint
-yarn lint
-
-# fix ESLint errors
-yarn lint:fix
-
-# run prettier
-yarn prettier
-
-# fix prettier errors
-yarn prettier:fix
-```
 
 ## Environment Variables
 
@@ -188,11 +119,6 @@ src\
  |--app.js          # Express app
  |--index.js        # App entry point
 ```
-
-## API Documentation
-
-To view the list of available APIs and their specifications, run the server and go to `http://localhost:3000/v1/docs` in your browser. This documentation page is automatically generated using the [swagger](https://swagger.io/) definitions written as comments in the route files.
-
 ### API Endpoints
 
 List of available routes:
@@ -412,28 +338,6 @@ The `paginate` method returns a Promise, which fulfills with an object having th
   "totalResults": 48
 }
 ```
-
-## Linting
-
-Linting is done using [ESLint](https://eslint.org/) and [Prettier](https://prettier.io).
-
-In this app, ESLint is configured to follow the [Airbnb JavaScript style guide](https://github.com/airbnb/javascript/tree/master/packages/eslint-config-airbnb-base) with some modifications. It also extends [eslint-config-prettier](https://github.com/prettier/eslint-config-prettier) to turn off all rules that are unnecessary or might conflict with Prettier.
-
-To modify the ESLint configuration, update the `.eslintrc.json` file. To modify the Prettier configuration, update the `.prettierrc.json` file.
-
-To prevent a certain file or directory from being linted, add it to `.eslintignore` and `.prettierignore`.
-
-To maintain a consistent coding style across different IDEs, the project contains `.editorconfig`
-
-## Contributing
-
-Contributions are more than welcome! Please check out the [contributing guide](CONTRIBUTING.md).
-
-## Inspirations
-
-- [danielfsousa/express-rest-es2017-boilerplate](https://github.com/danielfsousa/express-rest-es2017-boilerplate)
-- [madhums/node-express-mongoose](https://github.com/madhums/node-express-mongoose)
-- [kunalkapadia/express-mongoose-es6-rest-api](https://github.com/kunalkapadia/express-mongoose-es6-rest-api)
 
 ## License
 
